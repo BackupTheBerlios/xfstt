@@ -1,5 +1,5 @@
 .\"
-.\"	$Id: xfstt.1x,v 1.1 2002/11/14 12:08:07 guillem Exp $
+.\"	$Id: xfstt.1x,v 1.2 2003/03/22 13:56:49 guillem Exp $
 .\"
 .TH xfstt 1x 2002-11-14 1.4 "Xfstt User's Manual" \" -*- nroff -*-
 .SH NAME
@@ -8,7 +8,7 @@ xfstt \- X11 font server for *ttf fonts
 .B xfstt
 [--port n] [--notcp] [--dir dirname] [--cache cachedir]
 [--multi] [--once] [--user username]
-[[--gslist] --sync] [--unstrap]
+[--gslist] [--sync] [--unstrap]
 [--res resolution] [--encoding list]
 [--help]
 .br
@@ -27,12 +27,6 @@ Don't do this while xfstt is running.
 .I "\-\-gslist"
 Print font list in a format usable for ghostscript during
 .BR \-\-sync .
-Currently the
-.B \-\-gslist
-option has to be before the
-.B \-\-sync
-option:
-xfstt --gslist --sync
 .TP
 .I "\-\-user username
 This is a security feature which is designed to lessen the impact of 
