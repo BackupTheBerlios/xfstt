@@ -1,5 +1,5 @@
 .\"
-.\"	$Id: xfstt.1x,v 1.3 2003/03/22 14:01:31 guillem Exp $
+.\"	$Id: xfstt.1x,v 1.4 2003/03/22 14:15:50 guillem Exp $
 .\"
 .TH xfstt 1x 2003-03-22 1.4 "Xfstt User's Manual" \" -*- nroff -*-
 .SH NAME
@@ -13,8 +13,8 @@ xfstt \- X11 Font Server for TrueType fonts
 [--help]
 .br
 .SH DESCRIPTION
-Xfstt serves *ttf fonts to X11 servers.  Start xfstt then tell X11 about the
-font server with
+Xfstt serves TrueType fonts to X11 servers. Start xfstt then tell X11 about
+the font server with
 .B "xset fp+ unix/:7101"
 or (assuming the X11 server runs on host 127.0.0.1)
 .B "xset fp+ inet/127.0.0.1:7101"
