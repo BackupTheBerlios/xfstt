@@ -1,5 +1,5 @@
 
-	$Id: TODO,v 1.2 2002/11/19 04:46:25 guillem Exp $
+	$Id: TODO,v 1.3 2002/12/09 07:29:27 guillem Exp $
 
 TODO list:
 
@@ -7,10 +7,13 @@ TODO list:
    - hardcoded dirs.
    - default ports.
    - hardcoded versions.
+ - create an install hook to mkdir the fontdir and cachedir (depends on
+   configure space dehardcoding)
  - remove --gslist dependancy on order.
  - add option to bind to specific interfaces.
  - add signal handler to re-sync fonts dir.
  - error messages using syslog (depends on error()).
+ - improve error message when cache dir doesn't exist.
  - add memory sharing support (multi-threading?).
  - add anti-aliasing support (using the X render extension).
  - add endianess agnostic support.
@@ -23,6 +26,7 @@ TODO list:
 
 Documentation:
  - differences: xfstt vs xtt-fs.
+ - that font database is placed in the cache dir.
 
 Code cleanup:
  - remove dprintfN and move it to its own module.
