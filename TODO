@@ -25,7 +25,6 @@ Documentation:
  - that font database is placed in the cache dir.
 
 Code cleanup:
- - add an error() function and normalize all > stderr.
  - search for XXX and correct.
  ? move all contrib references in src to THANKS file (code cleanup).
 

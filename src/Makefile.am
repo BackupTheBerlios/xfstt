@@ -21,7 +21,7 @@ AM_CPPFLAGS = -DLOCALEDIR=\""$(localedir)\"" -DFONTDIR=\""$(fontdir)\"" \
 bin_PROGRAMS = xfstt
 EXTRA_PROGRAMS = patchttf perftest showttf
 
-xfstt_SOURCES = xfstt.cc xfstt.h ttfn.h encoding.cc encoding.h gettext.h
+xfstt_SOURCES = xfstt.cc xfstt.h ttfn.h encoding.cc encoding.h mesg.h gettext.h
 xfstt_CXXFLAGS = $(X_CFLAGS)
 
 patchttf_SOURCES = patchttf.cc gettext.h

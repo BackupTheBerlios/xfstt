@@ -1,11 +1,11 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.18 2003/08/07 06:31:47 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
- * portions are (C) 2002-2003 Guillem Jover
+ * portions are (C) 2002-2004 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -48,6 +48,7 @@
 #include "ttfn.h"
 #include "xfstt.h"
 #include "encoding.h"
+#include "mesg.h"
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -156,7 +157,7 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, char *ttdir, int gslist)
 	int ttdir_len = strlen(ttdir);
 
 	if (!gslist)
-		printf(_("xfstt: sync in directory \"%s/%s\"\n"), fontdir, ttdir);
+		info(_("Sync in directory \"%s/%s\".\n"), fontdir, ttdir);
 
 	DIR *dirp = opendir(".");
 
@@ -247,12 +248,11 @@ cachefile(const char *leafname)
 	struct stat statbuf;
 
 	if (stat(cachedir, &statbuf)) {
-		fprintf(stderr, _("xfstt: \"%s\" does not exist!\n"), cachedir);
+		error(_("directory \"%s\" does not exist!\n"), cachedir);
 		return 0;
 	}
 	if (!S_ISDIR(statbuf.st_mode)) {
-		fprintf(stderr, _("xfstt: \"%s\" is not a directory!\n"),
-			cachedir);
+		error(_("\"%s\" is not a directory!\n"), cachedir);
 		return 0;
 	}
 
@@ -260,7 +260,7 @@ cachefile(const char *leafname)
 	long maxlen = pathconf(cachedir, _PC_PATH_MAX);
 
 	if (maxlen != -1 && len > maxlen) {
-		fputs(_("xfstt: Cache directory name is too long\n"), stderr);
+		error(_("cache directory name is too long.\n"));
 		return 0;
 	}
 
@@ -277,7 +277,7 @@ ttSyncAll(int gslist = 0)
 		debug("TrueType syncing\n");
 
 	if (chdir(fontdir)) {
-		fprintf(stderr, _("xfstt: \"%s\" does not exist!\n"), fontdir);
+		error(_("directory \"%s\" does not exist!\n"), fontdir);
 		return -1;
 	}
 	DIR *dirp = opendir(".");
@@ -297,7 +297,7 @@ ttSyncAll(int gslist = 0)
 	delete ttnamefilename;
 
 	if (infoFile <= 0 || nameFile <= 0) {
-		fputs(_("xfstt: Cannot write to font database!\n"), stderr);
+		error(_("cannot write to font database!\n"));
 		return -1;
 	}
 
@@ -322,10 +322,10 @@ ttSyncAll(int gslist = 0)
 
 	if (nfonts > 0) {
 		if (!gslist)
-			printf(_("Found %d fonts.\n"), nfonts);
+			info(_("Found %d fonts.\n"), nfonts);
 	} else {
-		printf(_("No valid truetype fonts found!\n"));
-		printf(_("Please put some *.ttf fonts into \"%s\"\n"), fontdir);
+		error(_("no valid truetype fonts found!\n"));
+		info(_("Please put some *.ttf fonts into \"%s\".\n"), fontdir);
 	}
 
 	return nfonts;
@@ -547,8 +547,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 	xfs->fe.buflen = MAXFONTBUFSIZE;
 	while (!(xfs->fe.buffer = (U8 *)allocMem(xfs->fe.buflen)))
 		if ((xfs->fe.buflen >>= 1) < MINFONTBUFSIZE) {
-			fputs(_("xfstt: entering memory starved mode\n"),
-			      stderr);
+			error(_("entering memory starved mode.\n"));
 			xfs->fid = 0;
 			return 0;
 		}
@@ -733,7 +732,7 @@ openTTFdb()
 	infoSize = nameSize = aliasSize = 0;
 
 	if (chdir(fontdir)) {
-		fprintf(stderr, _("xfstt: \"%s\" does not exist!\n"), fontdir);
+		error(_("directory \"%s\" does not exist!\n"), fontdir);
 		return 0;
 	}
 
@@ -743,7 +742,7 @@ openTTFdb()
 
 	int fd = open(ttinfofilename, O_RDONLY);
 	if (0 >= fd) {
-		fputs(_("Can not open font database!\n"), stderr);
+		error(_("cannot open font database!\n"));
 		delete ttinfofilename;
 		return 0;
 	}
@@ -757,12 +756,12 @@ openTTFdb()
 
 	if (infoSize <= sizeof(TTFNheader)
 	    || strncmp(infoBase, "TTFNINFO", 8)) {
-		fputs(_("Corrupt font database!\n"), stderr);
+		error(_("corrupt font database!\n"));
 		return 0;
 	}
 
 	if (((TTFNheader *)infoBase)->version != TTFN_VERSION) {
-		fputs(_("Wrong font database version!\n"), stderr);
+		error(_("wrong font database version!\n"));
 		return 0;
 	}
 
@@ -772,7 +771,7 @@ openTTFdb()
 
 	fd = open(ttnamefilename, O_RDONLY);
 	if (0 >= fd) {
-		fputs(_("Can not open font database!\n"), stderr);
+		error(_("cannot open font database!\n"));
 		delete ttnamefilename;
 		return 0;
 	}
@@ -785,12 +784,12 @@ openTTFdb()
 
 	if (nameSize <= sizeof(TTFNheader)
 	    || strncmp(nameBase, "TTFNNAME", 8)) {
-		fputs(_("Corrupt font database!\n"), stderr);
+		error(_("corrupt font database!\n"));
 		return 0;
 	}
 
 	if (((TTFNheader *)nameBase)->version != TTFN_VERSION) {
-		fputs(_("Wrong font database version!\n"), stderr);
+		error(_("wrong font database version!\n"));
 		return 0;
 	}
 
@@ -841,8 +840,8 @@ prepare2connect(int portno)
 		unlink(s_unix.sun_path);
 		old_umask = umask(0);
 		if (bind(sd_unix, (struct sockaddr *)&s_unix, sizeof(s_unix))) {
-			fprintf(stderr, _("Couldn't write to %s/\n"), sockdir);
-			fputs(_("Please check permissions.\n"), stderr);
+			error(_("could not write to %s/. Please check "
+			      "permissions.\n"), sockdir);
 		}
 		umask(old_umask);
 		listen(sd_unix, 1);	// only one connection
@@ -856,8 +855,8 @@ prepare2connect(int portno)
 		s_inet.sin_port = htons(portno);
 		s_inet.sin_addr.s_addr = htonl(INADDR_ANY);
 		if (bind(sd_inet, (struct sockaddr *)&s_inet, sizeof(s_inet))) {
-			fprintf(stderr, _("Cannot open TCPIP port %d\n"), portno);
-			fprintf(stderr, _("Better try another port!\n"));
+			error(_("cannot open TCP/IP port %d. Try another "
+			      "port!"), portno);
 		}
 		listen(sd_inet, 1);	// only one connection
 	}
@@ -897,7 +896,7 @@ connecting(int sd)
 		return 0;
 
 	if (req->byteOrder != 'l' && req->byteOrder != 'B') {
-		fputs(_("xfstt: invalid byteorder, giving up\n"), stderr);
+		error(_("invalid byteorder, giving up.\n"));
 		return 0;
 	}
 
@@ -907,7 +906,7 @@ connecting(int sd)
 
 	if ((req->byteOrder == 'l' && (*(U32 *)req & 0xff) != 'l')
 	    || (req->byteOrder == 'B' && ((*(U32 *)req >> 24) & 0xff) != 'B')) {
-		fputs(_("xfstt: byteorder mismatch, giving up\n"), stderr);
+		error(_("byteorder mismatch, giving up.\n"));
 		return 0;
 	}
 
@@ -944,10 +943,8 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 {
 	int format = ((hint >> 8) & 3) + 3;
 	if (format < LOGSLP) {
-		fputs(_("xfstt: scanline length error!\n"), stderr);
-		fprintf(stderr,
-			_("recompile xfstt with LOGSLP defined as %d!\n"),
-			format <= 3 ? 3 : format);
+		error(_("scanline length error! recompile xfstt with LOGSLP "
+		      "defined as %d!\n"), format <= 3 ? 3 : format);
 	}
 
 	if ((hint ^ fe->bmpFormat) == 0)
@@ -1070,10 +1067,10 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			return l;
 
 #ifdef DEBUG
-		printf("===STARTREQ=========== %d\n", l);
+		debug("===STARTREQ=========== %d\n", l);
 		for (i = 0; i < sz_fsReq; ++i)
-			printf("%02X ", buf[i]);
-		printf("\n");
+			debug("%02X ", buf[i]);
+		debug("\n");
 		sync();
 #endif
 
@@ -1094,13 +1091,13 @@ working(int sd, Rasterizer *raster, char *replybuf)
 
 #ifdef DEBUG
 		for (i = sz_fsReq; i < length; ++i) {
-			printf("%02X ", buf[i]);
+			debug("%02X ", buf[i]);
 			if ((i & 3) == 3)
-				printf(" ");
+				debug(" ");
 			if ((i & 15) == (15 - sz_fsReq))
-				printf("\n");
+				debug("\n");
 		}
-		printf("\n===ENDREQ============= %d\n", length);
+		debug("\n===ENDREQ============= %d\n", length);
 		sync();
 #endif
 
@@ -1800,7 +1797,7 @@ main(int argc, char **argv)
 			if (i <= argc)
 				portno = xatoi(argv[++i]);
 			if (!portno) {
-				fputs(_("Illegal port number!\n"), stderr);
+				error(_("illegal port number!\n"));
 				portno = default_port;
 			}
 		} else if (!strcmp(argv[i], "--notcp")) {
@@ -1809,7 +1806,7 @@ main(int argc, char **argv)
 			if (i <= argc)
 				defaultres = xatoi(argv[++i]);
 			if (!defaultres)
-				fputs(_("Illegal default resolution!\n"), stderr);
+				error(_("illegal default resolution!\n"));
 		} else if (!strcmp(argv[i], "--dir")) {
 			fontdir = argv[++i];
 		} else if (!strcmp(argv[i], "--user")) {
@@ -1821,13 +1818,13 @@ main(int argc, char **argv)
 		} else if (!strcmp(argv[i], "--encoding")) {
 			char *maplist = argv[++i];
 			if (!Encoding::parse(maplist, encodings, MAXENC)) {
-				fprintf(stderr, _("Illegal encoding!\n"));
-				fprintf(stderr, _("Valid encodings are:\n"));
+				error(_("illegal encoding!\n"));
+				info(_("valid encodings are:\n"));
 				for (Encoding *maps = 0;;) {
 					maps = Encoding::enumerate(maps);
 					if (!maps)
 						exit(0);
-					fprintf(stderr, "\t%s\n", maps->strName);
+					info("\t%s\n", maps->strName);
 				}
 			}
 		} else if (!strcmp(argv[i], "--help")) {
@@ -1841,8 +1838,8 @@ main(int argc, char **argv)
 			multiConnection = 0;
 		} else if (!strcmp(argv[i], "--unstrap")) {
 			maxLastChar = UNSTRAPLIMIT;
-			printf(_("xfstt unstrapped: you must start X11 "
-				"with \"-deferglyphs 16\" option!\n"));
+			warning(_("[unstrapped] you must start X11 with "
+				"\"-deferglyphs 16\" option!\n"));
 		} else if (!strcmp(argv[i], "--daemon")) {
 			daemon = 1;
 		} else {
@@ -1853,15 +1850,14 @@ main(int argc, char **argv)
 
 	if (sync_db) {
 		if (ttSyncAll(gslist) <= 0)
-			fputs(_("xfstt: sync failed\n"), stderr);
+			error(_("sync failed.\n"));
 		cleanupMem();
 		return 0;
 	}
 
 	if (inetdConnection && multiConnection) {
 		multiConnection = 0;
-		fprintf(stderr,
-			_("xfstt: --inetd and --multi option collission\n"));
+		error(_("--inetd and --multi option collission.\n"));
 		// we don't know what to do ...so exit.
 		return 1;
 	}
@@ -1903,20 +1899,19 @@ main(int argc, char **argv)
 			break;
 		closeTTFdb();
 
-		fprintf(stderr, _("xfstt: error opening TTF database!\n"));
-		fprintf(stderr, _("xfstt: reading \"%s\" to build it.\n"),
-			fontdir);
+		error(_("opening TTF database failed, while reading \"%s\" "
+		      "to build it.\n"), fontdir);
 
 		if (ttSyncAll() > 0 && openTTFdb() > 0)
 			break;
-		fputs(_("Creating a font database failed\n"), stderr);
+		error(_("creating a font database failed.\n"));
 		unlink(pidfilename);
 	}
 
 	signal(SIGCHLD, SIG_IGN); // We don't need no stinkinig zombies -sjc
 
 	if (retry <= 0)
-		fputs(_("xfstt: Good bye.\n"), stderr);
+		error(_("good bye.\n"));
 	else do {
 		int sd = inetdConnection ? 0 : prepare2connect(portno);
 
