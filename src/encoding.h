@@ -1,7 +1,7 @@
 /*
  * Header for glyph remapping subsystem
  *
- * $Id: encoding.h,v 1.1 2002/11/14 12:08:08 guillem Exp $
+ * $Id: encoding.h,v 1.2 2002/12/29 06:30:55 guillem Exp $
  *
  * Copyright (C) 1998 Herbert Duerr
  *
@@ -29,20 +29,20 @@ public:
 	virtual ~Encoding() {}
 	virtual int map2unicode(int code) = 0;
 	virtual int hasGlyphs(int /*unicodeRange*/[4]) { return 1; }
-	static void getDefault(Encoding** maps, int maxcodes);
-	static int parse(char* mapnames, Encoding** maps, int maxcodes);
-	static Encoding* find(char* mapname);
-	static Encoding* enumerate(Encoding* iterator);
+	static void getDefault(Encoding **maps, int maxcodes);
+	static int parse(char *mapnames, Encoding **maps, int maxcodes);
+	static Encoding *find(char *mapname);
+	static Encoding *enumerate(Encoding *iterator);
 
-	const char	*strName;
-	const int	lenName;
+	const char *strName;
+	const int lenName;
 
 protected:
-	Encoding(char* name);
+	Encoding(char *name);
 
 private:
-	static Encoding	*first, *last;
-	Encoding	*next;
+	static Encoding *first, *last;
+	Encoding *next;
 };
 
 #endif
