@@ -1,5 +1,5 @@
 
-	$Id: TODO,v 1.8 2003/03/21 18:43:28 guillem Exp $
+	$Id: TODO,v 1.9 2003/03/21 18:51:17 guillem Exp $
 
 TODO list:
 
@@ -11,6 +11,7 @@ TODO list:
  - add signal handler (HUP?) to re-sync fonts dir.
  - error messages using syslog (depends on error()).
  - improve error message when cache dir doesn't exist.
+ - add IPv6 support.
  - add memory sharing support (multi-threading?).
  - add anti-aliasing support (using the X render extension).
  - add endianess agnostic support.
