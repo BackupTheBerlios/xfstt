@@ -12,7 +12,7 @@ man_MANS = xfstt.1x
 EXTRA_DIST = $(man_MANS) xfstt.lsm FAQ examples
 
 edit = sed \
-	-e 's,@VERSION@,$(VERSION),g' \
+	-e 's,@VERSION\@,$(VERSION),g' \
         -e 's,@datadir\@,$(pkgdatadir),g' \
         -e 's,@localstatedir\@,$(localstatedir),g'
 
