@@ -1,7 +1,7 @@
 /*
  * Name Table
  *
- * $Id: table_name.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id: table_name.cc,v 1.3 2003/08/07 06:20:44 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -33,7 +33,7 @@ NameTable::NameTable(RandomAccessFile &f, int offset, int length):
 }
 
 char *
-NameTable::getString(int pfId, int strId, int *pLen, char *convbuf)
+NameTable::getString(int pfId, int strId, int *pLen)
 {
 	// name records
 	seekAbsolute(6);
@@ -78,19 +78,27 @@ NameTable::getString(int pfId, int strId, int *pLen, char *convbuf)
 				return 0;
 			if (p >= (char *)base + getLength())
 				return 0;
-			return p;
+
+			char *str = new char [*pLen];
+			memcpy(str, p, *pLen);
+
+			return str;
 		}
 	}
 
 	// hack to convert unicode -> ascii
-	if (convbuf && pfId == 1) {
-		const char *p = getString(3, strId, pLen, 0);
+	if (pfId == 1) {
+		const char *p = getString(3, strId, pLen);
+
 		if (!p)
 			return 0;
 
 		*pLen >>= 1;
+		char *convbuf = new char [*pLen];
 		for (int i = *pLen; --i >= 0;)
 			convbuf[i] = p[2 * i + 1];
+
+		delete p;
 
 		return convbuf;
 	}

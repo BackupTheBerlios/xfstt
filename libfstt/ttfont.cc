@@ -1,7 +1,7 @@
 /*
  * General handling of *ttf files
  *
- * $Id: ttfont.cc,v 1.3 2003/06/25 04:23:54 guillem Exp $
+ * $Id: ttfont.cc,v 1.4 2003/08/07 06:20:44 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -236,18 +236,23 @@ TTFont::getFontInfo(FontInfo *fi)
 			fi->panose[i] = 0;		// any
 	}
 
-	// we need an ascii name even if we only have unicode
-	// => use a conversion buffer
-	char conv[256];
-	char *faceName = nameTable->getString(1, 4, &fi->faceLength, conv);
+	char *faceName;
+	char *p_faceName = nameTable->getString(1, 4, &fi->faceLength);
 
-	if (!faceName) {
+	if (p_faceName) {
+		faceName = p_faceName;
+	} else {
 		faceName = "Unknown";
 		fi->faceLength = strlen(faceName);
 	}
+
 	if (fi->faceLength > 32)
 		fi->faceLength = 32;
+
 	strncpy(fi->faceName, faceName, fi->faceLength);
+	if (p_faceName)
+		delete faceName;
+
 	if (fi->faceLength < 31)
 		fi->faceName[fi->faceLength] = 0;
 }
@@ -396,66 +401,72 @@ TTFont::write2File(char *filename)
 }
 
 
-#include <string.h>
-#include <ctype.h>
+#include <string>
+#include <cctype>
 
 // result has to be preset with the category name "-category-",
 // returns "-category-family-weight-slant-setwidth-TT-"
 // XXX: "pixelsize-pointsize-xres-yres-spacing-avgwidth-charset-encoding"
 
-int
-TTFont::getXLFDbase(char* result)
+std::string
+TTFont::getXLFDbase(std::string xlfd_templ)
 {
 //#define XLFDEXT "-normal-tt-0-0-0-0-p-0-iso8859-1"
 //#define XLFDEXT "-normal-tt-"
 
-	char *convbuf;
-
-	// some fonts have only unicode names -> try to convert them to ascii
-	convbuf = (char *)malloc(sizeof(char) * 256);
 	int lenFamily;
-	char *strFamily = nameTable->getString(1, 1, &lenFamily, convbuf);
-	if (!strFamily) {
-		strFamily = "Unknown";
-		lenFamily = strlen(strFamily);
-	}
+	char *p_strFamily = nameTable->getString(1, 1, &lenFamily);
+	std::string strFamily;
 
-	if (strFamily == convbuf) 
-		convbuf = (char *)malloc(sizeof(char) * 256);
-	int lenSub;
-	char *strSubFamily = nameTable->getString(1, 2, &lenSub, convbuf);
-	if (!strFamily) {
-		strSubFamily = "tt";
-		lenSub = strlen(strSubFamily);
-	}
-
-	char *p = result + strlen(result);
-	p[0] = '-';
-	strncpy(++p, strFamily, lenFamily);
-	for (p[lenFamily] = 0; *p; ++p)
-		if (*p == '-')
-			*p = ' ';
-	if (os2Table) {
-		strcpy(p, (os2Table->selection & 32) ? "-bold" : "-medium");
-		strcat(p, (os2Table->selection & 1) ? "-i" : "-r");
+	if (p_strFamily) {
+		strFamily = std::string(p_strFamily, lenFamily);
 	} else {
-		strcpy(p, (headTable->macStyle & 1) ? "-bold" : "-medium");
-		strcat(p, (headTable->macStyle & 2) ? "-i" : "-r");
+		strFamily = "unknown";
+		lenFamily = strFamily.length();
 	}
 
-	strcat(p, "-normal-");
-	p += strlen(p);
-	strncpy(p, strSubFamily, lenSub);
-	for (p[lenSub] = 0; *p; ++p)
-		if (*p == '-')
-			*p = ' ';
-	*(p++) = '-';
-	*p = 0;
+	int lenSub;
+	char *p_strSubFamily = nameTable->getString(1, 2, &lenSub);
+	std::string strSubFamily;
 
-	for (p = result; *p; ++p)
-		*p = tolower(*p);
+	if (p_strFamily) {
+		strSubFamily = std::string(p_strSubFamily, lenSub);
+	} else {
+		strSubFamily = "tt";
+		lenSub = strSubFamily.length();
+	}
 
-	debug("xlfd = \"%s\"\n", result);
-	return strlen(result);
+	std::string::iterator i;
+
+	for (i = strFamily.begin(); i < strFamily.end(); i++)
+		if (*i == '-')
+			*i = ' ';
+	for (i = strSubFamily.begin(); i < strSubFamily.end(); i++)
+		if (*i == '-')
+			*i = ' ';
+
+	std::string xlfd = xlfd_templ + '-' + strFamily;
+
+	if (os2Table) {
+		xlfd += (os2Table->selection & 32) ? "-bold" : "-medium";
+		xlfd += (os2Table->selection & 1) ? "-i" : "-r";
+	} else {
+		xlfd += (headTable->macStyle & 1) ? "-bold" : "-medium";
+		xlfd += (headTable->macStyle & 2) ? "-i" : "-r";
+	}
+
+	xlfd += "-normal-" + strSubFamily + '-';
+
+	for (i = xlfd.begin(); i < xlfd.end(); i++)
+		*i = std::tolower(*i);
+
+	if (p_strFamily)
+		delete p_strFamily;
+	if (p_strSubFamily)
+		delete p_strSubFamily;
+
+	debug("xlfd = \"%s\"\n", xlfd.c_str());
+
+	return xlfd;
 }
 

@@ -1,7 +1,7 @@
 /*
  * Header for the xfstt (X Font Server for TrueType) font engine
  *
- * $Id: ttf.h,v 1.4 2003/08/06 20:24:04 guillem Exp $
+ * $Id: ttf.h,v 1.5 2003/08/07 06:20:44 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -42,6 +42,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <string>
 
 #ifndef MULDIV
 #  define MULDIV(a,b,c) (int)(((S64)(a) * (b) + (c >> 1)) / (c))
@@ -289,7 +290,7 @@ public:
 	int getGlyphWidth(int mppemx, int glyphNo);
 	int getGlyphMetrics(int glyphNo);
 
-	int getXLFDbase(char *xlfd);
+	std::string getXLFDbase(std::string xlfd_templ);
 
 	// for comparing with reference implementation
 	int patchGlyphCode(GlyphTable *glyph, int instruction);
@@ -317,7 +318,7 @@ public:
 		NAME_TRADEMARK = 7
 	};
 
-	char *getString(int platformId, int strId, int *len, char *conv = 0);
+	char *getString(int platformId, int strId, int *len);
 };
 
 // Font specific flags
