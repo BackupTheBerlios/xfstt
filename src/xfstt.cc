@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.2 2003/01/05 10:16:28 guillem Exp $
+ * $Id: xfstt.cc,v 1.3 2003/01/05 10:20:20 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -111,7 +111,7 @@ Encoding *encodings[MAXENC];
 static void
 usage(int verbose)
 {
-	printf(_("Xfstt %s, X font server for TT fonts\n"), VERSION);
+	printf(_("xfstt %s, X font server for truetype fonts\n"), VERSION);
 	printf(_("Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]"
 		"[--user username]\n"
 		"\t\t[--dir ttfdir][--cache ttfcachedir][--pidfile pidfile]\n"
