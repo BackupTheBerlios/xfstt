@@ -2,13 +2,15 @@
 #
 # autogen.sh
 #
-#	$Id: autogen.sh,v 1.1 2002/11/14 12:08:05 guillem Exp $
+#	$Id: autogen.sh,v 1.2 2002/11/19 05:02:35 guillem Exp $
 #
 # Authors:	Guillem Jover <guillem.jover@menta.net>
+#		Midnight Commander Authors
 #
 # License:
 #
 #	Copyright (C) 2002 Guillem Jover
+#	Some parts of this script come from Midnight Commander's autogen.sh
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -20,38 +22,74 @@
 
 set -e
 
+# Make it possible to specify path in the environment
+: ${AUTOCONF=autoconf}
+: ${AUTOHEADER=autoheader}
+: ${AUTOMAKE=automake}
+: ${ACLOCAL=aclocal}
+: ${GETTEXTIZE=gettextize}
+: ${AUTOPOINT=autopoint}
+
 srcdir=`dirname $0`
-if test -e $srcdir/src/xfstt.cc 
+if test -e $srcdir/src/xfstt.cc
 then
 	:
 else
-	echo "Not xfstt source dir"
+	echo "autogen.sh: No xfstt source dir" 2>&1
 	exit 1
 fi
 
 test -d config || mkdir config
 
-echo "+++ autopoint"
-autopoint
+# Ensure that gettext is reasonably new.
+gettext_ver=`$GETTEXTIZE --version | \
+  sed '2,$d;			# remove all but the first line
+       s/.* //;			# take text after the last space
+       s/-.*//;			# strip "-pre" or "-rc" at the end
+       s/\([^.]\+\)/0\1/g;	# prepend 0 to every token
+       s/0\([^.][^.]\)/\1/g;	# trim 0 from long lokens
+       s/\.//g;			# remove dots
+       '`
 
-#echo "+++ gettextize"
-#gettextize --intl --force
-#echo "  + working around a nasty bug in gettext 0.11.5"
-#sed -e 's,^\(AM_GNU_GETTEXT_VERSION([^)]\)$,\1),' < configure.ac > configure.ac.tmp
-#mv -f configure.ac.tmp configure.ac
+if test $gettext_ver -lt 01038; then
+	echo "autogen.sh: Don't use gettext earlier than 0.10.38" 2>&1
+	exit 1
+fi
 
-echo "+++ aclocal "
-aclocal -I config
+rm -rf intl
+if test $gettext_ver -ge 01100; then
+	if test $gettext_ver -lt 01105; then
+		echo "autogen.sh: Upgrade gettext to at least 0.11.5 or downgrade to 0.10.40" 2>&1
+		exit 1
+	fi
+	echo "+++ $AUTOPOINT"
+	$AUTOPOINT || exit 1
+else
+	echo "+++ $GETTEXTIZE"
+	echo "autogen.sh: Warning -- gettextize is not designed to be used automatically," 2>&1
+	echo "            so problems may arise. Upgrade to at least gettext 0.11.5" 2>&1
+	$GETTEXTIZE --intl --copy --force || exit 1
+	#echo "  + working around a nasty bug in gettext 0.11.5"
+	#sed -e 's,^\(AM_GNU_GETTEXT_VERSION([^)]\)$,\1),' < configure.ac > configure.ac.tmp
+	#mv -f configure.ac.tmp configure.ac
+	if test -e po/ChangeLog~; then
+		rm -f po/ChangeLog
+		mv po/ChangeLog~ po/ChangeLog
+	fi
+fi
+
+echo "+++ $ACLOCAL"
+$ACLOCAL -I config
 
 #echo "  + removing unnecessary m4/ directory found in aclocal.m4"
 #rm -rf m4/
 
-echo "+++ autoheader "
-autoheader
-echo "+++ automake "
-automake --verbose --add-missing
-echo "+++ autoconf"
-autoconf
+echo "+++ $AUTOHEADER"
+$AUTOHEADER || exit 1
+echo "+++ $AUTOMAKE"
+$AUTOMAKE --verbose --add-missing --copy || exit 1
+echo "+++ $AUTOCONF"
+$AUTOCONF || exit 1
 
 echo "+++ cleaning cruft files"
 find . -name '*~' | xargs rm -f
