@@ -2,7 +2,7 @@
 #
 # autogen.sh
 #
-#	$Id: autogen.sh,v 1.5 2003/06/04 04:36:40 guillem Exp $
+#	$Id$
 #
 # Authors:	Guillem Jover <guillem.jover@menta.net>
 #		Midnight Commander Authors
@@ -67,10 +67,10 @@ if test $gettext_ver -ge 01100; then
 		echo "autogen.sh: Upgrade gettext to at least 0.11.5 or downgrade to 0.10.40" 2>&1
 		exit 1
 	fi
-	echo "+++ $AUTOPOINT"
+	echo "-> $AUTOPOINT"
 	$AUTOPOINT --force || exit 1
 else
-	echo "+++ $GETTEXTIZE"
+	echo "-> $GETTEXTIZE"
 	echo "autogen.sh: Warning -- gettextize is not designed to be used automatically," 2>&1
 	echo "            so problems may arise. Upgrade to at least gettext 0.11.5" 2>&1
 	$GETTEXTIZE --intl --copy --force || exit 1
@@ -83,20 +83,20 @@ else
 	fi
 fi
 
-echo "+++ $ACLOCAL"
+echo "-> $ACLOCAL"
 $ACLOCAL -I config
 
 #echo "  + removing unnecessary m4/ directory found in aclocal.m4"
 #rm -rf m4/
 
-echo "+++ $AUTOHEADER"
-$AUTOHEADER || exit 1
-echo "+++ $AUTOMAKE"
-$AUTOMAKE --verbose --add-missing --copy || exit 1
-echo "+++ $AUTOCONF"
-$AUTOCONF || exit 1
+echo "-> $AUTOHEADER"
+$AUTOHEADER -Wall || exit 1
+echo "-> $AUTOMAKE"
+$AUTOMAKE -Wall --add-missing --copy || exit 1
+echo "-> $AUTOCONF"
+$AUTOCONF -Wall || exit 1
 
-echo "+++ cleaning cruft files"
+echo "-> cleaning cruft files"
 find . -name '*~' | xargs rm -f
 rm -rf autom4te.cache/
 
