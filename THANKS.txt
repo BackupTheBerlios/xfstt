@@ -1,20 +1,29 @@
 Thank you to all who made xfstt better!
 
 patches:
-	Luc Stepniewski
-	Pablo Saratxaga
-	Colin McCormack
-	Andrew Turner
+	Tasos Chronis
+	David Crowley
+	Vladimir Eltsov
+	Noah Friedman
+	Nikolay Grygoryev
 	Christoph Lameter
+	Colin McCormack
+	Pablo Saratxaga
+	Constantinos Sourelis
+	Luc Stepniewski
+	Andrew Turner
 
 ideas:
 	Jan Anderson
-	Guido Notari
-	Stephen Montgomery
-	Michael Lanertz
-	Yaron M. Minsky
 	Emmanuel Blot
-	Felix von Leitner
+	Brian Crowder
 	Ian Justman
+	Christian Kirsch
+	Michael Lanertz
+	Felix von Leitner
+	Stephen Montgomery
+	Yaron M. Minsky
+	Guido Notari
 	Marcelo Fernandes Vianna
+	Brian Vibber
 

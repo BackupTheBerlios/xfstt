@@ -173,8 +173,8 @@ int GlyphTable::getCompositeGlyphData( int glyphNo, LocaTable* locaTable, Raster
 			points[ i].yold = points[ i].ynow += yarg;
 		}
 
-		for( int i = nEndPoints; --i >= 0;)
-			endPoints[ i] += sumPoints;
+		for( int j = nEndPoints; --j >= 0;)
+			endPoints[ j] += sumPoints;
 
 		sumEndpoints	+= nEndPoints;
 		sumPoints	+= nPoints;

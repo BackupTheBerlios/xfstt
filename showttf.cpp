@@ -12,10 +12,6 @@
 
 #include "ttf.h"
 
-#define __KERNEL
-#include <asm/byteorder.h>
-#undef __KERNEL__
-
 #if (MSB_BYTE_FIRST != 1 || MSB_BIT_FIRST != 2)
 	#error "showttf assumes MSB_BYTE_FIRST=1 and MSB_BIT_FIRST=2"
 #endif
@@ -195,6 +191,13 @@ int main( int argc, char** argv)
 
 	unsigned int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 
+#if 0
+	int fid = XLoadFont( display, "TTM20_Bitstream Cyberbit");
+	XSetFont( display, textGC, fid);
+	XChar2b* tststr = (XChar2b*)"\0a\0b\0c\0\x61";
+	//char* tststr = "abcd";
+#endif
+
 	Window win = XCreateSimpleWindow( display, rootWindow, 0, 0,
 		width, height, 1, gcv.foreground, gcv.background);
 	XStoreName( display, win, "TrueType Viewer");
@@ -230,7 +233,12 @@ drawglyph:
 				if( !MAGNIFY) MAGNIFY = 1;
 			}
 #endif
-			glyph2image( glyphNo, fontsize, angle, &img);
+{
+int gno2 = glyphNo;	//ttFont->getGlyphNo16( glyphNo);
+fprintf( stderr, "gno2 %d\n", gno2);
+fflush( stderr);
+			glyph2image( gno2, fontsize, angle, &img);
+}
 			/* fall through */
 		case Expose:
 expose:
@@ -241,6 +249,12 @@ expose:
 				XPutImage( display, win, textGC,
 					&img, 0, 0, 4, 4,
 					img.width, img.height);
+#if 0
+			tststr[3].byte2 = glyphNo;
+			tststr[3].byte1 = glyphNo>>8;
+			fprintf( stderr, "glyphNo = %d\n", glyphNo);
+			XDrawImageString16( display,win,textGC,4,120,tststr,4);
+#endif
 			break;
 
 		case KeyPress:

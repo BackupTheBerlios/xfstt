@@ -52,6 +52,8 @@ char* NameTable::getString( int pfId, int strId, int* pLen, char* convbuf)
 #endif
 			*pLen = strLength;
 			p = (char*)base + strBase + strOffset;
+			if( p <= (char*)base) return 0;
+			if( p >= (char*)base+getLength()) return 0;
 			return p;
 		}
 	}

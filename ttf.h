@@ -164,7 +164,8 @@ class EbscTable;
 //class PclTable;
 class KernTable;
 //class PostTable;
-//class VheaTable;
+class VheaTable;
+class MortTable;
 
 enum{ ON_CURVE = 1, X_TOUCHED = 0x40, Y_TOUCHED = 0x80, END_SUBGLYPH = 0x100};
 typedef struct{ int xnow, ynow, xold, yold, flags
@@ -209,6 +210,11 @@ public:	//### perftest needs maxpTable
 	GaspTable* gaspTable;
 	KernTable* kernTable;
 
+	EbdtTable* ebdtTable;
+	EblcTable* eblcTable;
+	MortTable* mortTable;
+	VheaTable* vheaTable;
+
 	enum {
 		NAME_MAGIC	= 0x6E616D65,
 		HEAD_MAGIC	= 0x68656164,
@@ -224,10 +230,16 @@ public:	//### perftest needs maxpTable
 		PREP_MAGIC	= 0x70726570,
 		CVT_MAGIC	= 0x63767420,
 		HHEA_MAGIC	= 0x68686561,
+		VHEA_MAGIC	= 0x76686570,
 		HMTX_MAGIC	= 0x686D7478,
 		KERN_MAGIC	= 0x6B65726E,
 		POST_MAGIC	= 0x706F7374,
-		GASP_MAGIC	= 0x67617370
+		GASP_MAGIC	= 0x67617370,
+		EBLC_MAGIC	= 0x45424C43,
+		BLOC_MAGIC	= 0x626C6F63,
+		EBDT_MAGIC	= 0x45424454,
+		BDAT_MAGIC	= 0x62646174,
+		MORT_MAGIC	= 0x6D6F7274
 	};
 
 	int* endPoints;
@@ -260,7 +272,7 @@ public:
 
 // name table
 class NameTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 	int strBase;
 	int nRecords;
@@ -276,7 +288,7 @@ public:
 
 // font specific flags
 class HeadTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 	U32 headMagic;
 public:	//###
@@ -306,7 +318,7 @@ public:
 
 // font limits
 class MaxpTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 friend TTFont;
 friend Rasterizer;
@@ -336,7 +348,7 @@ public:
 
 // character code to glyph number mapping
 class CmapTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 	int unicodeOffset;
 	int macCharOffset;
@@ -355,7 +367,7 @@ public:
 
 // glyph number to glyph data offset mapping
 class LocaTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 	int maxGlyph;
 	int isShort;
@@ -421,7 +433,7 @@ private:
 
 // Hhea
 class HheaTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 friend TTFont;
 	int yAscent;
@@ -441,7 +453,7 @@ friend TTFont;
 
 // Hmtx
 class HmtxTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 	int nHMetrics;
 public:
@@ -455,7 +467,7 @@ public:
 
 // OS/2
 class OS2Table
-: RandomAccessFile
+: public RandomAccessFile
 {
 public:
 	S16	weightClass;
@@ -503,7 +515,7 @@ public:
 
 // LTSH
 class LtshTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 	int numGlyphs;
 public:
@@ -515,7 +527,7 @@ public:
 
 // hdmx
 class HdmxTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 	int nRecords;
 	int recordLen;
@@ -529,7 +541,7 @@ public:
 
 // VDMX
 class VdmxTable
-: RandomAccessFile
+: public RandomAccessFile
 {
 	int nRecords;
 	int nRatios;
@@ -583,35 +595,6 @@ public:
 };
 
 
-// EBLC embedded bitmap locations
-class EblcTable
-: public RandomAccessFile
-{
-public:
-	EblcTable( RandomAccessFile& f, int offset, int length);
-	void dummy();
-};
-
-
-// EBDT embedded bitmap data
-class EbdtTable
-: public RandomAccessFile
-{
-public:
-	EbdtTable( RandomAccessFile& f, int offset, int length);
-
-	int readBitmap( int format, U8* bitmap);
-};
-
-
-// EBSC embedded bitmap scaling info
-class EbscTable
-: public RandomAccessFile
-{
-public:
-	EbscTable( RandomAccessFile& f, int offset, int length);
-};
-
 
 // Kern kerning table
 class KernTable
@@ -630,9 +613,76 @@ public:
 };
 
 
-enum{ UNITY2D14 = 0x4000};
-enum{ SHIFT = 6, SUBS = 64};
-enum {VGARES = 96};
+struct FontExtent
+{
+	int xBlackboxMin, xBlackboxMax;
+	int yBlackboxMin, yBlackboxMax;
+	int xLeftMin, xLeftMax;
+	int xRightMin, xRightMax;
+	int yAscentMin, yAscentMax;
+	int yDescentMin, yDescentMax;
+	int xAdvanceMin, xAdvanceMax;
+	int yAdvanceMin, yAdvanceMax;
+	int yWinAscent, yWinDescent;
+
+	U8* buffer;	// hack
+	U8* bitmaps;	// hack
+	int buflen;	// hack
+	int bmplen;	// hack
+	int numGlyphs;	// hack
+	int bmpFormat;	// hack
+	// format of buffer:
+	//	CharInfo[ numGlyphs]
+	//	bitmaps[ numGlyphs]
+};
+
+struct GlyphMetrics
+{
+	int xBlackbox, yBlackbox;
+	int xOrigin, yOrigin;
+	int xAdvance, yAdvance;
+};
+
+struct CharInfo
+{
+	GlyphMetrics gm;
+	int offset;
+	int length;
+	int tmpofs;	// scratchpad offset
+};
+
+
+// EBLC embedded bitmap locations
+class EblcTable
+: public RandomAccessFile
+{
+	enum { HORIZONTAL = 0x01, VERTICAL = 0x02};
+public:
+	EblcTable( RandomAccessFile& f, int offset, int length);
+
+	void readStrike( int glyphNo, int _ppemx, int _ppemy);
+	void readSubTableArray( int glyphNo, int ofsSTA);
+	void readSubTable( int first, int last);
+};
+
+// EBDT embedded bitmap data
+class EbdtTable
+: public RandomAccessFile
+{
+public:
+	EbdtTable( RandomAccessFile& f, int offset, int length);
+
+	int readBitmap( int format, U8* bitmap, GlyphMetrics* gm);
+};
+
+// EBSC embedded bitmap scaling info
+class EbscTable
+: public RandomAccessFile
+{
+public:
+	EbscTable( RandomAccessFile& f, int offset, int length);
+};
+
 
 class GraphicsState {
 friend Rasterizer;	// only Rasterizer needs this
@@ -675,43 +725,9 @@ friend Rasterizer;	// only Rasterizer needs this
 	int dropout_control;
 };
 
-struct FontExtent
-{
-	int xBlackboxMin, xBlackboxMax;
-	int yBlackboxMin, yBlackboxMax;
-	int xLeftMin, xLeftMax;
-	int xRightMin, xRightMax;
-	int yAscentMin, yAscentMax;
-	int yDescentMin, yDescentMax;
-	int xAdvanceMin, xAdvanceMax;
-	int yAdvanceMin, yAdvanceMax;
-	int yWinAscent, yWinDescent;
-
-	U8* buffer;	// hack
-	U8* bitmaps;	// hack
-	int buflen;	// hack
-	int bmplen;	// hack
-	int numGlyphs;	// hack
-	int bmpFormat;	// hack
-	// format of buffer:
-	//	CharInfo[ numGlyphs]
-	//	bitmaps[ numGlyphs]
-};
-
-struct GlyphMetrics
-{
-	int xBlackbox, yBlackbox;
-	int xOrigin, yOrigin;
-	int xAdvance, yAdvance;
-};
-
-struct CharInfo
-{
-	GlyphMetrics gm;
-	int offset;
-	int length;
-	int tmpofs;	// scratchpad offset
-};
+enum{ UNITY2D14 = 0x4000};
+enum{ SHIFT = 6, SUBS = 64};
+enum {VGARES = 96};
 
 // scan line converter
 class Rasterizer

@@ -134,7 +134,7 @@ U16 CmapTable::firstUnicode()
 
 	seekAbsolute( unicodeOffset + 16 + (nSegments << 1));
 	U16 i = readUShort();
-dprintf1( "First Unicode = %d\n", i);
+	dprintf1( "First Unicode = %d\n", i);
 	return i;
 }
 
@@ -145,7 +145,7 @@ U16 CmapTable::lastUnicode()
 
 	seekAbsolute( unicodeOffset + 14 + ((nSegments-2) << 1));
 	U16 i = readUShort();
-dprintf1( "Last Unicode = %d\n", i);
+	dprintf1( "Last Unicode = %d\n", i);
 	return i;
 }
 

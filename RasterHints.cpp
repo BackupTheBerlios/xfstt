@@ -805,7 +805,8 @@ inline void Rasterizer::execOpcode( RandomAccessFile* const f)
 			if( pp1 == pp) continue;
 			dprintf2( "SHZ%d p[%d] ", opc&1, pp1-p[m]);
 			dprintf2( "by %f, rp = p[%d]", n/FSHIFT, pp-p[m]);
-			gs.movePoint( *pp1, n);
+			pp1->xnow += (n * gs.move_x) >> 14;
+			pp1->ynow += (n * gs.move_y) >> 14;
 		}
 		}
 		break;

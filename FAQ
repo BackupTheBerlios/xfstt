@@ -3,8 +3,8 @@
 1.2  How do I use it?
 
 2.0  It doesn't work! I get something like "fontpath not found"!
-2.1  the X11 server doesn't start when xfstt isn't running!
-2.2  xfstt locks up my machine!
+2.1  The X11 server doesn't start when xfstt isn't running!
+2.2  Xfstt locks up my machine!
 2.3  Why are no fonts included? Where do I get some?
 2.4  How does one add fonts?
 2.5  What are these weird fontnames displayed by xlsfonts when using xfstt?
@@ -14,12 +14,15 @@
 2.9  I cannot see all of my gazillion installed fonts!
 2.10 Why can't I use all 16bit characters?
 2.11 Rotated glyphs have wrong spacing!
+2.12 The glyphs are too small!
+2.13 How does one request an encoding different from iso8859-1?
 
 3.0  How do I put fonts in categories?
 3.1  use with java (tm)
 3.2  use with netscape/communicator (tm)
-3.3  How do I print documents which use *.ttf fonts?
-3.4  Does xfstt have anti-aliasing/grayscaling technology?
+3.3  use with staroffice (tm)
+3.4  How do I print documents which use *.ttf fonts?
+3.5  Does xfstt have anti-aliasing/grayscaling technology?
 
 4.0  I have problems to compile xfstt!
 4.1  Will it be merged with the X server?
@@ -32,15 +35,15 @@
 1.0 What is xfstt?
 
 	Xfstt means "X11 Font Server for TT fonts".
-	TT fonts are generally regarded to be the best scalable fonts
-	for low resolution devices like screens.
+	TT fonts are generally regarded to be the best scalable
+	fonts for low resolution devices like displays.
 
 	Examples where good scalable fonts improve the visual quality
 	considerably are netscape(tm), gimp and java(tm).
 	A fonts.properties file for use with java is provided.
 
 	Xfstt is freely available under the LGPL. This basically means:
-	You can freely use it; if you fix bugs you have to contribute the
+	Use it for free; if you fix bugs you have to contribute the
 	fixes to the public.
 
 1.1 How do I test it?
@@ -62,8 +65,8 @@
 
 1.2 How do I use it?
 
-	add unix/:7100 to the fontpath in your XF86Config
-	start xfstt a second before starting X11
+	Add unix/:7100 to the fontpath in your X11 configuration file.
+	Start xfstt a few seconds before starting X11.
 
 	The font name for a 24 point Arial would be "TTM24_Arial" or
 	"-ttf-arial-medium-r-normal-tt-18-240-75-75-p-123-iso8859-1",
@@ -94,19 +97,19 @@
 	designed. Move the font server to a machine with the correct
 	byte order.
 
-2.1 the X11 server doesn't start when xfstt isn't running!
+2.1 The X11 server doesn't start when xfstt isn't running!
 
 	This usually happens when "unix/:7100" is in the font path.
 	Despite xfstt's marvellous capabilities it cannot do anything
 	when it isn't running.
 
-2.2 xfstt locks up my machine!
+2.2 Xfstt locks up my machine!
 
 	Sorry about that. Xfstt itself cannot lock up the machine.
 	The X server that stops handling user requests is to blame.
 	If you are a developer please add this your TODO list...
 
-2.3  Why are no fonts included? Where do I get some?
+2.3 Why are no fonts included? Where do I get some?
 
 	Free fonts have the wierdest copyrights one can imagine. A typical
 	restriction is "non-commercial use only". Including such fonts in
@@ -118,6 +121,7 @@
 	There are a lot of cheap CDs with hundreds of *.ttf fonts.
 
 	http://www.winsite.com/win3/fonts/truetype/index.html
+	http://www.microsoft.com/truetype
 	http://www.hooked.net/~flubble/typography.html
 	http://home1.gte.net/tiaralyn/pctt.htm
 	http://www.homunculus.com/access/CustomDirs/Fonts.html
@@ -126,16 +130,15 @@
 	http://klink.net/~rcklueg/font1.html
 	http://www.fonthead.com/main.html
 	http://members.aol.com/ChiChiX/pages/fonts.html
-	http://www.microsoft.com/truetype
 	http://moon.yerphi.am/~hovik/Archive/Archive-PC/Fonts
 	http://www.geocities.com/SoHo/7554/downloads/fonts
 	and many many other web sites
 
 2.4 How does one add fonts?
 
-	If there already are *.ttf fonts on your computer do a softlink like
+	Copy *.ttf fonts into the /usr/ttfonts directory or put some
+	softlinks to font directories in there. A typical example is
 	ln -s /DOS/windows/fonts /usr/ttfonts/winfonts
-	You can copy *.ttf fonts directly into the /usr/ttfonts directory.
 
 	Now run "xfstt --sync" in order to have the new fonts recognized.
 	Adding fonts while xfstt is running doesn't work yet.
@@ -167,13 +170,14 @@
 	(they MUST have the same byte order as the font server) you
 	should start xfstt on another port (e.g. xfstt --port 7101)
 	and add unix/:7101 to the catalogue of the standard X11 font
-	server xfs.
+	server xfs. Make sure you conform to the font licence when serving
+	to multiple clients.
 
 2.7 Why does program xxx look awful with most *.ttf fonts?
 
 	Most *.ttf fonts are proportional (i.e. 'W' is wider than 'i').
 	Due to the sad history of font support in X11 many X programs
-	only know how to deal with monospaced fonts.
+	only know how handle monospaced fonts.
 
 	It may be possible to also serve monospaced versions of proportional
 	fonts. This feature is not implemented yet. Since this will probably
@@ -193,7 +197,7 @@
 	the X server already made up his opinion how big these "phantom
 	glyphs" are, it tries to display something: garbage
 
-	You should start the X server with the options
+	In this case the X server should be started with the options
 	-deferglyphs 8 -deferglyphs 16
 	Then the X server will load characters only in groups of 16, not
 	all at once. The maximum size of the glyphs is still finite, but
@@ -219,23 +223,43 @@
 2.11 Rotated glyphs have wrong spacing!
 
 	The X11 font server protocol only supports x advance widths,
-	not y advance widths. Xfstt uses the XCharStruct.attributes
+	not y advance widths. Xfstt takes the XCharStruct.attributes
 	field to pass y advance widths. No current X server uses
-	this information to display strings.
+	this information to display rotated strings.
 
+2.12 The glyphs are too small!
+
+	Most operating systems handling ttf fonts assume default
+	resolutions of 96dpi, 120dpi or higher. Most X servers
+	tell Xfstt to assume a default resolution of 72 dpi.
+	A 12pt font at 96dpi is the same as a 16pt font at 72dpi.
+
+	The solution is to tell the X server that the default
+	resolution is different from the default 72 dpi. 
+	As long as there is no such option in XFree xfstt will
+	provide the --res option. A typical usage example is
+	xfstt --res 96
+
+2.13 How does one request an encoding different from iso8859-1?
+
+	By default xfstt uses the unicode encoding which accidentially
+	matches the iso8859-1 encoding for the first 256 characters.
+	Starting in version 0.9.8 the unicode can be remapped to other
+	encodings with the --encoding option. Example
+	xfstt --encoding iso8859-2,koi8-r,windows-1251
 
 -----------------------------------------------------------------------------
 
 3.0  How do I put fonts in categories?
 
 	Create some subdirectories in /usr/ttfonts, e.g.
-	script, brush, old, symbol, ...
+	modern, script, brush, old, symbol, ...
 	and put the appropiate fonts in there. The corresponding font
-	names will be -script-..., -brush-..., -old-... and so on
+	names will be -modern-*, -script-*, -brush-* and so on
 
 3.1 use with java (tm) 1.1 and up
 
-	Copy the fonts.properties file to $JAVA_HOME/lib/
+	Overwrite the fonts.properties file in $JAVA_HOME/lib/
 
 3.2 use with netscape (tm)
 
@@ -247,17 +271,25 @@
 	of open fonts is finite after some font changes requests for
 	opening more fonts are rejected.
 
-3.3 How do I print documents which use *.ttf fonts?
+3.3  use with staroffice (tm)
+
+	Starting in version 0.9.8 xfstt recognizes the not 100% compliant
+	staroffice request for fonts with "-*" names. When using an older
+	xfstt version you can't access its fonts in staroffice.
+
+3.4 How do I print documents which use *.ttf fonts?
 
 	Unfortunately the X Consortium decided in its early days that the
 	display and printer are totally unrelated devices. There was no
 	common architecture for graphics devices. The recent approach
 	to close this gaping architectual hole is to use a X Print Server.
 
-	So the printing subsystem in applications usually is custom made
-	and cannot be changed to use a totally different kind of fonts.
+	Another way is to use ghostscript's ability to render ttf fonts.
+	In order to help ghostscript figure out which fonts are available
+	the --gslist option was added to xfstt. Usage example
+	xfstt --gslist --sync > gs-ttf-list
 
-3.4 Does xfstt have anti-aliasing/grayscaling technology?
+3.5 Does xfstt have anti-aliasing/grayscaling technology?
 
 	The font engine in xfstt knows grayscaling. Unfortunately neither
 	the X11 font server protocol nor most X11 servers allow grayscaled
@@ -270,14 +302,25 @@
 	xfstt is supposed to compile right out of the box. If the
 	error message says something about missing include files
 	make sure that you have a package xdevel or similar installed.
-	If this doesn't help get a binary release (e.g. from the nice
+	If this doesn't help get a binary release (e.g. from the great
 	debian distribution).
 
 4.1 Will it be merged with the X server?
 
 	Merging it with the X server creates some opportunities. It makes
 	advanced features like grayscaling, kerning, glyph substitution,
-	ligatures and vertical advance widths for rotated strings possible.
+	ligatures, unlimited glyph sizes and vertical advance widths for
+	rotated text possible.
+
+	It would also allow that only those glyphs that are actually
+	needed have to be rendered. Currently all glyphs in a font
+	have to be rendered in order to get almost useless font summary
+	properties. Fonts with lots of glyphs take considerably longer
+	than they should take because of this.
+
+	Unfortunately this requires a major rewrite of the X11 font
+	subsystem. But without the rewrite it is doubtful that X11
+	will be a competitive solution in the next millenium.
 
 4.2 How are embedded *ttf fonts used?
 
@@ -289,14 +332,15 @@
 
 4.3 How can I help?
 
-	A few example fonts would be nice. If you know good *ttf fonts that
-	are really free (please no "free for the first 30 days", no "non
-	commercial use only") and that display ok at small pixelsizes please
-	provide the URL.
+	Xfstt is reported to work on i386/m68k/sparc/alpha/mips/ppc on
+	linux/freebsd/aix/irix platforms. Porting it to a different
+	platform may require small modifications in the architecture
+	dependent header file "arch.h".
 
-	Xfstt is reported to work on i386/m68k/sparc/alpha on linux/freebsd
-	platforms. Porting it to a different platform may require slight
-	modifications to the architecture dependent header file "arch.h".
+	Read in 4.1 about the great benefits that could be achieved by
+	deeply embedding scalable font technology into a completely
+	revised X11 font subsystem. Read and understand the limitations of
+	the current X11 font subsystem and try to do something about it.
 
 4.4 Why the LGPL licence though xfstt is not a library?
 

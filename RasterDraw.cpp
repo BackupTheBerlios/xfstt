@@ -97,7 +97,7 @@ static void drawHorizontal( U8* const bmp, int height, int dX)
 		if( p[1].x - p[0].x < 96)
 			continue;
 
-		int x1 = (p[0].x + 31) >> SHIFT;	/*32*/
+		int x1 = (p[0].x + 32) >> SHIFT;	/*32,31*/
 
 		int y = height - (p->y >> SHIFT);
 		TYPESLP* ptr = (TYPESLP*)&bmp[ y * dX];
@@ -109,11 +109,11 @@ static void drawHorizontal( U8* const bmp, int height, int dX)
 		TYPESLP hscan = (TYPESLP)~0 << (x1 & SLPMASK);
 #endif
 
-		int x2 = (p[1].x - 33) >> SHIFT;	/*31*/
+		int x2 = (p[1].x - 32) >> SHIFT;	/*31,33*/
 		int x = (x2 >> LOGSLP) - (x1 >> LOGSLP);
 		if( x) {
 			*ptr |= hscan;
-			for( hscan = ~0U; --x > 0;)
+			for( hscan = (TYPESLP)~0U; --x > 0;)
 				*(++ptr) = hscan;
 			++ptr;
 		}
@@ -131,7 +131,7 @@ static void drawHorizontal( U8* const bmp, int height, int dX)
 static void drawHDropouts( U8* const bmp, int height, int dX)
 {
 	for( dot* p = dots[0]+1; p < dots0; p += 2) {
-		if( p[1].x - p[0].x >= 96)
+		if( p[1].x - p[0].x >= 96 )
 			continue;
 
 		int y = height - (p->y >> SHIFT);
@@ -174,11 +174,12 @@ static void drawVDropouts( U8* const bmp, int height, int dX)
 void Rasterizer::drawBitmap( U8* const bmp, int height, int dX)
 {
 	// sort horizontal/vertical dots
+	dprintf1( "dropoutControl = %d\n", gs.dropout_control);
 	if( dots[0] + 1 < dots0) {
 		preSort( dots[0] + 1, dots0);
 		endSort( dots[0] + 1, dots0);
 		drawHorizontal( bmp, height, dX);
-		if( gs.dropout_control)
+		//###if( gs.dropout_control)
 			drawHDropouts( bmp, height, dX);
 	}
 	if( gs.dropout_control && dots[1] + 1 < dots1) {

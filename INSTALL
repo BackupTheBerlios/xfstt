@@ -1,6 +1,6 @@
 1) Type in
-	make xfstt && make install
-2) Copy some truetype *.ttf files into /usr/ttfonts, then run
+	make && make install
+2) Copy some truetype *.ttf files into /usr/ttfonts/, then run
 	xfstt --sync
 3) Start xfstt in the background
 	xfstt &

@@ -18,6 +18,7 @@
 #include "ttf.h"
 #include "xfstt.h"
 #include "ttfn.h"
+#include "encoding.h"
 
 #include <dirent.h>
 #include <string.h>
@@ -34,12 +35,15 @@
 #include <X11/fonts/FS.h>
 #include <X11/fonts/FSproto.h>
 
+// if you want to read good code skip this hacked up file!
+
 typedef struct
 {
 	Font		fid;
 	TTFont*		ttFont;
 	FontInfo	fi;
 	FontExtent	fe;
+	Encoding*	encoding;
 } XFSFont;
 
 XFSFont xfsFont[ MAXOPENFONTS];
@@ -52,26 +56,34 @@ U16 maxLastChar = 255;
 
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
+char* fontdir = TTFONTDIR;
+Encoding** encodings = 0;
+int defaultres = 0;
 
 static void usage( int verbose)
 {
-	printf( "Xfstt 0.9.7\n");
-	printf( "Usage: xfstt [--sync][--port portno][--unstrap]\n");
+	printf( "Xfstt 0.9.8\n");
+	printf( "Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]\n");
 	if( !verbose)
 		return;
-	printf( "\t--sync  \tput ttf-fonts in "TTFONTDIR" in font database\n");
-	printf( "\t--port  \tchange port number from default 7100\n");
-	printf( "\t--unstrap\t!DANGER! serve all unicodes !DANGER!\n");
+	printf( "\t--sync     put ttf-fonts in \"%s\" in database\n", fontdir);
+	printf( "\t--gslist   print ghostscript style ttf fontlist\n ");
+	printf( "\t--port     change port number from default 7100\n");
+	printf( "\t--dir     change font directory from default "TTFONTDIR"\n");
+	printf( "\t--res      force default resolution to this value\n");
+	printf( "\t--encoding use encodings other than iso8859-1\n");
+	printf( "\t--unstrap  !DANGER! serve all unicodes !DANGER!\n");
 	printf( "\n\tattach to X Server by \"xset +fp unix/:7100\"\n");
 	printf( "\t\tor \"xset +fp inet/127.0.0.1:7100\"\n");
 	printf( "\tdetach from X Server by \"xset -fp unix/:7100\"\n");
 	printf( "\t\tor \"xset -fp inet/127.0.0.1:7100\"\n");
 } 
 
-static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir)
+static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir, int gslist)
 {
 	int nfonts = 0;
-	printf( "xfstt: sync in directory "TTFONTDIR"/%s\n", ttdir);
+	if( !gslist)
+		printf( "xfstt: sync in directory \"%s/%s\"\n", fontdir, ttdir);
 	DIR* dirp = opendir( ".");
 
 	while( dirent* de = readdir( dirp)) {
@@ -112,13 +124,17 @@ static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir)
 		fwrite( (void*)pathName, 1, info.pathLen, nameFile);
 		fputc( '\0', nameFile);
 
+		if( gslist)
+			printf( "(%s)\t(%s/%s)\t;\n",
+				fi.faceName, fontdir, pathName); 
+		
 		pathName[0] = '-';
 		if( *ttdir == '.') strcpy( pathName+1, "ttf");
 		else strcpy( pathName+1, ttdir);
 		info.xlfdLen = ttFont->getXLFDbase( pathName);
 		fwrite( (void*)pathName, 1, info.xlfdLen, nameFile);
 		fputc( '\0', nameFile);
-		
+
 		info.charSet		= 'U';
 		info.slant		= 0;
 		info.bFamilyType	= fi.panose[ 0];
@@ -142,12 +158,13 @@ static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir)
 	return nfonts;
 }
 
-static int ttSyncAll()
+static int ttSyncAll( int gslist=0)
 {
-	dprintf0( "TT synching\n");
+	if( !gslist)
+		dprintf0( "TT synching\n");
 
-	if( chdir( TTFONTDIR)) {
-		fputs( "xfstt: " TTFONTDIR " does not exist!\n", stderr);
+	if( chdir( fontdir)) {
+		fprintf( stderr, "xfstt: \"%s\" does not exist!\n", fontdir);
 		return -1;
 	}
 
@@ -168,21 +185,23 @@ static int ttSyncAll()
 	fwrite( (void*)&info, 1, sizeof( info), nameFile);
 
 	int nfonts = 0;
-	nfonts += ttSyncDir( infoFile, nameFile, ".");
+	nfonts += ttSyncDir( infoFile, nameFile, ".", gslist);
 	while( dirent* de = readdir( dirp)) {
-		chdir( TTFONTDIR);
+		chdir( fontdir);
 		if( de->d_name[0] != '.' && !chdir( de->d_name))
-			nfonts += ttSyncDir( infoFile, nameFile, de->d_name);
+			nfonts += ttSyncDir( infoFile, nameFile,
+				de->d_name, gslist);
 	}
 
 	fclose( infoFile);
 	fclose( nameFile);
 
-	if( nfonts > 0)
-		printf( "Found %d fonts.\n", nfonts);
-	else {
+	if( nfonts > 0) {
+		if( !gslist)
+			printf( "Found %d fonts.\n", nfonts);
+	} else {
 		printf( "No valid truetype fonts found!\n");
-		printf( "Please put some *.ttf fonts into "TTFONTDIR"\n");
+		printf( "Please put some *.ttf fonts into \"%s\"\n", fontdir);
 	}
 	return nfonts;
 }
@@ -191,10 +210,12 @@ static int ttSyncAll()
 static int listXLFDFonts( char* pattern0, int index, char* buf)
 {
 	static TTFNdata* ttfn = 0;
+	static int mapIndex = 0;
 
-	if( index == 0)
+	if( index == 0) {
 		ttfn = (TTFNdata*)(infoBase + sizeof( TTFNheader));
-	else if( (char*)++ttfn >= infoBase + infoSize)
+		mapIndex = 0;
+	} else if( mapIndex == 0 && (char*)++ttfn >= infoBase + infoSize)
 		return -1;
 
 	char* pattern = pattern0;
@@ -205,11 +226,14 @@ static int listXLFDFonts( char* pattern0, int index, char* buf)
 	char proportion = (ttfn->bProportion == 9) ? 'm' : 'p';
 
 	char* buf0 = buf++;
-	if( pattern[0] == '*') {
+	if( pattern[0] == '*'
+	|| (pattern[0] == '-' && pattern[1] == '*' && pattern[2] == 0)) { //CK
 		char xlfdExt[] = "0-0-0-0-p-0-iso8859-1";
 		xlfdExt[8] = proportion;
 		strcpy( buf, xlfdName);
 		strcpy( buf + ttfn->xlfdLen, xlfdExt);
+		strcpy( buf + ttfn->xlfdLen + 12, encodings[mapIndex]->strName);
+		if( !encodings[++mapIndex]) mapIndex = 0;
 		*buf0 = strlen( buf);
 		return *buf0 + 1;
 	}
@@ -239,9 +263,12 @@ static int listXLFDFonts( char* pattern0, int index, char* buf)
 	*buf = 0;
 	// this hack satisfies Mozilla, thanks Andrew Turner
 	if( !strcmp( buf-4, "-0-0")) {
-		strcpy( buf-3, "iso8859-1");
-		buf += strlen( "iso8859-1") - 3;
-	}
+		strcpy( buf-3, encodings[ mapIndex]->strName);
+		buf += encodings[ mapIndex]->lenName - 3;
+		if( !encodings[++mapIndex]) mapIndex = 0;
+	} else
+		mapIndex = 0;
+
 	dprintf1( "match\t\"%s\"\n", buf0+1);
 
 	*buf0 = buf - buf0;
@@ -256,10 +283,10 @@ static int listTTFNFonts( char* pattern, int index, char* buf)
 	if( pattern[ 0] != '*' || pattern[ 1] != 0)
 		return -1;
 
-	if( index == 0 || ttfn == 0)
-		ttfn = (TTFNdata*)(infoBase + sizeof( TTFNheader)),
+	if( index == 0 || ttfn == 0) {
+		ttfn = (TTFNdata*)(infoBase + sizeof( TTFNheader));
 		alias = aliasBase;
-	else if( (char*)++ttfn >= infoBase + infoSize)
+	} else if( (char*)++ttfn >= infoBase + infoSize)
 		return -1;
 
 #if 0
@@ -329,9 +356,10 @@ static XFSFont* findFont( Font fid, int sd, int seqno)
 }
 
 static XFSFont* openFont( TTFont* ttFont, FontParams* fp,
-	Rasterizer* raster, int fid)
+	Rasterizer* raster, int fid, Encoding* encoding)
 {
-	dprintf3( "point %d, pixel %d, res %d\n", fp->point[0], fp->pixel[0], fp->resolution[0]);
+	dprintf3( "point %d, pixel %d, res %d\n",
+		fp->point[0], fp->pixel[0], fp->resolution[0]);
 
 	if( !ttFont || ttFont->badFont())
 		return 0;
@@ -356,7 +384,8 @@ static XFSFont* openFont( TTFont* ttFont, FontParams* fp,
 	if( fi->firstChar > fi->lastChar)	fi->firstChar	= fi->lastChar;
 
 	if( !fp->resolution[0] || !fp->resolution[1])
-		fp->resolution[0] = fp->resolution[1] = VGARES;
+		fp->resolution[0] = fp->resolution[1]
+			 = defaultres ? defaultres : VGARES;
 
 	if( !fp->pixel[0] && !fp->pixel[1] && !fp->pixel[2] && !fp->pixel[3]) {
 		fp->pixel[0] = (fp->point[0] * fp->resolution[0]) / 72;
@@ -399,6 +428,7 @@ static XFSFont* openFont( TTFont* ttFont, FontParams* fp,
 		}
 
 	raster->getFontExtent( &xfs->fe);
+	xfs->encoding = encoding;
 	return xfs;
 }
 
@@ -472,11 +502,11 @@ static XFSFont* openTTFN( Rasterizer* raster,
 		char* name = nameBase + ttfn->nameOfs;
 		char* file = name + ttfn->nameLen + 1;
 		if( !strcmp( name, ttfnName)) {
-			chdir( TTFONTDIR);
-			return openFont( new TTFont( file), fp, raster, fid);
+			chdir( fontdir);
+			return openFont( new TTFont( file),
+				fp, raster, fid, encodings[0]);
 		}
 	}
-
 	return 0;
 }
 
@@ -495,6 +525,7 @@ static XFSFont* openXLFD( Rasterizer* raster,
 		return 0;
 
 	int delim = 0;
+	Encoding* encoding = 0;
 	for( char* p = xlfdName; *p; ++p) {
 		*p = tolower( *p);
 		if( *p == '-')
@@ -512,9 +543,18 @@ static XFSFont* openXLFD( Rasterizer* raster,
 			case 10:	// y-resolution
 				fp->resolution[1] = xatoi( ++p);
 				break;
+			case 13:
+				for( char* cp = p; *cp; ++cp)
+					*cp = tolower( *cp);
+				encoding = Encoding::findEncoding( ++p);
+				break;
 			}
 	}
-	dprintf1( "\nopenXLFD( \"%s\")\n", xlfdName);
+
+	if( !encoding)
+		encoding = encodings[0];
+
+	dprintf2( "\nopenXLFD( \"%s\"), %s\n", xlfdName, encoding->strName);
 	dprintf3( "size %d, resx %d, resy %d\n",
 		fp->point[0], fp->resolution[0], fp->resolution[1]);
 
@@ -530,8 +570,9 @@ static XFSFont* openXLFD( Rasterizer* raster,
 			if( *p != *xlfd) break;
 		}
 		if( *p == 0 && *xlfd == 0) {
-			chdir( TTFONTDIR);
-			return openFont( new TTFont( file), fp, raster, fid);
+			chdir( fontdir);
+			return openFont( new TTFont( file),
+				fp, raster, fid, encoding);
 		}
 	}
 
@@ -554,7 +595,10 @@ static int prepare2connect( int portno)
 		mkdir( "/tmp/.font-unix", 0766);
 		chdir( "/tmp/.font-unix");
 		unlink( s_unix.sa_data);
-		bind( sd_unix, (struct sockaddr*)&s_unix, sizeof(s_unix));
+		if( bind( sd_unix, (struct sockaddr*)&s_unix, sizeof(s_unix))) {
+			fputs( "Couldn't write to /tmp/.font-unix/\n", stderr);
+			fputs( "Please check permissions.\n", stderr);
+		}
 		listen( sd_unix, 1);	// only one connection
 	}
 
@@ -569,8 +613,7 @@ static int prepare2connect( int portno)
 		listen( sd_inet, 1);	// only one connection
 	}
 
-	int maxsd = sd_unix;
-	if( sd_inet > maxsd) maxsd = sd_inet;
+	int maxsd = (sd_inet > sd_unix) ? sd_inet : sd_unix;
 
 	fd_set sdlist;
 	FD_ZERO( &sdlist);
@@ -579,13 +622,12 @@ static int prepare2connect( int portno)
 	select( maxsd+1, &sdlist, 0L, 0L, 0L);
 
 	int sd = 0;
-	int sa_len = sizeof(struct sockaddr);
-	if( FD_ISSET( sd_unix, &sdlist)) {
-		sd = accept( sd_unix, (struct sockaddr*)&s_unix, &sa_len);
-	} else if( FD_ISSET( sd_inet, &sdlist)) {
-		sd = accept( sd_inet, (struct sockaddr*)&s_inet, &sa_len);
-	}
-	dprintf2( "accept( sa_len = %d) = %d\n", sa_len, sd);
+	int saLength = sizeof(struct sockaddr);
+	if( FD_ISSET( sd_unix, &sdlist))
+		sd = accept( sd_unix, (struct sockaddr*)&s_unix, &saLength);
+	else if( FD_ISSET( sd_inet, &sdlist))
+		sd = accept( sd_inet, (struct sockaddr*)&s_inet, &saLength);
+	dprintf2( "accept( saLength = %d) = %d\n", saLength, sd);
 
 	return sd;
 }
@@ -644,7 +686,7 @@ static void fixup_bitmap( FontExtent* fe, U32 hint)
 	if( format < LOGSLP) {
 		fputs( "xfstt: scanline length error!\n", stderr);
 		fprintf( stderr, "recompile xfstt with LOGSLP "
-			"defined as %d!\n", format<=3 ? 3: format);
+			"defined as %d!\n", format<=3 ? 3 : format);
 	}
 
 	if( (hint ^ fe->bmpFormat) == 0)
@@ -728,6 +770,10 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 {
 	FontParams fp0 = {{0,0,0,0}, {0,0,0,0}, {VGARES,VGARES}, 0}, fp;
 	int event_mask = 0;
+	int i;
+
+	if( defaultres)
+		fp0.resolution[0] = fp.resolution[1] = defaultres;
 
 	for( int seqno = 1;; ++seqno) {
 		int l = read( sd, buf, sz_fsReq);
@@ -736,7 +782,7 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 
 #ifdef DEBUG
 		printf( "===STARTREQ=========== %d\n", l);
-		for( int i = 0; i < sz_fsReq; ++i)
+		for( i = 0; i < sz_fsReq; ++i)
 			printf( "%02X ", buf[i]);
 		printf( "\n");
 #endif
@@ -753,14 +799,14 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 			break;
 		}
 
-		for( int i; l < length; l += i) {
+		for(; l < length; l += i) {
 			i = read( sd, buf+l, length-l);
 			if( i <= 0)
 				return i;
 		}
 
 #ifdef DEBUG
-		for( int i = sz_fsReq; i < length; ++i) {
+		for( i = sz_fsReq; i < length; ++i) {
 			printf( "%02X ", buf[i]);
 			if( (i&3) == 3) printf( " ");
 			if( (i&15) == (15-sz_fsReq)) printf( "\n");
@@ -896,9 +942,13 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 			dprintf1( "FS_SetResolution * %d\n", numres);
 			fsResolution* res = (fsResolution*)(req + 1);
 			for(; --numres >= 0; ++res) {
-				fp0.resolution[0] = res->x_resolution;
-				fp0.resolution[1] = res->y_resolution;
-				fp0.point[0] = res->point_size/10;
+				if( !defaultres) {
+					fp0.resolution[0] = res->x_resolution;
+					fp0.resolution[1] = res->y_resolution;
+				}
+				res->point_size /= 10;
+				fp0.point[0] = fp0.point[1] = res->point_size;
+				fp0.point[2] = 	fp0.point[3] = 0;
 				dprintf3( "xres = %d, yres = %d, size = %d\n",
 					res->x_resolution,
 					res->y_resolution,
@@ -944,7 +994,7 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 
 			char* buf = replybuf;
 			char* endbuf = replybuf + MAXREPLYSIZE - 256;
-			for( int i = 0; reply.nFonts < req->maxNames; i = 1) {
+			for( i = 0; reply.nFonts < req->maxNames; i = 1) {
 				if( buf >= endbuf) break;
 				int len = listXLFDFonts( pattern, i, buf);
 				if( len == 0) continue;
@@ -952,7 +1002,7 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 				buf += len;
 				++reply.nFonts;
 			}
-			for( int i = 0; reply.nFonts < req->maxNames; i = 1) {
+			for( i = 0; reply.nFonts < req->maxNames; i = 1) {
 				if( buf >= endbuf) break;
 				int len = listTTFNFonts( pattern, i, buf);
 				if( len == 0) continue;
@@ -960,6 +1010,7 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 				buf += len;
 				++reply.nFonts;
 			}
+			dprintf1( "Found %ld fonts\n", reply.nFonts);
 			reply.length = (sizeof(reply) + (buf-replybuf) + 3)>>2;
 			write( sd, (void*)&reply, sizeof(reply));
 			write( sd, (void*)replybuf,
@@ -1110,7 +1161,7 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 			fsQueryXExtents8Req* req = (fsQueryXExtents8Req*) buf;
 			U8* p8 = (U8*)(req + 1);
 			U16* p16 = (U16*)p8;
-			for( int i = req->num_ranges; --i >= 0;)
+			for( i = req->num_ranges; --i >= 0;)
 				p16[ i] = htons( p8[ i]);
 			}
 			// fall through
@@ -1158,8 +1209,9 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 			CharInfo* ci	= (CharInfo*)xfs->fe.buffer;
 
 			ext = ext0;
-			for( int i = reply.num_extents; --i >= 0; ++ext) {
+			for( i = reply.num_extents; --i >= 0; ++ext) {
 				int ch = ext->left;
+				ch = xfs->encoding->map2unicode( ch);
 				int glyphNo = xfs->ttFont->getGlyphNo16( ch);
 				GlyphMetrics* gm = &ci[ glyphNo].gm;
 				
@@ -1187,7 +1239,7 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 			fsQueryXBitmaps8Req* req = (fsQueryXBitmaps8Req*) buf;
 			U8* p8 = (U8*)(req + 1);
 			U16* p16 = (U16*)p8;
-			for( int i = req->num_ranges; --i >= 0;)
+			for( i = req->num_ranges; --i >= 0;)
 				p16[ i] = ntohs( p8[ i]);
 			}
 			// fall through
@@ -1234,15 +1286,16 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 			reply.replies_hint	= 0;
 
 			CharInfo* cia = (CharInfo*)xfs->fe.buffer;
-			for( int i = xfs->fe.numGlyphs; --i >= 0; ++cia)
+			for( i = xfs->fe.numGlyphs; --i >= 0; ++cia)
 				cia->tmpofs = -1;
 			cia = (CharInfo*)xfs->fe.buffer;
 
 			char *bmp0 = (char*)ofs, *bmp = bmp0;
 			ofs = ofs0;
 			char* replylimit = replybuf + MAXREPLYSIZE;
-			for( int i = reply.num_chars; --i >= 0; ++ofs) {
+			for( i = reply.num_chars; --i >= 0; ++ofs) {
 				int ch = ofs->position;
+				ch = xfs->encoding->map2unicode( ch);
 				int glyphNo = xfs->ttFont->getGlyphNo16( ch);
 				CharInfo* ci = &cia[ glyphNo];
 
@@ -1265,11 +1318,11 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 					ch, glyphNo, ofs->position);
 			}
 			reply.nbytes = bmp - bmp0;
-			reply.length = (sizeof(reply) + reply.nbytes
+			reply.length = (sizeof(reply) + reply.nbytes+3
 					+ ((U8*)ofs - (U8*)ofs0)) >> 2;
 			write( sd, (void*)&reply, sizeof(reply));
 			write( sd, (void*)ofs0, (U8*)ofs - (U8*)ofs0);
-			write( sd, (void*)bmp0, reply.nbytes);
+			write( sd, (void*)bmp0, (reply.nbytes+3)&~3);
 			}
 			break;
 
@@ -1313,8 +1366,8 @@ int openTTFdb()
 {
 	infoSize = nameSize = aliasSize = 0;
 
-	if( chdir( TTFONTDIR)) {
-		fputs( "xfstt: "TTFONTDIR" does not exist!\n", stderr);
+	if( chdir( fontdir)) {
+		fprintf( stderr, "xfstt: \"%s\" does not exist!\n", fontdir);
 		return 0;
 	}
 
@@ -1346,7 +1399,7 @@ int openTTFdb()
 		return 0;
 	}
 
-	stat( TTFONTDIR "/ttname.dir", &statbuf);
+	stat( "ttname.dir", &statbuf);
 	nameSize = statbuf.st_size;
 	nameBase = (char*)mmap( 0L, nameSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close( fd);
@@ -1362,9 +1415,9 @@ int openTTFdb()
 		return 0;
 	}
 
-	if( !stat( TTFONTDIR "/fonts.alias", &statbuf)) {
+	if( !stat( "fonts.alias", &statbuf)) {
 		aliasSize	= statbuf.st_size;
-		int fd		= open( TTFONTDIR "/fonts.alias", O_RDONLY);
+		int fd		= open( "fonts.alias", O_RDONLY);
 		if( fd <= 0) return 0;
 		aliasBase	= (char*)mmap( 0L, aliasSize, PROT_READ, MAP_SHARED, fd, 0L);
 		close( fd);
@@ -1386,10 +1439,14 @@ int main( int argc, char** argv)
 {
 	int multiConnection = 1;
 	int portno = 7100;
+	int gslist = 0;
+	char* maplist = "";
 
 	for( int i = 1; i < argc; ++i) {
-		if( !strcmp( argv[i], "--sync")) {
-			if( ttSyncAll() <= 0)
+		if( !strcmp( argv[i], "--gslist")) {
+			gslist = 1;
+		} else if( !strcmp( argv[i], "--sync")) {
+			if( ttSyncAll( gslist) <= 0)
 				fputs( "xfstt: sync failed\n", stderr);
 			cleanupMem();
 			return 0;
@@ -1400,6 +1457,15 @@ int main( int argc, char** argv)
 				fputs( "Illegal port number!\n", stderr);
 				portno = 7100;
 			}
+		} else if( !strcmp( argv[i], "--res")) {
+			if( i <= argc)
+				defaultres = xatoi( argv[++i]);
+			if( !defaultres)
+				fputs( "Illegal default resolution!\n", stderr);
+		} else if( !strcmp( argv[i], "--dir")) {
+			fontdir = argv[++i];
+		} else if( !strcmp( argv[i], "--encoding")) {
+			maplist = argv[++i];
 		} else if( !strcmp( argv[i], "--help")) {
 			usage( 1);
 			return 0;
@@ -1421,13 +1487,15 @@ int main( int argc, char** argv)
 	for( retry = 1; retry > 0; --retry) {
 		if( openTTFdb() > 0) break;
 		closeTTFdb();
-		fputs( "xfstt: error opening TTF database!\n", stderr);
-		fputs( "xfstt: reading "TTFONTDIR" to build it.\n", stderr);
+		fprintf( stderr, "xfstt: error opening TTF database!\n");
+		fprintf( stderr,"xfstt: reading \"%s\" to build it.\n",fontdir);
 		if( ttSyncAll() > 0 && openTTFdb() > 0) break;
 		fputs( "Creating a font database failed\n", stderr);
 	}
 
-	if( retry <= 0)
+	encodings = Encoding::getEncodings( maplist);
+
+	if( retry <= 0 || !encodings)
 		fputs( "xfstt: Good bye.\n", stderr);
 	else do {
 		int sd = prepare2connect( portno);
@@ -1442,6 +1510,7 @@ int main( int argc, char** argv)
 		close( sd);
 	} while( multiConnection);
 
+	delete[] encodings;
 	dprintf0( "xfstt: closing connection\n");
 	cleanupMem();
 	return 0;

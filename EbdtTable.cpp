@@ -10,13 +10,14 @@ EbdtTable::EbdtTable( RandomAccessFile& f, int offset, int length)
 	/*int version = */readUInt();	// == 0x00020000
 }
 
-int EbdtTable::readBitmap( int format, U8* bitmap)
+int EbdtTable::readBitmap( int format, U8* bitmap, GlyphMetrics* gm)
 {
 	int height, width;
 	int hBearX, hBearY;
 	int vBearX, vBearY;
 	int hAdv, vAdv;
 
+	// get glyph metric
 	switch( format) {
 	case 1:
 	case 2:
@@ -31,7 +32,7 @@ int EbdtTable::readBitmap( int format, U8* bitmap)
 	case 4: // unsupported
 	default:
 		return -1;
-	case 5:	// no metrics in EBDT
+	case 5:	// metrics in EBLC instead
 		break;
 	case 6:
 	case 7:
@@ -47,6 +48,7 @@ int EbdtTable::readBitmap( int format, U8* bitmap)
 		break;
 	}
 
+	// get glyph bitmap
 	switch( format) {
 	case 1:
 	case 6:	// byte aligned bitmap
@@ -62,9 +64,9 @@ int EbdtTable::readBitmap( int format, U8* bitmap)
 	case 7:	// bit aligned bitmap
 		{
 		for( int rem = 0, h = height; --h >= 0;) {
-			int data = 0;
-			for( int i, w = width; w >= 8; w -= 8) {
-				i = readUByte();
+			int data = 0, w;
+			for( w = width; w >= 8; w -= 8) {
+				int i = readUByte();
 				data |= i >> rem;
 				*(bitmap++) = data;
 				data = i << (8 - rem);

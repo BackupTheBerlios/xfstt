@@ -1,3 +1,11 @@
+0.9.8
+	fix "staroffice pattern" problem
+	fix "irix replysize" bug
+	fix "pretzel crash" bug
+	add "--encoding" option
+	add "--dir" option
+	add "--res" option
+	add "--gslist" option
 0.9.7
 	fix "nround" bug
 	fix "hdmx xxexp" bug

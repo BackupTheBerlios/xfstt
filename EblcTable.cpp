@@ -7,47 +7,117 @@ EblcTable::EblcTable( RandomAccessFile& f, int offset, int length)
 :	RandomAccessFile( f, offset, length)
 {
 	/*int version = */readUInt();	// should be 0x00020000
-	int numSizes = readUInt();
+	int numStrikes = readUInt();
+
+	for( int i = 0; i < numStrikes; ++i) readStrike(0,0,0);
 }
 
-void EblcTable::dummy()
+void EblcTable::readStrike( int glyphNo, int _ppemx, int _ppemy)
 {
-	/*idxSTAO =*/ readUInt();
-	/*U32 colorRef = */readUInt();	// should be 0
+	int strikeOfs	= readUInt();
+	/*strikeSize	=*/ readUInt();
+	int strikeNum	= readUInt();
+	/*U32 colorRef	=*/ readUInt();	// should be 0
 
-	//horizontal SBit metrics
-	/*hAscend		=*/ readSByte();
-	/*hDescend	=*/ readSByte();
-	/*hmaxWidth	=*/ readUByte();
-	/*hcsNumerator	=*/ readSByte();
-	/*hcsDenominator	=*/ readSByte();
-	/*hcaretOffset	=*/ readSByte();
-	/*hminOriginSB	=*/ readSByte();
-	/*hminAdvanceSB	=*/ readSByte();
-	/*hmaxBeforeBL	=*/ readSByte();
-	/*hminAfterBL	=*/ readSByte();
-	/*pad1 = */readSByte();
-	/*pad2 = */readSByte();
+	// horizontal sbit metrics
+	/*ascend	=*/ readSByte();
+	/*descend	=*/ readSByte();
+	/*maxWidth	=*/ readUByte();
+	/*csNumerator	=*/ readSByte();
+	/*csDenominator	=*/ readSByte();
+	/*caretOffset	=*/ readSByte();
+	/*minOriginSB	=*/ readSByte();
+	/*minAdvanceSB	=*/ readSByte();
+	/*maxBeforeBL	=*/ readSByte();
+	/*minAfterBL	=*/ readSByte();
+	/*pad1		=*/ readSByte();
+	/*pad2		=*/ readSByte();
 
-	//vertical SBit metrics
-	/*vAscend		=*/ readSByte();
-	/*vDescend	=*/ readSByte();
-	/*vmaxWidth	=*/ readUByte();
-	/*vcsNumerator	=*/ readSByte();
-	/*vcsDenominator	=*/ readSByte();
-	/*vcaretOffset	=*/ readSByte();
-	/*vminOriginSB	=*/ readSByte();
-	/*vminAdvanceSB	=*/ readSByte();
-	/*vmaxBeforeBL	=*/ readSByte();
-	/*vminAfterBL	=*/ readSByte();
-	/*pad1 = */readSByte();
-	/*pad2 = */readSByte();
+	// vertical sbit metrics
+	/*ascend	=*/ readSByte();
+	/*descend	=*/ readSByte();
+	/*maxWidth	=*/ readUByte();
+	/*csNumerator	=*/ readSByte();
+	/*csDenominator	=*/ readSByte();
+	/*caretOffset	=*/ readSByte();
+	/*minOriginSB	=*/ readSByte();
+	/*minAdvanceSB	=*/ readSByte();
+	/*maxBeforeBL	=*/ readSByte();
+	/*minAfterBL	=*/ readSByte();
+	/*pad1		=*/ readSByte();
+	/*pad2		=*/ readSByte();
 
-	/*startGlyph	=*/ readUShort();
-	/*endGlyph	=*/ readUShort();
-	/*ppemx		=*/ readUByte();
-	/*ppemy		=*/ readUByte();
+	int startGlyph	= readUShort();
+	int endGlyph	= readUShort();
+	int ppemx	= readUByte();
+	int ppemy	= readUByte();
 	/*bitDepth	=*/ readUByte();	// should be 1
-	/*flags		=*/ readSByte();
+	int flags	= readSByte();	// 1 hmetric, 2 vmetric
+
+	printf( "EBLC\nglyph( %3d - %3d), size( %2d, %2d), flags %d\n",
+		startGlyph, endGlyph, ppemx, ppemy, flags);
+
+	int ofs = tell();
+	seekAbsolute( strikeOfs);
+	for( int i = 0; i < strikeNum; ++i)
+		readSubTableArray( glyphNo, strikeOfs);
+	seekAbsolute( ofs);
+}
+
+void EblcTable::readSubTableArray( int glyphNo, int ofsSTA)
+{
+	int firstGlyph	= readUShort();
+	int lastGlyph	= readUShort();
+	int addOffset	= readUInt();
+	printf( "SubTable glyphs %3d - %3d, addofs 0x%04X\n",
+		firstGlyph, lastGlyph, addOffset);
+	int ofs = tell();
+	seekAbsolute( ofsSTA + addOffset);
+	readSubTable( firstGlyph, lastGlyph);
+	seekAbsolute( ofs);
+}
+
+void EblcTable::readSubTable( int first, int last)
+{
+	int idxFormat	= readUShort();
+	int imgFormat	= readUShort();
+	int imageOffset	= readUInt();
+
+	printf( "idxfmt %d, imgfmt %d, imgofs 0x%05X\n",
+		idxFormat, imgFormat, imageOffset);
+
+	int i;
+	switch( idxFormat) {
+	case 1:
+		for( i = first; i <= last; ++i)
+			printf( "ofs%02X = %04X\n", i, readUInt());
+		break;
+	case 2:
+		printf( "imgsize %d\n", readUInt());
+		printf( "bigGlyphMetrics\n");
+		break;
+	case 3:
+		for( i = first; i <= last; ++i)
+			printf( "ofs%04X = %04X\n", i, readUShort());
+		break;
+	case 4:
+		i = readUInt();
+		printf( "numGlyphs %d\n", i);
+		while( --i >= 0)
+			printf( "ofs%04X = %04X\n", readUShort(), readUShort());
+		break;
+	case 5:
+		printf( "imgsize %d\n", readUInt());
+		printf( "bigGlyphMetrics\n");
+		seekRelative( 8);
+		i = readUInt();
+		printf( "numGlyphs %d\n", i);
+		while( --i >= 0)
+			printf( "ofs%04X = %04X\n", readUShort(), readUShort());
+		break;
+	default:
+		printf( "Illegal index format!\n");
+		break;
+	}
 }
 

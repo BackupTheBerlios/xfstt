@@ -1,18 +1,17 @@
 Summary: X Font Server for *.ttf fonts
 Name: xfstt
-Version: 0.9.6
+Version: 0.9.8
 Release: 2
 Copyright: LGPL
 Group: X11/Utilities
-Source: ftp://sunsite.unc.edu/pub/Linux/X11/fonts/xfstt-0.9.6.tgz
+Source: ftp://sunsite.unc.edu/pub/Linux/X11/fonts/xfstt-0.9.8.tgz
 Source1: xfstt.init
 BuildRoot: /tmp/xfstt-root
 
 %description
-xfstt means "X11 Font Server for TrueType fonts".
-TT fonts are generally regarded to be the best scalable fonts
-for displays. Applications that need scalable fonts for display
-on low resolution devices like screens benefit most.
+Xfstt means "X11 Font Server for TrueType fonts".
+TT fonts are generally regarded to be the best scalable
+fonts for low resolution devices like displays.
 
 %pre
 # adds "inet/127.0.0.1:7100" to the list of searchable fonts

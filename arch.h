@@ -3,12 +3,18 @@
 
 // environment specific
 
-#define MSB_BYTE_FIRST	0	// MSB=1, LSB=0
-#define MSB_BIT_FIRST	0	// MSB=2, LSB=0
-#define FSBYTEORDER	'l'	// 'l' little endian, 'B' big endian
-#define LOGSLP		5	// default SCANLINEPAD is 32bits = 1<<5
-				// change it to 3 for special font clients
-				// like fstobdt, showfont or strange X servers
+#ifdef __i386__
+	#define MSB_BYTE_FIRST	0	// MSB=1, LSB=0
+	#define MSB_BIT_FIRST	0	// MSB=2, LSB=0
+	#define FSBYTEORDER	'l'	// 'l' little endian, 'B' big endian
+	#define LOGSLP		5	// default SCANLINEPAD is 32bits = 1<<5
+					// change it to 3 for some font clients
+#else
+	#define MSB_BYTE_FIRST	1
+	#define MSB_BIT_FIRST	2
+	#define FSBYTEORDER	'B'
+	#define LOGSLP		5
+#endif
 
 // architecture specific
 
@@ -24,7 +30,7 @@ typedef signed int	S32;
 #define bswapl(x)	ntohl(x)
 #define bswaps(x)	ntohs(x)
 
-#ifdef i386
+#ifdef __i386__
 	// MULDIV is worth putting in assembler,
 	// undefine it to use the generic method
 	#define MULDIV muldiv
@@ -38,14 +44,6 @@ typedef signed int	S32;
 	}
 #endif
 
-#ifdef WIN32
-	typedef void* __ptr_t;
-	#define setbuffer( x1, x2, x3)
-	#include <stdlib.h>
-	extern FILE* outfile;
-#else
-	#define outfile stdout
-#endif
 
 #ifndef MULDIV
 	// 64bit types are only needed for temporary MULDIV results
@@ -56,5 +54,21 @@ typedef signed int	S32;
 		typedef __int64			S64;
 		typedef unsigned __int64	U64;
 	#endif
+#endif
+
+//=========== add special cases here ==================
+
+#ifdef WIN32
+	typedef void* __ptr_t;
+	#define setbuffer(x1,x2,x3)
+	#include <stdlib.h>
+	extern FILE* outfile;
+#else
+	#define outfile stdout
+#endif
+
+#ifdef __sgi
+	#undef LOGSLP
+	#define LOGSLP 3
 #endif
 

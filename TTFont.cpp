@@ -13,8 +13,10 @@ TTFont::TTFont( char* fileName, int infoOnly):
 	hheaTable( 0),	hmtxTable( 0),	
 	os2Table( 0),
 	ltshTable( 0),	hdmxTable( 0),	vdmxTable( 0),
-	gaspTable( 0),	kernTable( 0)
-	//postTable( 0)
+	gaspTable( 0),	kernTable( 0),
+	//postTable( 0),
+	ebdtTable( 0), eblcTable( 0),
+	mortTable(0), vheaTable( 0)
 {
 	dprintf1( "TTFont( \"%s\");\n", fileName);
 
@@ -95,6 +97,20 @@ TTFont::TTFont( char* fileName, int infoOnly):
 			break;
 		case GASP_MAGIC:
 			gaspTable = new GaspTable( *this, offset, length);
+			break;
+		case EBDT_MAGIC:
+		case BDAT_MAGIC:
+			//###ebdtTable = new EbdtTable( *this, offset, length);
+			break;
+		case EBLC_MAGIC:
+		case BLOC_MAGIC:
+			//###eblcTable = new EblcTable( *this, offset, length);
+			break;
+		case VHEA_MAGIC:
+			//vheaTable = new VheaTable( *this, offset, length);
+			break;
+		case MORT_MAGIC:
+			//mortTable = new MortTable( *this, offset, length);
 			break;
 		default:
 			// System.out.println( "???");
@@ -181,6 +197,8 @@ void TTFont::getFontInfo( FontInfo* fi)
 	if( fi->faceLength > 32)
 		fi->faceLength = 32;
 	strncpy( fi->faceName, faceName, fi->faceLength);
+	if( fi->faceLength < 31)
+		fi->faceName[ fi->faceLength] = 0;
 }
 
 
@@ -306,7 +324,7 @@ int TTFont::write2File( char* filename)
 
 // result has to be preset with the category name "-category-",
 // returns "-category-family-weight-slant-setwidth-TT-"
-//         "pixelsize-pointsize-xres-yres-spacing-avgwidth-charset-encoding"
+//###	"pixelsize-pointsize-xres-yres-spacing-avgwidth-charset-encoding"
 
 int TTFont::getXLFDbase( char* result)
 {
