@@ -1,3 +1,15 @@
+1.6
+	Fixed ttSyncAll only looking at fontdir subdirectories
+	Added more robust checking for cachedir
+	Removed a constant path size limitation (for the Hurd)
+	Fixed a typo in "syncing"
+	Minor indentation fixes
+	Started the transition to using C++ strings
+	Changed the libfstt API:
+	  Fixed multiple memory leakages
+	  The member getString doesn't need the conversion buffer anymore
+	Fixed the output format of --gslist
+
 1.5.1
 	Fixed a possible security problem by checking the byteorder magic in
 	the connection handshake:
