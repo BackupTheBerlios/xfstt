@@ -2,12 +2,19 @@
 #
 # xfstt Makefile
 #
-#	$Id: Makefile.am,v 1.1 2002/11/14 12:08:07 guillem Exp $
+#	$Id$
 #
-# Copyright (C) 2002 Guillem Jover <guillem.jover@menta.net>
+# Copyright (C) 2002,2004 Guillem Jover <guillem.jover@menta.net>
 #
 
 man_MANS = xfstt.1x
 
 EXTRA_DIST = $(man_MANS) xfstt.lsm FAQ examples
+
+edit = sed \
+        -e 's,@datadir\@,$(pkgdatadir),g' \
+        -e 's,@localstatedir\@,$(localstatedir),g'
+
+xfstt.1x: Makefile $(srcdir)/xfstt.1x.in
+	$(edit) $(srcdir)/xfstt.1x.in > $@
 

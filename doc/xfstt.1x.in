@@ -1,7 +1,7 @@
 .\"
-.\"	$Id: xfstt.1x,v 1.7 2003/08/07 06:59:03 guillem Exp $
+.\"	$Id$
 .\"
-.TH xfstt 1x 2003-08-05 1.6 "Xfstt User's Manual" \" -*- nroff -*-
+.TH xfstt 1x 2003-08-05 @VERSION@ "Xfstt User's Manual" \" -*- nroff -*-
 .SH NAME
 xfstt \- X11 Font Server for TrueType fonts
 .SH SYNOPSIS
@@ -52,17 +52,17 @@ Don't open TCP socket, use unix domain only.
 .I "\-\-dir name"
 Change xfstt's font directory.
 The default directory is
-.IR /usr/share/fonts/truetype .
+.IR @datadir@/fonts/truetype .
 .TP
 .I "\-\-cache name"
 Change xfstt's font cache directory.
 The default directory is
-.IR /var/cache/xfstt .
+.IR @localstatedir@/cache/xfstt .
 .TP
 .I "\-\-pidfile name"
 Change xfstt's pidfile location.
 The default file name is
-.IR /var/run/xfstt.pid .
+.IR @localstatedir@/run/xfstt.pid .
 .TP
 .I "\-\-res value"
 Force the resolution for underspecified fonts to value (typically 96 or 120).
