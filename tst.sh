@@ -9,7 +9,7 @@ sleep 1
 echo trying to connect via $fontpath
 xset +fp $fontpath
 xlsfonts > fonts.lst
-xfontsel -pattern "-*-*-*-*-*-tt-*-*-*-*-*-*-*-*"
+xfontsel -pattern "-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
 #xfontsel -pattern "-*-*-medium-r-normal-tt-*-*-*-*-*-*-iso8859-1"
 #rxvt +sb -fn "TTM160_Courier New" -geometry 32x10
 xcoral -fn "TTM12_Courier New" -mfn "TTM16_Times New Roman" RasterHints.cpp &

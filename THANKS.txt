@@ -2,15 +2,21 @@ Thank you to all who made xfstt better!
 
 patches:
 	Stephen Carpenter
+	Francesco Chemolli
 	Tasos Chronis
 	David Crowley
 	Anthony David
 	Vladimir Eltsov
+	Feanor ?
 	Ethan Fischer
 	Noah Friedman
+	Gilbert ?
 	Nikolay Grygoryev
+	Hymie ?
 	Christoph Lameter
+	Stanislav Malyshev
 	Colin McCormack
+	Mindaugas Riauga
 	Pablo Saratxaga
 	Constantinos Sourelis
 	Luc Stepniewski
@@ -29,5 +35,7 @@ ideas:
 	Yaron M. Minsky
 	Guido Notari
 	Marcelo Fernandes Vianna
-	Brian Vibber
+	Brion Vibber
+
+Hope I didn't forget anyone...
 

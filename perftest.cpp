@@ -47,6 +47,13 @@ static int ttPerfDir( Rasterizer* raster, int pt, FontExtent* fe, char* ttdir)
 		struct timeval t0, t1;
 		gettimeofday( &t0, 0);
 
+static int countFonts = 0;
+printf( "opening \"%s\",\tno. %5d\n", de->d_name, countFonts++);
+fflush( stdout);
+if( !strcmp( "DAVSDING.TTF", de->d_name))	continue;
+if( !strcmp( "FH0495.TTF", de->d_name))		continue;
+if( !strcmp( "GAELACH.TTF", de->d_name))	continue;
+
 		TTFont* ttFont = new TTFont( de->d_name);
 		if( ttFont->badFont()) {
 			delete ttFont;

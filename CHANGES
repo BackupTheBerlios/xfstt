@@ -1,3 +1,14 @@
+0.9.10
+	add euro currency symbol to encodings
+	unmap unused read mmaps
+	improve memory handling on freebsd
+	avoid remap on Digital Unix
+	allow multiple connections
+	fix "empty glyph" bug
+	fix "too many encodings" bug
+	add some encodings
+	add "--inetd" option
+	change -tt- in xlfd name to subfamily
 0.9.9
 	add some more encodings
 	use daemon pid file

@@ -5,8 +5,8 @@
 
 // the unstrap limit is set to 10500 characters in order to limit
 // getextent replies to (10500|255)*24Bytes < 256kBytes;
-// if you are sure your X11 server doesn't request
-// more than it can handle, increase up to 65535
+// if you are sure your X11 server doesn't request more
+// than it can handle, increase the limit up to 65535
 #define UNSTRAPLIMIT	10500U
 #define TTFONTDIR	"/usr/ttfonts"
 
@@ -60,24 +60,31 @@ U16 maxLastChar = 255;
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
 char* fontdir = TTFONTDIR;
-Encoding *encodings[16];
 int defaultres = 0;
+
+#define MAXENC 16 /* Maximum number of encodings */
+Encoding *encodings[ MAXENC];
+
 
 static void usage( int verbose)
 {
-	printf( "Xfstt 0.9.9, X font server for TT fonts\n");
-	printf( "Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]\n");
+	printf( "Xfstt 0.9.10, X font server for TT fonts\n");
+	printf( "Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]\n"
+		"\t\t[--dir ttfdir][--encoding list_of_encodings]"
+		"[--daemon][--inetd]\n\n");
 	if( !verbose)
 		return;
 	printf( "\t--sync     put ttf-fonts in \"%s\" in database\n", fontdir);
 	printf( "\t--gslist   print ghostscript style ttf fontlist\n ");
 	printf( "\t--port     change port number from default 7100\n");
-	printf( "\t--dir     change font directory from default "TTFONTDIR"\n");
+	printf( "\t--dir      use other font directory than "TTFONTDIR"\n");
 	printf( "\t--res      force default resolution to this value\n");
 	printf( "\t--encoding use encodings other than iso8859-1\n");
 	printf( "\t--unstrap  !DANGER! serve all unicodes !DANGER!\n");
-	printf( "\n\tattach to X Server by \"xset +fp unix/:7100\"\n");
-	printf( "\t\tor \"xset +fp inet/127.0.0.1:7100\"\n");
+	printf( "\t--daemon   run in the background\n");
+	printf( "\t--inetd    run as inetd service\n");
+	printf( "\n\tattach to X Server by \"xset fp+ unix/:7100\"\n");
+	printf( "\t\tor \"xset fp+ inet/127.0.0.1:7100\"\n");
 	printf( "\tdetach from X Server by \"xset -fp unix/:7100\"\n");
 	printf( "\t\tor \"xset -fp inet/127.0.0.1:7100\"\n");
 } 
@@ -128,7 +135,7 @@ static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir, int gslist)
 		fputc( '\0', nameFile);
 
 		if( gslist)
-			printf( "(%s)\t(%s/%s)\t;\n",
+			printf( "(%s)\t(/%s/%s)\t;\n",
 				fi.faceName, fontdir, pathName); 
 		
 		pathName[0] = '-';
@@ -268,7 +275,7 @@ static int listXLFDFonts( char* pattern0, int index, char* buf)
 	if( !strcmp( buf-4, "-0-0")) {
 		strcpy( buf-3, encodings[ mapIndex]->strName);
 		buf += encodings[ mapIndex]->lenName - 3;
-		if( !encodings[++mapIndex]) mapIndex = 0;
+		if( !encodings[ ++mapIndex]) mapIndex = 0;
 	} else
 		mapIndex = 0;
 
@@ -616,20 +623,21 @@ static int prepare2connect( int portno)
 		s_inet.sin_family	= AF_INET;
 		s_inet.sin_port		= htons( portno);
 		s_inet.sin_addr.s_addr	= htonl( INADDR_ANY);
-		bind( sd_inet, (struct sockaddr*)&s_inet, sizeof(s_inet));
+		if( bind( sd_inet,(struct sockaddr*)&s_inet, sizeof(s_inet))) {
+			fprintf( stderr, "Cannot open TCPIP port %d\n", portno);			fprintf( stderr, "Better try another port!\n");
+		}
 		listen( sd_inet, 1);	// only one connection
 	}
-
-	int maxsd = (sd_inet > sd_unix) ? sd_inet : sd_unix;
 
 	fd_set sdlist;
 	FD_ZERO( &sdlist);
 	FD_SET( sd_unix, &sdlist);
 	FD_SET( sd_inet, &sdlist);
+	int maxsd = (sd_inet > sd_unix) ? sd_inet : sd_unix;
 	select( maxsd+1, &sdlist, 0L, 0L, 0L);
 
 	int sd = 0;
-	int saLength = sizeof(struct sockaddr);
+	/*unsigned*/ int saLength = sizeof(struct sockaddr);
 	if( FD_ISSET( sd_unix, &sdlist))
 		sd = accept( sd_unix, (struct sockaddr*)&s_unix, &saLength);
 	else if( FD_ISSET( sd_inet, &sdlist))
@@ -943,7 +951,7 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 			dprintf0( "FS_SetAuthorization\n");
 			break;
 
-		case FS_SetResolution:		// don't care
+		case FS_SetResolution:
 			{
 			fsSetResolutionReq* req = (fsSetResolutionReq*) buf;
 			int numres = req->num_resolutions;	//### 1
@@ -965,7 +973,7 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 			}
 			break;
 
-		case FS_GetResolution:		// don't care
+		case FS_GetResolution:
 			dprintf0( "FS_GetResolution\n");
 			{
 			struct {
@@ -1230,11 +1238,19 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 				ext->descent	= gm->yOrigin;
 				ext->attributes	= gm->yAdvance;
 
+				if( !glyphNo && ch!=xfs->fi.firstChar) { //tx GB
+					ext->left = ext->right = 0;
+					ext->ascent = ext->descent = 0;
+					ext->width = ext->attributes = 0;
+				}
+
+#if DEBUG&2
 				dprintf2( "GM[%3d = %3d] = ", ch, glyphNo);
 				dprintf2( "(l= %d, r= %d, ",
 					ext->left, ext->right);
 				dprintf3( "w= %d, a= %d, d= %d);\n",
 					ext->width, ext->ascent, ext->descent);
+#endif
 			}
 			write( sd, (void*)&reply, sizeof( reply));
 			write( sd, (void*)ext0, (U8*)ext - (U8*)ext0);
@@ -1322,8 +1338,10 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 				}
 				ofs->position = ci->tmpofs;
 
+#if DEBUG&2
 				dprintf3( "OFS[%3d = %3d] = %ld\n",
 					ch, glyphNo, ofs->position);
+#endif
 			}
 			reply.nbytes = bmp - bmp0;
 #if 1
@@ -1476,10 +1494,11 @@ void delPIDfile( int signal)
 int main( int argc, char** argv)
 {
 	int multiConnection = 1;
+	int inetdConnection = 0;
 	int portno = 7100;
 	int gslist = 0;
 
-	Encoding::getDefault( encodings, 16);
+	Encoding::getDefault( encodings, MAXENC);
 
 	for( int i = 1; i < argc; ++i) {
 		if( !strcmp( argv[i], "--gslist")) {
@@ -1505,7 +1524,7 @@ int main( int argc, char** argv)
 			fontdir = argv[++i];
 		} else if( !strcmp( argv[i], "--encoding")) {
 			char* maplist = argv[++i];
-			if( !Encoding::parse( maplist, encodings, 16)) {
+			if( !Encoding::parse( maplist, encodings, MAXENC)) {
 				fprintf( stderr, "Illegal encoding!\n");
 				fprintf( stderr, "Valid encodings are:\n");
 				for( Encoding* maps = 0;;) {
@@ -1517,6 +1536,8 @@ int main( int argc, char** argv)
 		} else if( !strcmp( argv[i], "--help")) {
 			usage( 1);
 			return 0;
+		} else if( !strcmp( argv[i], "--inetd")) { // thanks Feanor
+			inetdConnection = 1;
 		} else if( !strcmp( argv[i], "--multi")) {
 			multiConnection = 1;
 		} else if( !strcmp( argv[i], "--once")) {
@@ -1525,10 +1546,24 @@ int main( int argc, char** argv)
 			maxLastChar = UNSTRAPLIMIT;
 			printf( "xfstt unstrapped: you must start X11 "
 				"with \"-deferglyphs 16\" option!\n");
+		} else if( !strcmp( argv[i], "--daemon")) {
+			if( fork())
+				_exit( 0);
+			fclose( stdin);
+			fclose( stdout);
+			fclose( stderr);
+			setsid();
+			if( fork())
+				_exit( 0);
 		} else {
 			usage( 0);
 			return -1;
 		}
+	}
+
+	if( inetdConnection && multiConnection) {	// inetd
+		multiConnection = 0;
+		fprintf( stderr, "--inetd and --multi option collission\n");
 	}
 
 	// Make a pid file for easy starting and killing like
@@ -1540,8 +1575,8 @@ int main( int argc, char** argv)
 			fprintf( pidfile, "%d\n", pid);
 			fclose( pidfile);
 			// setup signal handlers to die better
-			(void) signal( SIGINT, delPIDfile);
-			(void) signal( SIGTERM, delPIDfile);
+			signal( SIGINT, delPIDfile);
+			signal( SIGTERM, delPIDfile);
 		}
 	}
 
@@ -1553,24 +1588,31 @@ int main( int argc, char** argv)
 		fprintf( stderr,"xfstt: reading \"%s\" to build it.\n",fontdir);
 		if( ttSyncAll() > 0 && openTTFdb() > 0) break;
 		fputs( "Creating a font database failed\n", stderr);
+		unlink( PIDFILE);
 	}
+
+	signal( SIGCHLD, SIG_IGN); // We don't need no stinkinig zombies -sjc
 
 	if( retry <= 0)
 		fputs( "xfstt: Good bye.\n", stderr);
 	else do {
-		int sd = prepare2connect( portno);
+		int sd = inetdConnection ? 0 : prepare2connect( portno);
 		if( connecting( sd)) {
-			Rasterizer* raster = new Rasterizer();
-			char* replybuf = (char*) allocMem( MAXREPLYSIZE);
-			working( sd, raster, replybuf);
-			deallocMem( replybuf, MAXREPLYSIZE);
-			delete raster;
+			if( !multiConnection || !fork()) {
+				Rasterizer* raster = new Rasterizer();
+				char* replybuf = (char*)allocMem( MAXREPLYSIZE);
+				working( sd, raster, replybuf);
+				deallocMem( replybuf, MAXREPLYSIZE);
+				delete raster;
+				if( !inetdConnection)
+					shutdown( sd, 2);
+				close( sd);
+				break;
+			}
 		}
-		shutdown( sd, 2);
-		close( sd);
 	} while( multiConnection);
 
-	dprintf0( "xfstt: closing connection\n");
+	dprintf0( "xfstt: closing a connection\n");
 	cleanupMem();
 	return 0;
 }

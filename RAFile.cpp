@@ -20,9 +20,9 @@
 void* allocMem( int size)
 {
 	void* ptr;
-#ifdef MAP_ANONYMOUS
+#ifdef MAP_ANON
 	ptr = mmap( 0, size, PROT_READ | PROT_WRITE,
-		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		MAP_PRIVATE | MAP_ANON, -1, 0);
 	if( ptr == (void*)-1)
 		ptr = 0;
 #elif defined(WIN32)
@@ -36,7 +36,7 @@ void* allocMem( int size)
 
 void* shrinkMem( void* ptr, int oldsize, int newsize)
 {
-#ifdef MAP_ANONYMOUS
+#if defined(MAP_ANONYMOUS) && !defined(__osf__)
 	if( oldsize > newsize)
 		ptr = mremap( ptr, oldsize, newsize, 0);
 	if( ptr == (void*)-1)
@@ -47,7 +47,7 @@ void* shrinkMem( void* ptr, int oldsize, int newsize)
 
 void deallocMem( void* ptr, int size)
 {
-#ifdef MAP_ANONYMOUS
+#ifdef MAP_ANON
 	munmap( ptr, size);
 #elif defined(WIN32)
 	VirtualFree( ptr, size, MEM_DECOMMIT);
@@ -151,9 +151,8 @@ void operator delete( void* ptr)
 #endif /* MEMDEBUG */
 
 
-U8* RandomAccessFile::absbase = 0;
-
-RandomAccessFile::RandomAccessFile( char* fileName) {
+RandomAccessFile::RandomAccessFile( char* fileName)
+{
 #ifdef WIN32
 	void* fd = CreateFile( fileName, GENERIC_READ, FILE_SHARE_READ,
 			NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -169,7 +168,7 @@ RandomAccessFile::RandomAccessFile( char* fileName) {
 	int fd = open( fileName, O_RDONLY);
 	if( fd <= 0) {
 		fprintf( stderr, "Cannot open \"%s\"\n", fileName);
-		ptr = base = absbase = 0;
+		ptr = base = 0;
 		return;
 	}
 	struct stat st;
@@ -178,8 +177,7 @@ RandomAccessFile::RandomAccessFile( char* fileName) {
 	base = (U8*) mmap( 0L, length, PROT_READ, MAP_SHARED, fd, 0L);
 	close( fd);
 #endif
-	ptr = base;
-	absbase = base;
+	ptr = absbase = base;
 }
 
 void RandomAccessFile::closeRAFile()

@@ -1,14 +1,14 @@
-MAXOPT = -O6 -fomit-frame-pointer -ffast-math
+#MAXOPT = -O6 -fomit-frame-pointer -ffast-math
 MISCOPT =
 OPT = $(MISCOPT) $(MAXOPT)
 
 CFLAGS = $(OPT) -DMAGNIFY=0 -DNDEBUG
 #CFLAGS = -fprofile-arcs -ftest-coverage -DMAGNIFY=0
-#CFLAGS = -g -Wall -pedantic $(MISCOPT) -DMAGNIFY=0
+CFLAGS = -g -Wall -pedantic $(MISCOPT) -DMAGNIFY=0
 #CFLAGS = -O -Wall -pedantic -DDEBUG $(MISCOPT)
 
 LFLAGS = -L/usr/X11R6/lib -L/usr/openwin/lib/X11
-#LFLAGS = -g -L/usr/X11R6/lib
+LFLAGS = -g -L/usr/X11R6/lib
 
 CC = c++
 LD = c++
@@ -55,7 +55,8 @@ xfstt : $(OBJS) xfstt.o encoding.o
 	$(LD) -o $@ $(OBJS) xfstt.o encoding.o $(LFLAGS) -lm
 
 xfstt.o : xfstt.cpp xfstt.h ttf.h arch.h Makefile
-	$(CC) $(CFLAGS) -c $< -I/usr/X11R6/include/X11/fonts
+	$(CC) $(CFLAGS) -c $< -I/usr/X11R6/include/X11/fonts	\
+		-I/usr/X11R6/include/
 
 encoding.o : encoding.cpp encoding.h Makefile
 	$(CC) $(CFLAGS) -c $<

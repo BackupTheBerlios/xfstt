@@ -11,7 +11,7 @@ GlyphTable::GlyphTable( RandomAccessFile& f, int offset, int length)
 int GlyphTable::getGlyphData( int glyphNo, LocaTable* locaTable, Rasterizer* raster)
 {
 	int glyphOffset = locaTable->getGlyphOffset( glyphNo);
-	if( glyphOffset < 0)
+	if( glyphOffset < 0 || glyphOffset >= getLength())
 		return 0;
 	seekAbsolute( glyphOffset);
 

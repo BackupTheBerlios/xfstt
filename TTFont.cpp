@@ -337,7 +337,7 @@ int TTFont::write2File( char* filename)
 int TTFont::getXLFDbase( char* result)
 {
 //#define XLFDEXT "-normal-tt-0-0-0-0-p-0-iso8859-1"
-#define XLFDEXT	"-normal-tt-"
+//#define XLFDEXT	"-normal-tt-"
 
 	// some fonts have only unicode names -> try to convert them to ascii
 	char convbuf[ 256];
@@ -348,10 +348,17 @@ int TTFont::getXLFDbase( char* result)
 		lenFamily = strlen( strFamily);
 	}
 
+	int lenSub;
+	char* strSubFamily = nameTable->getString( 1, 2, &lenSub, convbuf);
+	if( !strFamily) {
+		strSubFamily = "tt";
+		lenSub = strlen( strSubFamily);
+	}
+
 	char* p = result + strlen( result);
 	p[0] = '-';
 	strncpy( ++p, strFamily, lenFamily);
-	for( char* p2 = p + lenFamily; p < p2; ++p)
+	for( p[ lenFamily] = 0; *p; ++p)
 		if( *p == '-')
 			*p = ' ';
 	if (os2Table) {
@@ -361,7 +368,15 @@ int TTFont::getXLFDbase( char* result)
 		strcpy( p, (headTable->macStyle & 1) ? "-bold" : "-medium");
 		strcat( p, (headTable->macStyle & 2) ? "-i" : "-r");
 	}
-	strcat( p, XLFDEXT);
+
+	strcat( p, "-normal-");
+	p += strlen( p);
+	strncpy( p, strSubFamily, lenSub);
+	for( p[ lenSub] = 0; *p; ++p)
+		if( *p == '-')
+			*p = ' ';
+	*(p++) = '-';
+	*p = 0;
 
 	for( p = result; *p; ++p)
 		*p = tolower( *p);

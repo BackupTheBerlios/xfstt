@@ -321,6 +321,7 @@ expose:
 			case XK_Control_R:
 				goto expose;
 			default:
+				//###glyphNo = ttFont->getGlyphNo16( 0x20AC);
 				glyphNo = ttFont->getGlyphNo16( c[0]);
 				printf( "key = \"%s\" -> %d\n", c, glyphNo);
 				glyph2image( glyphNo, fontsize, angle, &img);

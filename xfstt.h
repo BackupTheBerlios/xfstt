@@ -1,4 +1,4 @@
-// Header for the X Font Server for TT Files
+// Header for the X Font Server for TT Fonts
 // (C) Copyright 1997-1998 Herbert Duerr
 
 #define TTFN_VERSION 0x0102

@@ -20,17 +20,26 @@ Don't do this while xfstt is running.
 .TP
 .I "\-\-gslist"
 Print font list in a format usable for ghostscript during --sync.
+Currently the --gslist option has to be before the --sync option:
+xfstt --gslist --sync
+.TP
+.I "\-\-encoding"
+Remap to different encodings. Default is iso8859-1.
+Usage example: xfstt --encoding iso8859-2,koi8-r,windows-1251
+!!!NOTE: one comma but no blanks between the encodings!!!
 .TP
 .I "\-\-port number"
 Change the port number for xfstt's font services.
-Default ist --port 7100.
+The default for X11 font servers is --port 7100.
 .TP
 .I "\-\-dir name"
 Change xfstt's font directory.
-Default ist --dir /usr/ttfonts.
+The default is --dir /usr/ttfonts.
 .TP
 .I "\-\-res value"
-Force default resolution to value. Typical are 96 or 120.
+Force the resolution for underspecified fonts to value (typically 96 or 120).
+Default is the value the X11 server suggests which can be adjusted by the
+-dpi option of the X11 server. Standard X11 servers have defaults of 72 dpi.
 .TP
 .I "\-\-unstrap"
 Allow some more unicode characters. This is dangerous for many X11 servers.
@@ -43,13 +52,15 @@ unicode range.
 Exit after the font client disconnects.
 .TP
 .I "\-\-multi"
-Opposite of --once option.
+Opposite of --once option. This has become the default behaviour,
+so it is obsolete now and is ignored for backwards compatibility.
+It will be removed in a future release.
 .TP
-.I "\-\-encoding"
-Remap to different encodings. Default is iso8859-1.
-Usage example: xfstt --encoding iso8859-2,koi8-r,windows-1251
-!!!NOTE: one comma but no blanks between the encodings!!!
-Currently supported are koi8-r, windows-1251 and iso8859-1 to iso8859-9.
+.I "\-\-inetd"
+Tell xfstt to be used as inetd service.
+.TP
+.I "\-\-daemon"
+Behave like a daemon.
 .TP
 .I "\-\-help"
 Print brief usage information on standard output and exit.

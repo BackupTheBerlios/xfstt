@@ -49,14 +49,15 @@
 class RandomAccessFile
 {
 protected:
-	U8 *ptr, *base;		// low offset for most used member ptr
+	U8 *ptr, *base;		// low offset for frequently used members
 private:
-	static U8* absbase;	//### hack for fileOffset();
+	U8* absbase;		//### hack for fileOffset();
 	int length;
 public:
 	RandomAccessFile( char* fileName);
 	RandomAccessFile( RandomAccessFile& f, int offset, int _length) {
 		length = _length;
+		absbase = f.base;
 		ptr = base = f.base + offset;
 	}
 //###	virtual ~RandomAccessFile()	{}
