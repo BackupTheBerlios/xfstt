@@ -31,6 +31,7 @@ Patches:
 	Jason Froebe
 	Andrew Wheatley (iso8859-14 encoding support)
 	Atsawin Chowanakritsanakul (iso8859-11 encoding support)
+	Andre Albsmeier (--notcp support)
 
 Ideas:
 	Jan Anderson
