@@ -620,25 +620,39 @@ openTTFN(Rasterizer *raster, char *ttfnName, FontParams *fp, int fid)
 	// set attribute defaults
 
 	switch (m_index) {
-	case 0:	// use fp defaults		//fall through
-	case 1:	fp->point[1] = fp->point[0];	//fall through
-	case 2:	fp->point[2] = 0;		//fall through
-	case 3:	fp->point[3] = -fp->point[2];	//fall through
-	default: break;
+	case 0:
+		// use fp defaults		//fall through
+	case 1:
+		fp->point[1] = fp->point[0];	//fall through
+	case 2:
+		fp->point[2] = 0;		//fall through
+	case 3:
+		fp->point[3] = -fp->point[2];	//fall through
+	default:
+		break;
 	}
 
 	switch (p_index) {
-	case 0:	// use fp defaults		//fall through
-	case 1:	fp->pixel[1] = fp->pixel[0];	//fall through
-	case 2:	fp->pixel[2] = 0;		//fall through
-	case 3:	fp->pixel[3] = -fp->pixel[2];	//fall through
-	default: break;
+	case 0:
+		// use fp defaults		//fall through
+	case 1:
+		fp->pixel[1] = fp->pixel[0];	//fall through
+	case 2:
+		fp->pixel[2] = 0;		//fall through
+	case 3:
+		fp->pixel[3] = -fp->pixel[2];	//fall through
+	default:
+		break;
 	}
 
 	switch (r_index) {
-	case 0:	break; // use fp defaults
-	case 1:	fp->resolution[1] = fp->resolution[0]; break;
-	default: break;
+	case 0:
+		break; // use fp defaults
+	case 1:
+		fp->resolution[1] = fp->resolution[0];
+		break;
+	default:
+		break;
 	}
 
 	TTFNdata *ttfn = (TTFNdata *)(infoBase + sizeof(TTFNheader));
@@ -676,14 +690,14 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 		*p = tolower(*p);
 		if (*p == '-')
 			switch (++delim) {
-			case  7:	// pixelsize
+			case 7:		// pixelsize
 				fp->pixel[0] = fp->pixel[1] = xatoi(++p);
 				*p = 0;
 				break;
-			case  8:	// pointsize
+			case 8:		// pointsize
 				fp->point[0] = fp->point[1] = xatoi(++p)/10;
 				break;
-			case  9:	// x-resolution
+			case 9:		// x-resolution
 				fp->resolution[0] = xatoi(++p);
 				break;
 			case 10:	// y-resolution
@@ -706,7 +720,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 
 	TTFNdata* ttfn = (TTFNdata *)(infoBase + sizeof(TTFNheader));
 	// XXX: linear search should be replaced
-	for (; (char *) ttfn < infoBase + infoSize; ++ttfn) {
+	for (; (char *)ttfn < infoBase + infoSize; ++ttfn) {
 		char *file = nameBase + ttfn->nameOfs + ttfn->nameLen + 1;
 		char *xlfd = file + ttfn->pathLen + 1;
 		char *p = xlfdName;
@@ -1738,7 +1752,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			}
 			break;
 		}
-	debug("done.\n");
+		debug("done.\n");
 	}
 
 	return 0;
@@ -1882,8 +1896,8 @@ main(int argc, char **argv)
 	// Make a pid file for easy starting and killing like
 	// a good little daemon
 	if (multiConnection) {
-		
 		FILE *pidfile = fopen(pidfilename, "w");
+
 		if (pidfile) {
 			pid_t pid = getpid();
 			fprintf(pidfile, "%d\n", pid);
