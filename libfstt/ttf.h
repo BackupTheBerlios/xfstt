@@ -52,7 +52,7 @@
 #  define debug(format, ...)
 #  define STATIC static
 #else
-#  define debug(format, ...)	fprintf(outfile, format, ##__VA_ARGS__)
+#  define debug(format, ...)	fprintf(stderr, format, ##__VA_ARGS__)
 #  define STATIC
 #endif
 

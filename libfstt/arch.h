@@ -83,8 +83,6 @@ typedef unsigned long long	U64;
 
 //=========== add special cases here ==================
 
-#define outfile stdout
-
 #ifdef __sgi
 #  undef LOGSLP
 #  define LOGSLP 3
