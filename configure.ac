@@ -2,12 +2,12 @@
 #
 # xfstt configure.ac
 #
-#	$Id: configure.ac,v 1.3 2003/07/29 03:51:33 guillem Exp $
+#	$Id: configure.ac,v 1.4 2003/07/29 04:19:32 guillem Exp $
 #
 
-AC_INIT([xfstt],[1.4])
+AC_INIT([xfstt],[1.5])
 AC_PREREQ(2.53)
-AC_REVISION($Revision: 1.3 $)
+AC_REVISION($Revision: 1.4 $)
 AC_CONFIG_SRCDIR([src/xfstt.cc])
 AC_CONFIG_AUX_DIR(config)
 

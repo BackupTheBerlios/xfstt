@@ -1,4 +1,4 @@
-pre-1.5
+1.5
 	Fixed multiple buffer overflows in the network packet handling code:
 	  CAN-2003-0581
 
