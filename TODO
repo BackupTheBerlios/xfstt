@@ -1,5 +1,5 @@
 
-	$Id: TODO,v 1.11 2003/06/25 04:39:21 guillem Exp $
+	$Id: TODO,v 1.12 2004/03/03 08:39:43 guillem Exp $
 
 TODO list:
 
@@ -16,6 +16,7 @@ TODO list:
  - add endianess agnostic support.
    - make showttf endian agnostic.
  - add missing encodings.
+ - add TTF apple encoding.
  - fix xfstt crashing X Server when used with some fonts.
  - fix X error when X_SetFontPath on fonts with white spaces (unreproducible).
  - fix xfs protocol compliance.
@@ -25,7 +26,6 @@ Documentation:
  - that font database is placed in the cache dir.
 
 Code cleanup:
- - remove dprintfN and move it to its own module.
  - add an error() function and normalize all > stderr.
  - search for XXX and correct.
  ? move all contrib references in src to THANKS file (code cleanup).
