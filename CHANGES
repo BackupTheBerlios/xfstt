@@ -2,9 +2,15 @@ pre-1.5
 	New encoding: iso8859-14
 	Moved hardcoded dir locations to configure space
 	Mkdir the fontdir and cachedir in the make install target
+	Improve error messages when cachedir does not exist
 	Remove --gslist dependency on order of arguments
-	Replaced dprintfN with a debug function and cleaned its output
+	Replaced dprintfN with a debug function
+	Cleaned the debugging output
+	Indentation and minor source cosmetic changes
+
 	Added a System V init file example
+	Cleaned the examples in doc/examples: font.properties, test.sh
+	Updated the documentation: doc/FAQ, INSTALL, THANKS, TODO, xfstt.1x
 
 1.4
 	Autoconfiscated
