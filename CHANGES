@@ -1,3 +1,15 @@
+1.2
+	Fixes bug that broke xfstt when using unix 
+	domain sockets under linux 2.4 (THANK YOU Oliver Suárez)
+
+	Fixed bug in realloc() use.
+	Added Slackware folder.
+	Added Patch for Boxdrawing glyphs
+
+	New Encodings: iso8859_11 (latin/Thai) and  koi8_u
+
+	Now compiles properly under newer versions of gcc
+
 1.1
 	
 	'The 'oops' release"

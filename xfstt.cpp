@@ -136,7 +136,7 @@ static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir, int gslist)
 		strcat( pathName, de->d_name);
 
 		TTFont* ttFont = new TTFont( de->d_name, 1);
-		if( ttFont->badFont()) {
+		if( ttFont->badFont() || !ttFont) {
 			delete ttFont;
 			continue;
 		}
@@ -183,8 +183,8 @@ static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir, int gslist)
 		delete ttFont;
 		++nfonts;
 	}
-
-	closedir( dirp);
+	if (dirp)
+		closedir( dirp);
 	return nfonts;
 }
 
@@ -470,10 +470,12 @@ static XFSFont* openFont( TTFont* ttFont, FontParams* fp,
 	raster->getFontExtent( &xfs->fe);
 
 	int used = (xfs->fe.bitmaps + xfs->fe.bmplen) - xfs->fe.buffer;
+	int bmpoff = xfs->fe.bitmaps - xfs->fe.buffer;
 	xfs->fe.buffer = (U8*)shrinkMem( xfs->fe.buffer, used);
-	if( xfs->fe.buffer)
+	if( xfs->fe.buffer) {
 		xfs->fe.buflen = used;
-	else {
+		xfs->fe.bitmaps = xfs->fe.buffer + bmpoff;
+	} else {
 		xfs->fid = 0;	//###
 		xfs = 0;
 	}
@@ -1692,12 +1694,17 @@ int main( int argc, char** argv)
 		close( sd);
 	} while( multiConnection);
 	
+	/* - it seemed like a good idea at the time. How else can we handle
+		the case where a user runs xfstt for a single x session and
+		then another user wants to use it later?
+ 
 	if (sockname) {
 		chdir( "/tmp/.font-unix");
 		unlink(sockname);
 		chdir("/tmp");
 		rmdir(".font-unix");
 	}
+	*/
 
 	dprintf0( "xfstt: closing a connection\n");
 	cleanupMem();

@@ -229,14 +229,19 @@ void Rasterizer::newLine2vector( const point& p2, const point& p1,
 	//### how can it be that df1 or df2 are bigger than 16 bits ?
 	float f1 = p2.xnow - p1.xnow;
 	float f2 = p2.ynow - p1.ynow;
-#if 1
-	float f3 = sqrt( UNITY2D14*UNITY2D14 / (f1*f1 + f2*f2));
-#else
-	float f3 = UNITY2D14 / hypot( f1, f2);
-#endif
-	vx = (int)(f1 * f3);
-	vy = (int)(f2 * f3);
 
+	if (f1 != 0.0f || f2 != 0.0f) {
+#if 1
+		float f3 = sqrt( UNITY2D14*UNITY2D14 / (f1*f1 + f2*f2));
+#else
+		float f3 = UNITY2D14 / hypot( f1, f2);
+#endif
+		vx = (int)(f1 * f3);
+		vy = (int)(f2 * f3);
+	} else {
+	    	vx = 0;
+		vy = 0;
+	}
 	dprintf2( "\t(%d %d) - ", p2.xnow, p2.ynow);
 	dprintf2( "(%d %d)", p1.xnow, p1.ynow);
 	dprintf2( "\nvx vy = %f %f", vx/FSHIFT, vy/FSHIFT);
@@ -248,14 +253,20 @@ void Rasterizer::oldLine2vector( const point& p2, const point& p1,
 	//### how can it be that df1 or df2 are bigger than 16 bits ?
 	float f1 = p2.xold - p1.xold;
 	float f2 = p2.yold - p1.yold;
-#if 1
-	float f3 = sqrt( UNITY2D14*UNITY2D14 / (f1*f1 + f2*f2));
-#else
-	float f3 = UNITY2D14 / hypot( f1, f2);
-#endif
-	vx = (int)(f1 * f3);
-	vy = (int)(f2 * f3);
 
+	if (f1 != 0.0f || f2 != 0.0f) {
+	
+#if 1
+		float f3 = sqrt( UNITY2D14*UNITY2D14 / (f1*f1 + f2*f2));
+#else
+		float f3 = UNITY2D14 / hypot( f1, f2);
+#endif
+		vx = (int)(f1 * f3);
+		vy = (int)(f2 * f3);
+	} else {
+	    	vx = 0;
+		vy = 0;
+	}
 	dprintf2( "\t(%d %d) - ", p2.xold, p2.yold);
 	dprintf2( "(%d %d)", p1.xold, p1.yold);
 	dprintf2( "\nvx vy = %f %f", vx/FSHIFT, vy/FSHIFT);

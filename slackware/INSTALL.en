@@ -1,0 +1,74 @@
+----------------------------------------------------------------------------
+
+                Installing XFSTT under Linux Slackware ® (v1.01)
+
+----------------------------------------------------------------------------
+
+INDEX
+
+  1. Introduction
+  2. Installation
+  3. Contact
+
+----------------------------------------------------------------------------
+
+1. Introduction
+
+     This file describe in details the procedure to install XFSTT
+     under Linux Slackware ®. Please, note that this has been tested
+     under Slackware 7.0, but as Slackware is Slackware, it should
+     work on latest release (I mean 7.1 at the time of writing).
+
+2. Installation
+
+     The installation will build a standard Slackware package that you
+     will install later with installpkg. This is the simpliest way to
+     install XFSTT under Slackware. Here we go :
+
+     1. Login as root. This is needed to build the package with
+        makepkg.
+
+     2. Execute the SlackMe.sh script in this folder.
+
+     3. If SlackMe.sh didn't fail, you should find a new file called
+        xfstt.tgz in the same folder. This file is the XFSTT package. To
+        install it, do a installpkg xfstt.tgz.
+
+     4. Edit /etc/XF86Config and add the following line in the Files
+        section, after all FontPath directives :
+
+             FontPath "unix/:7101"
+
+     5. Add the following line at the end of your /etc/rc.d/rc.local :
+
+          if [ -x /etc/rc.d/rc.xfstt ]
+          then
+             . /etc/rc.d/rc.xfstt
+          fi
+
+     6. Copy some True Type Fonts in /usr/X11R6/lib/fonts/ttf. You
+        will find theses fonts in /windows/fonts folder if you have
+        ZindoZs installed somewhere.
+
+     7. Restart you SlackBox (or execute /etc/rc.d/rc.xfstt, login as
+        a classic user and start X).
+
+     In order to uninstall XFSTT, do a removepkg xfstt. Delete lines
+     you have previously added in /etc/XF86Config and
+     /etc/rc.d/rc.local.  Delete the xfstt user (added by the
+     doinst.sh script in the package).
+
+3. Contact
+
+     In case of trouble and if you are sure I have done a mistake,
+     write me a note (my e-mail address is at the bottom of this
+     page).  Before, verify you have followed the previous
+     instructions or we will never be friends ... Do not forget to
+     e-mail me error messages and infos you think I should be aware.
+     E-mail with attachment will go to /dev/null. 
+
+----------------------------------------------------------------------------
+
+                                                     LiNuCe (Lucien NARDINI)
+                                                      <massilia98@yahoo.com>
+                                                                  08/14/2000

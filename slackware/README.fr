@@ -1,0 +1,14 @@
+UNIQUEMENT POUR LES SLACKERS !
+
+   Ce dossier contient les fichiers nécessaires à l'installation de XFSTT
+   sous Linux Slackware. Lisez bien le fichier INSTALL.fr dans ce dossier
+   si vous voulez que XFSTT fonctionne sur votre SlackBox. Notez que ce
+   qui y est décrit a été testé sous Slackware 7.0, mais cela devrait
+   fonctionner sur les versions plus récentes (7.1 au moment de leur
+   réalisation).
+
+                                                    LiNuCe (Lucien NARDINI)
+                                                     <massilia98@yahoo.com>
+                                                                 14/08/2000
+
+ vim: set ai tw=75 sw=3 expandtab sts=3:

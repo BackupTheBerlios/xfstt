@@ -1,0 +1,137 @@
+<HTML>
+
+<HEAD>
+   <TITLE>Installing XFSTT under Linux Slackware &reg; (v1.01)</TITLE>
+   <META NAME="Author" CONTENT="LiNuCe (Lucien NARDINI)">
+   <META NAME="Generator" CONTENT="ViM 5.7">
+   <META NAME="Description" CONTENT="XFSTT, LiNuX, Slackware">
+</HEAD>
+
+<!-- ####### -->
+<!--  TITLE  -->
+<!-- ####### -->
+
+<HR>
+   <H1 ALIGN="center">Installing XFSTT under Linux Slackware &reg; (v1.01)</H1>
+<HR>
+
+<!-- ####### -->
+<!--  INDEX  -->
+<!-- ####### -->
+
+<H2 ALIGN="left">INDEX</H2>
+<OL TYPE="1">
+   <LI><A HREF="#intro">Introduction</A></LI>
+   <LI><A HREF="#install">Installation</A></LI>
+   <LI><A HREF="#contact">Contact</A></LI>
+</OL>
+<HR>
+
+<!-- ############## -->
+<!--  INTRODUCTION  -->
+<!-- ############## -->
+
+<A NAME="intro"></A>
+<H2 ALIGN=left">1. Introduction</H2>
+<BLOCKQUOTE>
+   <P ALIGN="justify">
+      This file describe in details the procedure to install XFSTT
+      under Linux <A HREF="http://www.slackware.com">Slackware</A> &reg;.
+      Please, note that this has been tested under Slackware 7.0, but as
+      Slackware is Slackware, it should work on latest release (I mean
+      7.1 at the time of writing).
+   </P>
+</BLOCKQUOTE>
+
+<!-- ############# -->
+<!--  INSTALLATION -->
+<!-- ############# -->
+
+<A NAME="install"></A>
+<H2 ALIGN="left">2. Installation</H2>
+<BLOCKQUOTE>
+   <P ALIGN="justify">
+      The installation will build a standard Slackware package that you
+      will install later with <TT>installpkg</TT>. This is the simpliest
+      way to install XFSTT under Slackware. Here we go : 
+   </P>
+   <P ALIGN="justify">
+      <B>1.</B> Login as <TT>root</TT>. This is needed to build the package
+      with <TT>makepkg</TT>.
+   </P>        
+   <P ALIGN="justify">     
+      <B>2.</B> Execute the <TT>SlackMe.sh</TT> script in this folder.
+   </P>
+   <P ALIGn="justify">
+      <B>3.</B> If <TT>SlackMe.sh</TT> didn't fail, you should find a new
+      file called <TT>xfstt.tgz</TT> in the same folder.  This file is the
+      XFSTT package. To install it, do a <TT>installpkg xfstt.tgz</TT>.
+   </P>   
+   <P ALIGN="justify">
+      <B>4.</B> Edit <TT>/etc/XF86Config</TT> and add the following line in
+      the <TT>Files</TT> section, after all <TT>FontPath</TT> directives :
+   </P>
+   <BLOCKQUOTE>   
+      <TT>&nbsp;&nbsp;&nbsp;FontPath "unix/:7101"</TT>
+   </BLOCKQUOTE>
+   <P ALIGN="justify">
+     <B>5.</B> Add the following line  at the end of your
+     <TT>/etc/rc.d/rc.local</TT> :
+   </P>           
+   <BLOCKQUOTE><TT>
+      if [ -x /etc/rc.d/rc.xfstt ]<BR>
+      then<BR>
+      &nbsp;&nbsp;&nbsp;. /etc/rc.d/rc.xfstt<BR>
+      fi<BR>
+   </TT></BLOCKQUOTE>
+   <P ALIGN="justify">
+      <B>6.</B> Copy some True Type Fonts in
+      <TT>/usr/X11R6/lib/fonts/ttf</TT>. You will find theses fonts in
+      <TT>/windows/fonts</TT> folder if you have ZindoZs installed
+      somewhere.
+   </P>
+   <P ALIGN="justify">
+      <B>7.</B> Restart you SlackBox (or execute
+      <TT>/etc/rc.d/rc.xfstt</TT>, login as a classic user and start X).
+   </P>
+   <P ALIGN="justify">
+      In order to uninstall XFSTT, do a <TT>removepkg xfstt</TT>. Delete
+      lines you have previously added in <TT>/etc/XF86Config</TT> and
+      <TT>/etc/rc.d/rc.local</TT>. Delete the <TT>xfstt</TT> user (added by
+      the <TT>doinst.sh</TT> script in the package).
+   </P>
+</BLOCKQUOTE>
+
+<!-- ######### -->
+<!--  CONTACT  -->
+<!-- ######### -->
+
+<A NAME="contact"></A>
+<H2 ALIGN="left">3. Contact</H2>
+<BLOCKQUOTE>
+   <P ALIGN="justify">
+      In case of trouble and if you are sure I have done a mistake, write
+      me a note (my e-mail address is at the bottom of this page). Before,
+      verify you have followed the previous instructions or we will never
+      be friends ... Do not forget to e-mail me error messages and infos you
+      think I should be aware.  E-mail with attachment will go to
+      /dev/null. 
+   </P>
+</BLOCKQUOTE>
+
+<!-- ######## -->
+<!--  FOOTER  -->
+<!-- ######## -->
+
+<HR>
+<P ALIGN="right">
+   LiNuCe (Lucien NARDINI)<BR>
+   &lt;<A HREF="mailto:massilia98@yahoo.com">massilia98@yahoo.com</A>&gt;<BR>
+   08/14/2000
+</P>
+
+</BODY>
+<!--
+ vim: set ai tw=75 expandtab sw=3 sts=3:
+-->
+</HTML>

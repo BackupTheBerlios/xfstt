@@ -1,14 +1,9 @@
 This is just a simple file I decided to add to add a few notes that
 may interest people. You SHOULD read this at a minimum for upgrades.
 
-Well this is the big 1.0 release. The program is very stable and
-there have been very few complaints about it (aside from a couple
-of minor glitches and specific font problems). 
 
-This version fixes a couple of things that should be considered major
-but were never found, until now.
+NOTE: Upgrades From 0.9.99:
 
-From 0.9.99:
 For starters there is now a "Debian" directory as I have decided to
 merge the Debian version and "Upstream" version. This will make life
 easier on me. The Debian directory only contains a couple of text files.

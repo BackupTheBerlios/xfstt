@@ -1,0 +1,144 @@
+<HTML>
+
+<HEAD>
+   <TITLE>Installation de XFSTT sous Linux Slackware &reg; (v1.01)</TITLE>
+   <META NAME="Author" CONTENT="LiNuCe (Lucien NARDINI)">
+   <META NAME="Generator" CONTENT="ViM 5.7">
+   <META NAME="Description" CONTENT="XFSTT, LiNuX, Slackware">
+</HEAD>
+
+<!-- ####### -->
+<!--  TITLE  -->
+<!-- ####### -->
+
+<HR>
+   <H1 ALIGN="center">
+      Installation de XFSTT sous Linux Slackware &reg; (v1.01)
+   </H1>
+<HR>
+
+<!-- ####### -->
+<!--  INDEX  -->
+<!-- ####### -->
+
+<H2 ALIGN="left">INDEX</H2>
+<OL TYPE="1">
+   <LI><A HREF="#intro">Introduction</A></LI>
+   <LI><A HREF="#install">Installation</A></LI>
+   <LI><A HREF="#contact">Contact</A></LI>
+</OL>
+<HR>
+
+<!-- ############## -->
+<!--  INTRODUCTION  -->
+<!-- ############## -->
+
+<A NAME="intro"></A>
+<H2 ALIGN=left">1. Introduction</H2>
+<BLOCKQUOTE>
+   <P ALIGN="justify">
+      Ce fichier décrit en détail la procédure pour installer XFSTT sous
+      Linux <A HREF="http://www.slackware.com">Slackware</A> &reg;.  Ce qui
+      y est décrit a été testé sous Slackware 7.0, mais Slackware étant
+      Slackware, cela devrait fonctionner sur la dernière version (7.1 au
+      moment de la rédaction de ce document).
+   </P>
+</BLOCKQUOTE>
+
+<!-- ############# -->
+<!--  INSTALLATION -->
+<!-- ############# -->
+
+<A NAME="install"></A>
+<H2 ALIGN="left">2. Installation</H2>
+<BLOCKQUOTE>
+   <P ALIGN="justify">
+      L'installation créera un package Slackware standard que vous
+      installerezt plus tard avec <TT>installpkg</TT>. C'est la manière la
+      plus simple pour installer XFSTT sous Slackware. Allez, on y va :
+   </P>
+   <P ALIGN="justify">
+      <B>1.</B> Loggez-vous en tant que <TT>root</TT>. Cela est nécessaire
+      pour construire le package avec <TT>makepkg</TT>.
+   </P>        
+   <P ALIGN="justify">     
+      <B>2.</B> Exécutez le script <TT>SlackMe.sh</TT> dans ce dossier.
+   </P>
+   <P ALIGn="justify">
+      <B>3.</B> Si <TT>SlackMe.sh</TT> s'exécute sans erreur, vous devriez
+      trouver un nouveau fichier nommé <TT>xfstt.tgz</TT> dans ce dossier :
+      il s'agit du package XFSTT. Pour l'installer, faites simplement
+      <TT>installpkg xfstt.tgz</TT>.
+   </P>   
+   <P ALIGN="justify">
+      <B>4.</B> Editez <TT>/etc/XF86Config</TT> et ajoutez la ligne
+      suivante dans la section <TT>File</TT> après toutes les directives
+      <TT>FontPath</TT> :
+   </P>
+   <BLOCKQUOTE>   
+      <TT>&nbsp;&nbsp;&nbsp;FontPath "unix/:7101"</TT>
+   </BLOCKQUOTE>
+   <P ALIGN="justify">
+     <B>5.</B> Ajoutez la ligne suivante à la fin de votre fichier
+     <TT>/etc/rc.d/rc.local</TT> :
+   </P>           
+   <BLOCKQUOTE><TT>
+      if [ -x /etc/rc.d/rc.xfstt ]<BR>
+      then<BR>
+      &nbsp;&nbsp;&nbsp;. /etc/rc.d/rc.xfstt<BR>
+      fi<BR>
+   </TT></BLOCKQUOTE>
+   <P ALIGN="justify">
+      <B>6.</B> Copiez quelques polices True Types dans
+      <TT>/usr/X11R6/lib/fonts/ttf</TT>. Vous trouverez ces polices dans le
+      dossier <TT>/windows/fonts</TT> si vous avez ZindoZs installé
+      quelquepart.
+   </P>
+   <P ALIGN="justify">
+      <B>7.</B> Redémarrez votre SlackBox (ou exécutez
+      <TT>/etc/rc.d/rc.xfstt</TT>, loggez vous en tant que simple
+      utilisateur et démarrez X).
+   </P>
+   <P ALIGN="justify">
+      Pour désinstaller XFSTT, faites <TT>removepkg xfstt</TT>. Effacez les
+      lignes que vous avez précédemment ajoutées dans
+      <TT>/etc/XF86Config</TT>et <TT>/etc/rc.d/rc.local</TT>. Effacez
+      l'utilisateur <TT>xfstt</TT> (<TT>userdel xfstt</TT>) ajouté par
+      l'installation du package.
+   </P>
+</BLOCKQUOTE>
+
+<!-- ######### -->
+<!--  CONTACT  -->
+<!-- ######### -->
+
+<A NAME="contact"></A>
+<H2 ALIGN="left">3. Contact</H2>
+<BLOCKQUOTE>
+   <P ALIGN="justify">
+      En cas de problèmes et si vous &ecirc;tes s&ucirc;r que j'ai fait une
+      erreur, envoyer-moi une note par e-mail (mon adresse est en bas de
+      cette page). Avant cela, assurez-vous de bien avoir suivit les
+      instructions précédentes où ne nous serons jamais amis ... N'oubliez
+      pas de fournir les messages d'erreurs ou autres informations qui
+      pourraient m'&ecirc;tre utiles. Les courriers avec pièce jointe iront
+      directement sur <TT>/dev/null</TT>. 
+   </P>
+</BLOCKQUOTE>
+
+<!-- ######## -->
+<!--  FOOTER  -->
+<!-- ######## -->
+
+<HR>
+<P ALIGN="right">
+   LiNuCe (Lucien NARDINI)<BR>
+   &lt;<A HREF="mailto:massilia98@yahoo.com">massilia98@yahoo.com</A>&gt;<BR>
+   14/08/2000
+</P>
+
+</BODY>
+<!--
+ vim: set ai tw=75 expandtab sw=3 sts=3:
+-->
+</HTML>

@@ -1,0 +1,78 @@
+----------------------------------------------------------------------------
+
+            Installation de XFSTT sous Linux Slackware ® (v1.01)
+
+----------------------------------------------------------------------------
+
+INDEX
+
+  1. Introduction
+  2. Installation
+  3. Contact
+
+----------------------------------------------------------------------------
+
+1. Introduction
+
+     Ce fichier décrit en détail la procédure pour installer XFSTT sous
+     Linux Slackware ®. Ce qui y est décrit a été testé sous Slackware
+     7.0, mais Slackware étant Slackware, cela devrait fonctionner sur
+     la dernière version (7.1 au moment de la rédaction de ce
+     document).
+
+2. Installation
+
+     L'installation créera un package Slackware standard que vous
+     installerezt plus tard avec installpkg. C'est la manière la plus
+     simple pour installer XFSTT sous Slackware. Allez, on y va :
+
+     1. Loggez-vous en tant que root. Cela est nécessaire pour
+     construire le package avec makepkg.
+
+     2. Exécutez le script SlackMe.sh dans ce dossier.
+
+     3. Si SlackMe.sh s'exécute sans erreur, vous devriez trouver un
+     nouveau fichier nommé xfstt.tgz dans ce dossier : il s'agit du
+     package XFSTT. Pour l'installer, faites simplement installpkg
+     xfstt.tgz.
+
+     4. Editez /etc/XF86Config et ajoutez la ligne suivante  dans la
+     section File après toutes les directives FontPath :
+
+             FontPath "unix/:7101"
+
+     5. Ajoutez la ligne suivante à la fin de votre fichier
+     /etc/rc.d/rc.local :
+
+          if [ -x /etc/rc.d/rc.xfstt ]
+          then
+             . /etc/rc.d/rc.xfstt
+          fi
+
+     6. Copiez quelques polices True Types dans /usr/X11R6/lib/fonts/ttf.
+     Vous trouverez ces polices dans le dossier /windows/fonts si vous
+     avez ZindoZs installé quelquepart.
+
+     7. Redémarrez votre SlackBox (ou exécutez /etc/rc.d/rc.xfstt,
+     loggez vous en tant que simple utilisateur et démarrez X).
+
+     Pour désinstaller XFSTT, faites removepkg xfstt. Effacez les
+     lignes que vous avez précédemment ajoutées dans /etc/XF86Configet
+     /etc/rc.d/rc.local. Effacez l'utilisateur xfstt (userdel xfstt)
+     ajouté par l'installation du package.
+
+3. Contact
+
+     En cas de problèmes et si vous êtes sûr que j'ai fait une erreur,
+     envoyer-moi une note par e-mail (mon adresse est en bas de cette
+     page). Avant cela, assurez-vous de bien avoir suivit les
+     instructions précédentes où ne nous serons jamais amis  ...
+     N'oubliez pas de fournir les messages d'erreurs ou autres
+     informations qui pourraient m'être utiles. Les courriers avec
+     pièce jointe iront directement sur /dev/null.
+
+----------------------------------------------------------------------------
+
+                                                     LiNuCe (Lucien NARDINI)
+                                                      <massilia98@yahoo.com>
+                                                                 14/08/2000

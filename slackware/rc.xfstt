@@ -1,0 +1,72 @@
+#!/bin/sh
+
+###
+# FILE    : /etc/rc.d/rc.xfstt 
+# INFOS   : this script starts XFSTT, the true type font server
+# VERSION : 1.0 - 08/10/2000
+# AUTHOR  : LiNuCe (Lucien NARDINI) <massilia98@yahoo.com>
+# LICENSE : GNU GPL
+###
+
+###
+# Theses variables are set with theses default values.
+# - TTFDIR   : /usr/X11/lib/fonts/ttf
+# - CACHEDIR : /var/cache/xfstt
+# - PORT     : 7101
+# - USER     : user id used by XFSTT's children process
+#
+# If you modifiy theses vars, don't expect XFSTT to work
+# if you don't make modificiations to your filesystem.
+# DON'T MODIFY THESES VARS IF YOU DON'T KNOW THE ISSUES !
+###
+
+TTFDIR="/usr/X11/lib/fonts/ttf"
+CACHEDIR="/var/cache/xfstt"
+PORT="7101"
+USER="xfstt"
+
+###
+# Theses lines synchronize XFSTT font database with the font directory,
+# just in case you've added new fonts. Okay man, we don't need to do this
+# each time we start XFSTT : you probably don't add font every day.
+# But you are free to remove these lines and to sync xfstt manually.
+###
+
+echo -n "Synchronizing XFSTT font database ... "
+/usr/X11/bin/xfstt \
+--dir $TTFDIR \
+--user $USER \
+--cache $CACHEDIR \
+--sync &>/dev/null 
+
+if [ ! $? -eq 0 ]
+then
+   echo "KO !!!"
+   exit 1
+fi
+echo "OK !"
+
+###
+# Once font database is up to date, we start XFSTT.
+# You can use the --res option to match tou X server
+# resolution. By default, XFSTT will use the X server
+# resolution. But you can improve TTF display by setting 
+# both resolutions to 96 or 120. Try and see ;-)
+###
+
+echo -n "Starting XFSTT ... "
+/usr/X11/bin/xfstt \
+--user $USER \
+--dir $TTFDIR \
+--cache $CACHEDIR \
+--port $PORT \
+--daemon &>/dev/null 
+
+if [ ! $? -eq 0 ]
+then
+   echo "KO !!!"
+   exit 1
+fi
+echo "OK"
+
+exit 0

@@ -4,6 +4,14 @@
 #include "encoding.h"
 #include <string.h>
 
+ // Map box drawing gliphs to 0x00 .. 0x1f for curses based program
+static unsigned short boxtable[32] = {
+		0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 
+		0x0020, 0x0020, 0x0020, 0x2518, 0x2510, 0x250c, 0x2514, 0x253c, 
+		0x0020, 0x0020, 0x2500, 0x0020, 0x0020, 0x251c, 0x2524, 0x2534, 
+		0x252c, 0x2502, 0x0020, 0x0020, 0x2510, 0x0020, 0x0020, 0x0020, 
+	};
+
 Encoding* Encoding::first	= 0;
 Encoding* Encoding::last	= 0;
 
@@ -64,6 +72,38 @@ Encoding* Encoding::enumerate( Encoding* iterator)
 	return iterator ? iterator->next : first;
 }
 
+
+//  Thaks to Atsawin Chowanakritsanakul
+//--- Latin/Thai aka TIS-620
+class iso8859_11
+: public Encoding
+{
+public:
+	iso8859_11() : Encoding("iso8859-11") {}
+	int map2unicode( int code);
+} exemplar_iso8859_11;
+
+int iso8859_11::map2unicode( int code)
+{
+	static unsigned short table[] = {
+		0x0020,0x0E01,0x0E02,0x0E03,0x0E04,0x0E05,0x0E06,0x0E07,
+		0x0E08,0x0E09,0x0E0A,0x0E0B,0x0E0C,0x0E0D,0x0E0E,0x0E0F,
+		0x0E10,0x0E11,0x0E12,0x0E13,0x0E14,0x0E15,0x0E16,0x0E17,
+		0x0E18,0x0E19,0x0E1A,0x0E1B,0x0E1C,0x0E1D,0x0E1E,0x0E1F,
+		0x0E20,0x0E21,0x0E22,0x0E23,0x0E24,0x0E25,0x0E26,0x0E27,
+		0x0E28,0x0E29,0x0E2A,0x0E2B,0x0E2C,0x0E2D,0x0E2E,0x0E2F,
+		0x0E30,0x0E31,0x0E32,0x0E33,0x0E34,0x0E35,0x0E36,0x0E37,
+		0x0E38,0x0E39,0x0E3A,     0,     0,     0,     0,0x0E3F,
+		0x0E40,0x0E41,0x0E42,0x0E43,0x0E44,0x0E45,0x0E46,0x0E47,
+		0x0E48,0x0E49,0x0E4A,0x0E4B,0x0E4C,0x0E4D,0x0E4E,0x0E4F,
+		0x0E50,0x0E51,0x0E52,0x0E53,0x0E54,0x0E55,0x0E56,0x0E57,
+		0x0E58,0x0E59,0x0E5A,0x0E5B,     0,     0,     0,     0
+	};
+
+        if( code < 160 || code >= 256) return code;
+        return table[ code - 160];
+}
+
 //--- contributed by David Woodhouse
 class iso8859_15
 : public Encoding                                                               
@@ -76,6 +116,7 @@ public:
 int iso8859_15::map2unicode( int code)
 {
         if( code < 0xd0 || code >= 255) return code;
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
         switch( code) {
         case 0xa4:      return 0x20AC;
         case 0xa6:      return 0x160;
@@ -101,6 +142,7 @@ public:
 
 int iso8859_1::map2unicode( int code)
 {
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code == 0x80) code = 0x20AC;	// euro currency symbol
 	return code;
 }
@@ -132,6 +174,7 @@ int iso8859_2::map2unicode( int code)
 		0x159, 0x16f, 0x0fa, 0x171, 0x0fc, 0x0fd, 0x163, 0x2d9
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code == 0x80) return 0x20AC;	// euro currency symbol
 	if( code <= 0xa0 || code >= 256) return code;
 	return table[ code - 0xa0];
@@ -163,6 +206,7 @@ int iso8859_3::map2unicode( int code)
 		0x11d, 0x0f9, 0x0fa, 0x0fb, 0x0fc, 0x16d, 0x15d, 0x2d9
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code == 0x80) return 0x20AC;	// euro currency symbol
 	if( code <= 0xa0 || code >= 256) return code;
 	return table[ code - 0xa0];
@@ -194,6 +238,7 @@ int iso8859_4::map2unicode( int code)
 		0x0f8, 0x173, 0x0fa, 0x0fb, 0x0fc, 0x169, 0x16b, 0x2d9
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code == 0x80) return 0x20AC;	// euro currency symbol
 	if( code <= 0xa0 || code >= 256) return code;
 	return table[ code - 0xa0];
@@ -210,6 +255,7 @@ public:
 
 int iso8859_5::map2unicode( int code)
 {
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code == 0x80) return 0x20AC;	// euro currency symbol
 	if( code <= 0xa0 || code == 0xad || code >= 256) return code;
 	if( code == 0xf0) return 0x2116;
@@ -228,6 +274,7 @@ public:
 
 int iso8859_6::map2unicode( int code)
 {
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 0x30 || code >= 256) return code;
 	if( code <= 0x39) return (code + 0x630);
 	if( code == 0x80) return 0x20AC;	// euro currency symbol
@@ -253,6 +300,7 @@ int iso8859_7::map2unicode( int code)
 		0x388, 0x389, 0x38a, 0x0bb, 0x38c, 0x0bd
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code == 0x80) return 0x20AC;	// euro currency symbol
 	if( code <= 0xa0 || code >= 256) return code;
 	if( code >= 0xbe) return (code + 0x2d0);
@@ -270,6 +318,7 @@ public:
 
 int iso8859_8::map2unicode( int code)
 {
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code <= 0xa9 || code >= 256) return code;
 	if( code == 0xaa) return 0xd7;
 	if( code == 0xaf) return 0x203e;
@@ -288,6 +337,7 @@ public:
 
 int iso8859_9::map2unicode( int code)
 {
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 0xd0 || code >= 255) return code;
 	switch( code) {
 	case 0x80:	return 0x20AC;
@@ -322,6 +372,41 @@ int koi8_r::map2unicode( int code)
 		0x2557,0x2558,0x2559,0x255a,0x255b,0x255c,0x255d,0x255e,
 		0x255f,0x2560,0x2561,0x0401,0x2562,0x2563,0x2564,0x2565,
 		0x2566,0x2567,0x2568,0x2569,0x256a,0x256b,0x256c,0x00a9,
+		0x044e,0x0430,0x0431,0x0446,0x0434,0x0435,0x0444,0x0433,
+		0x0445,0x0438,0x0439,0x043a,0x043b,0x043c,0x043d,0x043e,
+		0x043f,0x044f,0x0440,0x0441,0x0442,0x0443,0x0436,0x0432,
+		0x044c,0x044b,0x0437,0x0448,0x044d,0x0449,0x0447,0x044a,
+		0x042e,0x0410,0x0411,0x0426,0x0414,0x0415,0x0424,0x0413,
+		0x0425,0x0418,0x0419,0x041a,0x041b,0x041c,0x041d,0x041e,
+		0x041f,0x042f,0x0420,0x0421,0x0422,0x0423,0x0416,0x0412,
+		0x042c,0x042b,0x0417,0x0428,0x042d,0x0429,0x0427,0x042a
+	};
+
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
+	if( code < 128 || code >= 256) return code;
+	return table[ code - 128];
+}
+
+// Thanks to Vitaly V. Bursov
+class koi8_u
+: public Encoding
+{
+public:
+	koi8_u() : Encoding("koi8-u") {}
+	int map2unicode( int code);
+} exemplar_koi8_u;
+
+int koi8_u::map2unicode( int code)
+{
+	static unsigned short table[] = {
+		0x2500,0x2502,0x250c,0x2510,0x2514,0x2518,0x251c,0x2524,
+		0x252c,0x2534,0x253c,0x2580,0x2584,0x2588,0x258c,0x2590,
+		0x2591,0x2592,0x2593,0x2320,0x25a0,0x2219,0x221a,0x2248,
+		0x2264,0x2265,0x00a0,0x2321,0x00b0,0x00b2,0x00b7,0x00f7,
+		0x2550,0x2551,0x2552,0x0451,0x0454,0x2554,0x0456,0x0457,
+		0x2557,0x2558,0x2559,0x255a,0x255b,0x0491,0x255d,0x255e,
+		0x255f,0x2560,0x2561,0x0401,0x0404,0x2563,0x0406,0x0407,
+		0x2566,0x2567,0x2568,0x2569,0x256a,0x0490,0x256c,0x00a9,
 		0x044e,0x0430,0x0431,0x0446,0x0434,0x0435,0x0444,0x0433,
 		0x0445,0x0438,0x0439,0x043a,0x043b,0x043c,0x043d,0x043e,
 		0x043f,0x044f,0x0440,0x0441,0x0442,0x0443,0x0436,0x0432,
@@ -367,6 +452,7 @@ int windows_1251::map2unicode( int code)
 		0x0448,0x0449,0x044A,0x044B,0x044C,0x044D,0x044E,0x044F
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -401,6 +487,7 @@ int iso8859_10::map2unicode( int code)
 		0x00F8,0x0173,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x016B
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -436,6 +523,7 @@ int windows_1250::map2unicode( int code)
 		0x0159,0x016F,0x00FA,0x0171,0x00FC,0x00FD,0x0163,0x02D9
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -471,6 +559,7 @@ int windows_1252::map2unicode( int code)
 		0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x00FF
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -506,6 +595,7 @@ int windows_1253::map2unicode( int code)
 		0x03C8,0x03C9,0x03CA,0x03CB,0x03CC,0x03CD,0x03CE,0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -541,6 +631,7 @@ int windows_1254::map2unicode( int code)
 		0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x0131,0x015F,0x00FF
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -576,6 +667,7 @@ int windows_1255::map2unicode( int code)
 		0x05E8,0x05E9,0x05EA,0,0,0,0,0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -611,6 +703,7 @@ int windows_1256::map2unicode( int code)
 		0,0x00F9,0,0x00FB,0x00FC,0,0,0x00FF
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -646,6 +739,7 @@ int cp_437::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -681,6 +775,7 @@ int cp_737::map2unicode( int code)
 		0x00B0,0x00A3,0x0387,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -716,6 +811,7 @@ int cp_850::map2unicode( int code)
 		0x00B0,0x00A8,0x00B7,0x00B9,0x00B3,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -751,6 +847,7 @@ int cp_851::map2unicode( int code)
 		0x00B0,0x00A8,0x03C9,0x03CB,0x03B0,0x03CE,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -786,6 +883,7 @@ int cp_852::map2unicode( int code)
 		0x00B0,0x00A8,0x02D9,0x0171,0x0158,0x0159,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -821,6 +919,7 @@ int cp_853::map2unicode( int code)
 		0x00B0,0x00A8,0x02D9,0,0x00B3,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -856,6 +955,7 @@ int cp_855::map2unicode( int code)
 		0x042D,0x0449,0x0429,0x0447,0x0427,0,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -891,6 +991,7 @@ int cp_857::map2unicode( int code)
 		0x00B0,0x00A8,0x00B7,0x00B9,0x00B3,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -926,6 +1027,7 @@ int cp_860::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -961,6 +1063,7 @@ int cp_861::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -996,6 +1099,7 @@ int cp_862::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1031,6 +1135,7 @@ int cp_863::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1066,6 +1171,7 @@ static unsigned short table[] = {
 		0x0642,0,0,0x0644,0x0643,0x064A,0x25A0,0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1101,6 +1207,7 @@ static unsigned short table[] = {
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1136,6 +1243,7 @@ int cp_866::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x2116,0x00A4,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1171,6 +1279,7 @@ int cp_869::map2unicode( int code)
 		0x00B0,0x00A8,0x03C9,0x03CB,0x03B0,0x03CE,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1206,6 +1315,7 @@ int cp_895::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1257,6 +1367,7 @@ int wingreek::map2unicode( int code)
 		0x1FA3,0x1FA2,0x1FF7,0x1FA7,0x1FA6,0,0,0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code >= 256) return code;
 	return table[ code];
 }
@@ -1308,6 +1419,7 @@ int symbol::map2unicode( int code)
 		0,0,0,0,0,0,0,0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code >= 256) return code;
 	return table[ code];
 }
@@ -1359,6 +1471,7 @@ int wingding::map2unicode( int code)
 		0,0,0,0x2718,0x2714,0,0,0
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code >= 256) return code;
 	return table[ code];
 }
@@ -1394,6 +1507,7 @@ int atari_st::map2unicode( int code)
 	0x2248,0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x00B3,
 	0x00AF   };
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1438,6 +1552,7 @@ int windows_1257::map2unicode( int code)
 		0x0173,0x0142,0x015b,0x016b,0x00fc,0x017c,0x017e,0x02d9
 	};
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
@@ -1472,6 +1587,7 @@ int windows_sami2::map2unicode( int code)
                 0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x00FF
         };                                                                      
 
+	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
         if( code < 128 || code >= 256) return code;
         return table[ code - 128];
 }                                                                               

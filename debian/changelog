@@ -1,3 +1,11 @@
+xfstt (1.2) unstable; urgency=low
+
+  * Fixes bug in Unix Domain Socket Handling (Bug #66943)
+  * added new encodings
+  * Fresh compile (BUG# 57269, 64905)
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Mon, 22 Mar 2001 21:36:50 -0500
+
 xfstt (1.1) unstable; urgency=low
 
   * Fixed Memory corruption (BUG# 49297)
