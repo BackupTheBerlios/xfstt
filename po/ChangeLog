@@ -1,3 +1,7 @@
+2005-02-12  Guillem Jover  <guillem@hadrons.org>
+
+	* LINGUAS: New file. Moved content from configure.ac (ALL_LINGUAS).
+
 2004-05-04  Guillem Jover  <guillem@hadrons.org>
 
 	* Makevars: Changed mail address.
