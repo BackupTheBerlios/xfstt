@@ -1,0 +1,17 @@
+Source: xfstt
+Section: x11
+Priority: optional
+Maintainer: Stephen J. Carpenter <sjc@debian.org>
+Standards-Version: 2.3.0.0
+
+Package: xfstt
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: TrueType Font Server for X11
+ xfstt means "X11 Font Server for TT fonts".
+ TT fonts are generally regarded to be the best scalable fonts
+ for displays. Applications needing scalable fonts that are to
+ be displayed on a screen benefit most.
+ This server will allow X11 applications to use the exact same
+ fonts as the TrueType fonts used on most Windows Machines.
+ NB: This package contains NO FONTS. They MUST be obtained separately

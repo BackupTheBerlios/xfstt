@@ -1,6 +1,6 @@
 #! /bin/sh
-fontpath=unix/:7100
-#fontpath="inet/127.0.0.1:7100"
+fontpath=unix/:7101
+#fontpath="inet/127.0.0.1:7101"
 make && echo done.
 sync
 time xfstt --once > lst &

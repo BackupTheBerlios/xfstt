@@ -41,6 +41,8 @@ void* shrinkMem( void* ptr, int oldsize, int newsize)
 		ptr = mremap( ptr, oldsize, newsize, 0);
 	if( ptr == (void*)-1)
 		ptr = 0;
+#else
+	ptr = realloc(ptr, newsize);
 #endif
 	return ptr;
 }

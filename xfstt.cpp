@@ -1,5 +1,6 @@
 // X Font Server for *.ttf Files
-// (C) Copyright 1997-1998 Herbert Duerr
+// (C) Copyright 1997-1999 Herbert Duerr
+// portions are (C) 1999 Stephen Carpenter and others
 
 //#define DEBUG 1
 
@@ -8,14 +9,20 @@
 // if you are sure your X11 server doesn't request more
 // than it can handle, increase the limit up to 65535
 #define UNSTRAPLIMIT	10500U
-#define TTFONTDIR	"/usr/ttfonts"
+
+// Change these if you don't lie being FHS complient
+#define TTFONTDIR	"/usr/share/fonts/truetype"
+#define TTCACHEDIR      "/var/cache/xfstt"
+
+#define TTINFO_LEAF     "ttinfo.dir"
+#define TTNAME_LEAF     "ttname.dir"
+#define PIDFILE		"/var/run/xfstt.pid"	// be a good little daemon
 
 #define MAXOPENFONTS 256
 #define MAXREPLYSIZE (1<<22)
 #define MAXFONTBUFSIZE (1<<24)
 #define MINFONTBUFSIZE (1<<18)
 
-#define PIDFILE		"/var/run/xfstt.pid"	// be a good little daemon
 
 #include "ttf.h"
 #include "xfstt.h"
@@ -30,6 +37,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -37,6 +45,8 @@
 #include <time.h>
 #include <X11/fonts/FS.h>
 #include <X11/fonts/FSproto.h>
+#include <pwd.h>
+
 
 // if you want to read good code skip this hacked up file!
 
@@ -60,7 +70,11 @@ U16 maxLastChar = 255;
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
 char* fontdir = TTFONTDIR;
+char* cachedir = TTCACHEDIR;
 int defaultres = 0;
+
+uid_t newuid = -2;
+gid_t newgid = -2;
 
 #define MAXENC 16 /* Maximum number of encodings */
 Encoding *encodings[ MAXENC];
@@ -69,24 +83,27 @@ Encoding *encodings[ MAXENC];
 static void usage( int verbose)
 {
 	printf( "Xfstt 0.9.10, X font server for TT fonts\n");
-	printf( "Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]\n"
+	printf( "Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]"
+		"[--user username]\n"
 		"\t\t[--dir ttfdir][--encoding list_of_encodings]"
 		"[--daemon][--inetd]\n\n");
 	if( !verbose)
 		return;
 	printf( "\t--sync     put ttf-fonts in \"%s\" in database\n", fontdir);
 	printf( "\t--gslist   print ghostscript style ttf fontlist\n ");
-	printf( "\t--port     change port number from default 7100\n");
+	printf( "\t--port     change port number from default 7101\n");
 	printf( "\t--dir      use other font directory than "TTFONTDIR"\n");
+	printf( "\t--cache    use other font cache directory than "TTCACHEDIR"\n");
 	printf( "\t--res      force default resolution to this value\n");
 	printf( "\t--encoding use encodings other than iso8859-1\n");
 	printf( "\t--unstrap  !DANGER! serve all unicodes !DANGER!\n");
+	printf( "\t--user     Username that children should run as\n");
 	printf( "\t--daemon   run in the background\n");
 	printf( "\t--inetd    run as inetd service\n");
-	printf( "\n\tattach to X Server by \"xset fp+ unix/:7100\"\n");
-	printf( "\t\tor \"xset fp+ inet/127.0.0.1:7100\"\n");
-	printf( "\tdetach from X Server by \"xset -fp unix/:7100\"\n");
-	printf( "\t\tor \"xset -fp inet/127.0.0.1:7100\"\n");
+	printf( "\n\tattach to X Server by \"xset fp+ unix/:7101\"\n");
+	printf( "\t\tor \"xset fp+ inet/127.0.0.1:7101\"\n");
+	printf( "\tdetach from X Server by \"xset -fp unix/:7101\"\n");
+	printf( "\t\tor \"xset -fp inet/127.0.0.1:7101\"\n");
 } 
 
 static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir, int gslist)
@@ -168,6 +185,16 @@ static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir, int gslist)
 	return nfonts;
 }
 
+static char *cachefile(char *buf, size_t buflen, const char *leafname)
+{
+    unsigned len = strlen(cachedir)+strlen(leafname)+2;
+    if (len > buflen) {
+	fputs("xfstt: Cache directory name is too long\n", stderr);
+	return NULL;
+    }
+    sprintf(buf, "%s/%s", cachedir, leafname);
+}
+
 static int ttSyncAll( int gslist=0)
 {
 	if( !gslist)
@@ -179,8 +206,12 @@ static int ttSyncAll( int gslist=0)
 	}
 
 	DIR* dirp = opendir( ".");
-	FILE* infoFile = fopen( "ttinfo.dir", "wb");
-	FILE* nameFile = fopen( "ttname.dir", "wb");
+	char ttinfofilename[FILENAME_MAX]; 
+	if (!cachefile(ttinfofilename, sizeof(ttinfofilename), TTINFO_LEAF)) return -1;
+	char ttnamefilename[FILENAME_MAX];
+	if (!cachefile(ttnamefilename, sizeof(ttnamefilename), TTNAME_LEAF)) return -1;
+	FILE* infoFile = fopen( ttinfofilename, "wb");
+	FILE* nameFile = fopen( ttnamefilename, "wb");
 	if( infoFile <= 0 || nameFile <= 0) {
 		fputs( "xfstt: Cannot write to font database!\n", stderr);
 		return -1;
@@ -1416,14 +1447,19 @@ int openTTFdb()
 		return 0;
 	}
 
+	char ttinfofilename[FILENAME_MAX]; 
+	if (!cachefile(ttinfofilename, sizeof(ttinfofilename), TTINFO_LEAF)) return 0;
+	char ttnamefilename[FILENAME_MAX];
+	if (!cachefile(ttnamefilename, sizeof(ttnamefilename), TTNAME_LEAF)) return -1;
+
 	int fd;
-	if( 0 >= (fd = open( "ttinfo.dir", O_RDONLY))) {
+	if( 0 >= (fd = open( ttinfofilename, O_RDONLY))) {
 		fputs( "Can not open font database!\n", stderr);
 		return 0;
 	}
 
 	struct stat statbuf;
-	stat( "ttinfo.dir", &statbuf);
+	stat( ttinfofilename, &statbuf);
 	infoSize = statbuf.st_size;
 	infoBase = (char*)mmap( 0L, infoSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close( fd);
@@ -1439,12 +1475,12 @@ int openTTFdb()
 		return 0;
 	}
 
-	if( 0 >= (fd = open( "ttname.dir", O_RDONLY))) {
+	if( 0 >= (fd = open( ttnamefilename, O_RDONLY))) {
 		fputs( "Can not open font database!\n", stderr);
 		return 0;
 	}
 
-	stat( "ttname.dir", &statbuf);
+	stat( ttnamefilename, &statbuf);
 	nameSize = statbuf.st_size;
 	nameBase = (char*)mmap( 0L, nameSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close( fd);
@@ -1491,12 +1527,26 @@ void delPIDfile( int signal)
 	exit( 0);
 }
 
+void setuidgid ( char * name)
+{
+        struct passwd *pwent;
+
+        setpwent();
+        while ((pwent = getpwent())) 
+                if (strcmp(pwent->pw_name, name) == 0) { 
+                        newuid = pwent->pw_uid;
+			newgid = pwent->pw_gid;
+		}
+
+}
+
 int main( int argc, char** argv)
 {
 	int multiConnection = 1;
 	int inetdConnection = 0;
-	int portno = 7100;
+	int portno = 7101;
 	int gslist = 0;
+	char *user;
 
 	Encoding::getDefault( encodings, MAXENC);
 
@@ -1513,7 +1563,7 @@ int main( int argc, char** argv)
 				portno = xatoi( argv[++i]);
 			if( !portno) {
 				fputs( "Illegal port number!\n", stderr);
-				portno = 7100;
+				portno = 7101;
 			}
 		} else if( !strcmp( argv[i], "--res")) {
 			if( i <= argc)
@@ -1522,6 +1572,10 @@ int main( int argc, char** argv)
 				fputs( "Illegal default resolution!\n", stderr);
 		} else if( !strcmp( argv[i], "--dir")) {
 			fontdir = argv[++i];
+		} else if( !strcmp( argv[i], "--user")) {
+			setuidgid(argv[++i]);
+		} else if( !strcmp( argv[i], "--cache")) {
+			cachedir = argv[++i];
 		} else if( !strcmp( argv[i], "--encoding")) {
 			char* maplist = argv[++i];
 			if( !Encoding::parse( maplist, encodings, MAXENC)) {
@@ -1556,7 +1610,7 @@ int main( int argc, char** argv)
 			if( fork())
 				_exit( 0);
 		} else {
-			usage( 0);
+			usage(0);
 			return -1;
 		}
 	}
@@ -1564,6 +1618,11 @@ int main( int argc, char** argv)
 	if( inetdConnection && multiConnection) {	// inetd
 		multiConnection = 0;
 		fprintf( stderr, "--inetd and --multi option collission\n");
+	}
+	
+	if (newuid == -2) {
+		newuid = getuid();
+		newgid = getgid();
 	}
 
 	// Make a pid file for easy starting and killing like
@@ -1599,6 +1658,8 @@ int main( int argc, char** argv)
 		int sd = inetdConnection ? 0 : prepare2connect( portno);
 		if( connecting( sd)) {
 			if( !multiConnection || !fork()) {
+				setuid(newuid);
+				setgid(newgid);
 				Rasterizer* raster = new Rasterizer();
 				char* replybuf = (char*)allocMem( MAXREPLYSIZE);
 				working( sd, raster, replybuf);
@@ -1610,6 +1671,7 @@ int main( int argc, char** argv)
 				break;
 			}
 		}
+		close( sd);
 	} while( multiConnection);
 
 	dprintf0( "xfstt: closing a connection\n");

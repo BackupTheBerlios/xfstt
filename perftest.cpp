@@ -1,7 +1,7 @@
 // test ttf engine performance
 // (C) Copyright 1997-1998 Herbert Duerr
 
-#define TTFONTDIR	"/usr/ttfonts"
+#define TTFONTDIR	"/usr/share/fonts/truetype"
 #define MAXFONTBUFSIZE (2048*2048)
 
 #include "ttf.h"

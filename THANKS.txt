@@ -1,7 +1,10 @@
 Thank you to all who made xfstt better!
 
 patches:
-	Stephen Carpenter
+	Ove Kaaven
+	Mike Markowski
+	Albertas ?
+	David Woodhouse
 	Francesco Chemolli
 	Tasos Chronis
 	David Crowley

@@ -1,3 +1,15 @@
+0.9.20
+	New Maintainer Stephen Carpenter <sjc@debian.org> 
+	added fix for memory bug
+	added windows-sami2
+	Port changed to 7101 to avoid xfs conflict
+	Should now be FHS complient (font dir now /usr/share/fonts/truetype) 
+	Works with read-only /usr (stores databases in /var)
+	added "--user" option for security
+	UNICODE-2 now known as iso10646-1
+	Added encodeing iso8859-15
+	Fixed encoding match bug
+
 0.9.10
 	add euro currency symbol to encodings
 	unmap unused read mmaps

@@ -1,3 +1,12 @@
+                      Xfstt Frequently Asked Questions
+
+This document adresses common questions (and some not so common ones) about
+xfstt, the X11 TrueType Font Server. You will want to read this file to
+see if it answers your questions before you go asking the maintainer or
+in any public forums of course.
+
+This FAQ is current as of version 0.9.99 of xfstt. 
+
 1.0  What is xfstt?
 1.1  How do I test it?
 1.2  How do I use it?
@@ -14,7 +23,9 @@
 2.9  I cannot see all of my gazillion installed fonts!
 2.10 Why can't I use all 16bit characters?
 2.11 Rotated glyphs have wrong spacing!
-2.12 The glyphs are too small!
+2.12 The TrueType fonts are bigger/smaller than other fonts!
+2.12.1 The TrueType fonts are too small!
+2.12.2 The TrueType fonts are too big!
 2.13 How does one request an encoding different from iso8859-1?
 2.14 Why are multiple instances of xfstt running?
 
@@ -25,12 +36,13 @@
 3.4  How do I print documents which use *.ttf fonts?
 3.5  Does xfstt have anti-aliasing/grayscaling technology?
 
-4.0  I have problems to compile xfstt!
-4.1  Will it be merged with the X server?
-4.2  Why another free ttf font server?
-4.3  How are embedded *ttf fonts used?
-4.4  How can I help?
-4.5  Why the LGPL licence though xfstt is not a library?
+4.0  I am having problems compiling xfstt!
+4.1  I found a bug in xfstt! What do I do?
+4.2  Will it be merged with the X server?
+4.3  Why another free ttf font server?
+4.4  How are embedded *ttf fonts used?
+4.5  How can I help?
+4.6  Why the LGPL licence though xfstt is not a library?
 
 -----------------------------------------------------------------------------
 
@@ -50,24 +62,24 @@
 
 1.1 How do I test it?
 
-	mkdir /usr/ttfonts and put some *ttf fonts there, now run
+	mkdir /usr/share/fonts/truetype and put some *ttf fonts there, now run
 
 	make xfstt && make install
 	xfstt --sync
 	xfstt &
-	xset fp+ unix/:7100
+	xset fp+ unix/:7101
 	xlsfonts
 	xcoral -fn "TTM20_Times New Roman"
 	xfontsel -pattern "-*-*-*-*-*-tt-*-*-*-*-*-*-*-*"
-	xset -fp unix/:7100
+	xset -fp unix/:7101
 
 	If your X server cannot handle the unix protocol replace the
-	unix/:7100 part by inet/127.0.0.1:7100 (assuming the machine
+	unix/:7101 part by inet/127.0.0.1:7101 (assuming the machine
 	running xfstt has 127.0.0.1 as internet address).
 
 1.2 How do I use it?
 
-	Add unix/:7100 to the fontpath in your X11 configuration file.
+	Add unix/:7101 to the fontpath in your X11 configuration file.
 	Start xfstt a few seconds before starting X11.
 
 	The font name for a 24 point Arial would be "TTM24_Arial" or
@@ -90,7 +102,7 @@
 	In some situations xfstt needs to rebuild it's font database
 	which may take some extra seconds.
 
-	If "xset fp+ unix/:7100" fails while running X it very often
+	If "xset fp+ unix/:7101" fails while running X it very often
 	turned out xfstt wasn't started! Please check this with the
 	"ps" command. If it hasn't started, start it now.
 
@@ -101,7 +113,7 @@
 
 2.1 The X11 server doesn't start when xfstt isn't running!
 
-	This usually happens after you added "unix/:7100" to the X11
+	This usually happens after you added "unix/:7101" to the X11
 	server default fontpath. Most X11 servers are not prepared
 	to handle the situation that a resource they are told to use
 	isn't there. Either remove the default fontpath or make sure
@@ -154,9 +166,9 @@
 
 2.4 How does one add fonts?
 
-	Copy *.ttf fonts into the /usr/ttfonts/ directory or put some
+	Copy *.ttf fonts into the /usr/share/fonts/truetype/ directory or put some
 	softlinks to font directories in there. A typical example is
-	ln -s /DOS/windows/fonts /usr/ttfonts/winfonts
+	ln -s /DOS/windows/fonts /usr/share/fonts/truetype/winfonts
 
 	Now run "xfstt --sync" in order to have the new fonts recognized.
 	Adding fonts while xfstt is running doesn't work yet.
@@ -239,18 +251,29 @@
 	field to pass y advance widths. No current X server uses
 	this information to display rotated strings.
 
-2.12 The glyphs are too small!
+2.12 The TrueType fonts are bigger/smaller than other fonts!
 
-	Most operating systems handling ttf fonts assume default
-	resolutions of 96dpi, 120dpi or higher. Most X servers
-	tell Xfstt to assume a default resolution of 72 dpi.
-	A 12pt font at 96dpi is the same as a 16pt font at 72dpi.
+        Most operating systems handling ttf fonts assume default
+        resolutions of 96dpi, 120dpi or higher. Most X servers
+        tell Xfstt to assume a default resolution of 72 dpi.
+        A 12pt font at 96dpi looks the same as a 16pt font at
+        72dpi and vice-versa.
 
-	The solution is to tell the X server that the default
-	resolution is different from the default 72 dpi. To
-	do this start the X server with the -dpi option. 
-	Alternatively xfstt provides the --res option. Example:
-	xfstt --res 96
+2.12.1 The TrueType fonts are too small!
+
+        The solution is to tell the X server that the default
+        resolution is different from the default 72 dpi. To
+        do this start the X server with the -dpi option.
+        Alternatively xfstt provides the --res option. Example:
+        xfstt --res 96
+
+2.12.2 The TrueType fonts are too big!!
+
+     As stated above, some X servers can't communicate
+     correctly with Xfstt, and Xfstt may sometimes pick 96dpi
+     as it's default, when it should be 72dpi or 75dpi.  This
+     means that 12pt Arial looks the same as 16pt Helvetica.
+     To fix this, run Xfstt as: xfstt --res 72
 
 2.13 How does one request an encoding different from iso8859-1?
 
@@ -272,7 +295,7 @@
 
 3.0  How do I put fonts in categories?
 
-	Create some subdirectories in /usr/ttfonts, e.g.
+	Create some subdirectories in /usr/share/fonts/truetype, e.g.
 	modern, script, brush, old, symbol, ...
 	and put the appropiate fonts in there. The corresponding font
 	names will be -modern-*, -script-*, -brush-* and so on
@@ -309,7 +332,7 @@
 
 3.4 How to use with solaris?
 
-	There is a report that port 7100 on solaris is already
+	There is a report that port 7101 on solaris is already
 	occupied. Use another port, e.g. "xfstt --port 6666".
 
 3.5 How do I print documents which use *.ttf fonts?
@@ -340,10 +363,30 @@
 	Also for some not understood reasons on FreeBSD you have to use
 	gmake instead of standard make.
 
-	If this doesn't help get a binary release (e.g. from the great
+	If this doesn't help get a binary release (e.g. from the 
 	debian distribution http://www.debian.org).
 
-4.1 Will it be merged with the X server?
+4.1 I found a bug in xfstt! What do I do?
+
+	Ok, for starters calm down. Start out by seeing if you can make it
+	happen again. Reproducibility is a good thing. Read the documentation
+	and see if this is a known issue or even a "feature" (obviously
+	crashing and running off at 100% CPU usage is not a feature)
+
+	If it is not a feature (or you believe you have a good reason that
+	noone else has thought of that it is a wrong feature) and is a bug
+	then check to see if you have the current version. Currently the
+	maintainer is also the Debian maintainer, so if you can't find it
+	anywhere else, check the Debian ftp site for it.
+
+	Now if you have the most current version and the bug is still there,
+	then by all means report it. Just send me an email (try to put
+	xfstt in the subject so it gets higher priority). 
+
+	Also...the same goes for any fixes you want to make. If you fix
+	a bug...by all means send along the code. Same goes for new features.
+	
+4.2 Will it be merged with the X server?
 
 	Merging it with the X server creates some opportunities. It makes
 	advanced features like grayscaling, kerning, glyph substitution,
@@ -357,15 +400,17 @@
 	than they should take because of this.
 
 	Unfortunately this requires a major rewrite of the X11 font
-	subsystem.
+	subsystem. Currently there are no plans to do this. Feel free
+	to work on this yourself and send in any patches.
 
-4.2  Why another free ttf font server?
+
+4.3  Why another free ttf font server?
 
 	Xfstt was actually the first free truetype font server.
 	It was written from scratch, the useful freetype library
 	not being ready in early 1997.
 
-4.3 How are embedded *ttf fonts used?
+4.4 How are embedded *ttf fonts used?
 
 	Xfstt doesn't fully support dynamic adding/removing fonts yet.
 	This is a prerequisite for handling embedded fonts.
@@ -373,19 +418,19 @@
 	The intermediate solution is to send a FS_SetCatalogues request
 	to xfstt which makes it rebuild its font database.
 
-4.4 How can I help?
+4.5 How can I help?
 
 	Xfstt is reported to work on i386/m68k/sparc/alpha/mips/ppc on
 	linux/freebsd/aix/irix/sco/osf/solaris platforms.
 	Porting it to a different platform may require small modifications
 	in the architecture dependent header file "arch.h".
 
-	Item 4.1 of this FAQ dreams up the great benefits that could be
+	Item 4.2 of this FAQ dreams up the great benefits that could be
 	achieved by deeply embedding scalable font technology into a carefully
 	revised X11 font subsystem. Read and understand the limitations of the
 	current X11 font subsystem and try to do something about it.
 
-4.5 Why the LGPL licence though xfstt is not a library?
+4.6 Why the LGPL licence though xfstt is not a library?
 
 	It is an (almost) trivial exercise to combine parts of the
 	package into a library. The LGPL licence has considerable

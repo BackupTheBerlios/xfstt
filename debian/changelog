@@ -1,0 +1,199 @@
+xfstt (0.9.99) unstable; urgency=low
+
+  * Debian maintainer is now upstream maintainer
+  * Children now SUID to non-root
+  * new encodeings
+  * Documentation changes
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Mon, 26 Apr 1999 23:52:53 -0400
+
+xfstt (0.9.10-8) unstable; urgency=low
+
+  * fixed "bashism" in postinst (BUG#29958)
+    * added variable name to read statement
+  * Updated man page (thanx Josip Rodin) (BUG#32558)
+  * Applied patch for Alpha from Bart Warmerdam (BUG#35136)
+    * Incorrect type definition for 64 bit arch
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Mon, 12 Apr 1999 00:08:12 -0400
+
+xfstt (0.9.10-7) unstable; urgency=low
+
+  * Changes contributed by Steve Haslam
+    * fonts can be on read-only partitions
+    * build uses deb-helper 
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Sun, 17 Jan 1999 18:57:08 -0500
+
+xfstt (0.9.10-6) frozen; urgency=low
+
+  * Finnaly fixed bad libc problem
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Sun, 10 Jan 1999 19:06:04 -0600
+
+xfstt (0.9.10-5) frozen; urgency=low
+
+  * recompile - bad libc
+  * fixed some spelling errors - almost lintian clean now
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Fri,  8 Jan 1999 22:51:42 -0500
+
+xfstt (0.9.10-4) frozen; urgency=low
+
+  * Minor Documentation changes in man page
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Wed,  6 Jan 1999 16:40:37 -0500
+
+xfstt (0.9.10-3) frozen; urgency=low
+
+  * Init.d script in -2 was horribly broken
+    * case statment (accidently deleted) back
+    * then and fi leftovers removed (think I forgot to save?)
+    * fixes: #29835 #29821
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Sun, 22 Nov 1998 14:14:10 -0500
+
+xfstt (0.9.10-2) frozen; urgency=low
+
+  * init.d script failed with new xbase (BUG# 29442) 
+    * /etc/X11/config no longer exists
+    * init.d script no longer uses this
+    * Docs updated to reflect change
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Thu, 19 Nov 1998 20:42:26 -0500
+
+xfstt (0.9.10-1) unstable; urgency=low
+
+  * New Upstream Source
+  * Now init.d script can use start-stop-daemon properly
+  * Most Debian-specific changes now part of upstream source
+  * Added --daemon option (included upstream just before releace)
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Mon, 26 Oct 1998 08:37:00 -0500
+
+xfstt (0.9.9-8) unstable; urgency=low
+
+  * New init.d script used port 7100 (oops) - fixed
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Thu,  8 Oct 1998 22:25:43 -0400
+
+xfstt (0.9.9-7) unstable; urgency=low
+
+  * changed last references to port 7100 (BUG#26023)
+  * Fixed xfstt not deleteing PID file under certain circumstances 
+  *       - This fixes part of bug #26021
+  * init.d script works like xfs script (thanx Gergely Egervary)
+  * init.d script now uses start-stop-daemon (also Bug#26021)
+  * recompiled to use the new libstdc++
+
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Thu,  8 Oct 1998 00:23:58 -0400
+
+xfstt (0.9.9-6) unstable; urgency=low
+
+  * init.d script fix (again) Should be the last one (BUG#25326)
+  *        Changed "True Type" to TrueType
+  *        Fixed test to see if xfstt already running 
+  * Tiny bit of code cleanup. The build is down to 2 compiler warnings.
+  * Changed instances of 7100 in man page to 7101 
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Fri,  7 Aug 1998 22:20:06 -0400
+
+xfstt (0.9.9-5) unstable; urgency=low
+
+  * force-restart|restart chaned to force-reload|restart (another oops)
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Sat,  1 Aug 1998 20:48:10 -0400
+
+xfstt (0.9.9-4) unstable; urgency=low
+
+  * fixed a typo in init.d scipt (oops..bug#25261)
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Sat,  1 Aug 1998 01:23:27 -0400
+
+xfstt (0.9.9-3) unstable; urgency=low
+
+  * New Patch from Upstream Author to fix iso8859-8 (Hebrew) encoding
+  * init.d script is now a conffile (Bug# 24237)
+  * init.d script now has "force-reload|restart" and no reload (Bug# 24237)
+  * default port # is 7101 and init.d script added PORT variable 
+  * init.d script tests to see if xfstt is already running
+  
+ -- Stephen J. Carpenter <sjc@debian.org>  Sun,  29 Jul 1998 20:55:23 -0400
+
+xfstt (0.9.9-2) unstable; urgency=low
+
+  * New Patch from Upstream author to fix memory bug (part of Bug#24109)
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Thu,  2 Jul 1998 21:04:34 -0400
+
+xfstt (0.9.9-1) unstable; urgency=low
+
+  * New Upstream release (Bug# 22912)
+  *     More encodings
+  *     support mac7 fonts
+  *     allow bigger glyphs
+  *     shrink preallocated mmaps
+  * Fixes Bug#21739: xfstt is now more FHS complient
+  * Allows multiple simultaneous connections (new hack - fixes Bug#24109)
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Thu,  2 Jul 1998 00:58:45 -0400
+
+xfstt (0.9.8-1) unstable; urgency=low
+
+  * New Upstream release
+  * Now has a manpage 
+  * Upstream releace fixes a bug with Staroffice
+  * added init script to start automatically and close bug #18773
+  * Now inculdes needed documentation in /usr/doc/xfstt
+
+ -- Stephen J. Carpenter <sjc@delphi.com>  Sat, 23 May 1998 05:16:20 -0400
+
+xfstt (0.9.7-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Christoph Lameter <clameter@waterf.org>  Tue, 17 Feb 1998 21:21:16 -0800
+
+xfstt (0.9.6-2) unstable; urgency=low
+
+  * #18104 only use assembler code in i386 environment
+
+ -- Christoph Lameter <clameter@waterf.org>  Fri, 13 Feb 1998 18:30:33 -0800
+
+xfstt (0.9.6-1) unstable; urgency=low
+
+  * #15557 Copyright changed to LGPL not included anymore
+  * #16405 debmake upgrade fixes copyright/changelog concerns.
+  * #17996 New upstream release fixes #16620 (dashes in fontnames)
+
+ -- Christoph Lameter <clameter@waterf.org>  Mon,  9 Feb 1998 21:03:53 -0800
+
+xfstt (0.9.4-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Christoph Lameter <clameter@waterf.org>  Mon,  1 Dec 1997 08:07:02 -0800
+
+xfstt (0.9.2-1) unstable; urgency=low
+
+  * New upstream release (showttf not installed anymore)
+
+ -- Christoph Lameter <clameter@waterf.org>  Mon,  3 Nov 1997 12:25:08 -0800
+
+xfstt (0.9.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Christoph Lameter <clameter@waterf.org>  Fri, 31 Oct 1997 16:49:57 -0800
+
+xfstt (0.9-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Christoph Lameter <clameter@waterf.org>  Mon, 27 Oct 1997 19:20:48 -0800
+
+Local variables:
+mode: debian-changelog
+add-log-mailing-address: "chris@waterf.org"
+End:

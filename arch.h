@@ -48,8 +48,13 @@ typedef signed int	S32;
 #ifndef MULDIV
 	// 64bit types are only needed for temporary MULDIV results
 	#ifndef WIN32
-		typedef long long		S64;
-		typedef unsigned long long	U64;
+		#ifdef __alpha
+			typedef long			S64;
+			typedef unsigned long		U64; 
+		#else
+			typedef long long		S64;
+			typedef unsigned long long	U64;
+		#endif
 	#else
 		typedef __int64			S64;
 		typedef unsigned __int64	U64;

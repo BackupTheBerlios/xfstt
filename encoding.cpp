@@ -19,17 +19,16 @@ Encoding::Encoding( char* mapname)
 int Encoding::parse( char* mapnames, Encoding** maps0, int maxcodes)
 {
 	Encoding** maps = maps0;
+	char *mapname;
 
-	for(; *mapnames; ++mapnames) {
+	mapname = strtok(mapnames,", ");
+	while(mapname && maps - maps0 < maxcodes)		
 		for( Encoding* m = first; m; m = m->next)
-			if( !strncmp( mapnames, m->strName, m->lenName)) {
+			if( !strcmp( mapname, m->strName)) {
 				*(maps++) = m;
-				mapnames += m->lenName;
+				mapname = strtok(NULL,", ");
 				break;
 			}
-		if( (*mapnames != ',') || (maps - maps0 >= maxcodes))
-			break;
-	}
 
 	return (maps - maps0);
 }
@@ -46,6 +45,31 @@ Encoding* Encoding::enumerate( Encoding* iterator)
 {
 	return iterator ? iterator->next : first;
 }
+
+//--- contributed by David Woodhouse
+class iso8859_15
+: public Encoding                                                               
+{
+public:
+        iso8859_15() : Encoding("iso8859-15") {}
+        int map2unicode( int code);
+} exemplar_iso8859_15;                                                          
+
+int iso8859_15::map2unicode( int code)
+{
+        if( code < 0xd0 || code >= 255) return code;
+        switch( code) {
+        case 0xa4:      return 0x20AC;
+        case 0xa6:      return 0x160;
+        case 0xa8:      return 0x161;
+        case 0xb4:      return 0x17d;
+        case 0xb8:      return 0x17e;
+        case 0xbc:      return 0x152;
+        case 0xbd:      return 0x153;
+        case 0xbe:      return 0x178;
+        }                                                                       
+        return code;
+}                                                                               
 
 
 //---
@@ -1356,14 +1380,15 @@ int atari_st::map2unicode( int code)
 	return table[ code - 128];
 }
 
-//--- thanks Gilbert Baumann
-class unicode_2
+//--- thanks Gilbert Baumann 
+//--- Used to be unicode-2 - now known as iso10646-1  
+class iso10646_1
 : public Encoding
 {
 public:
-	unicode_2() : Encoding("unicode-2") {}
+	iso10646_1() : Encoding("iso10646-1") {}
 	int map2unicode( int code) { return code;}
-} exemplar_unicode_2;
+} exemplar_iso10646_1;
 
 //--- thanks Mindaugas Riauba
 class windows_1257
@@ -1398,6 +1423,41 @@ int windows_1257::map2unicode( int code)
 	if( code < 128 || code >= 256) return code;
 	return table[ code - 128];
 }
+
+//--- contributed by Ove Kaaven  **added 4/14/1999 for v0.9.99 **
+class windows_sami2
+: public Encoding                                                               
+{
+public:
+        windows_sami2() : Encoding("windows-sami2") {}
+        int map2unicode( int code);
+} exemplar_windows_sami2;                                                       
+
+int windows_sami2::map2unicode( int code)
+{
+        static unsigned short table[] = {
+                0x20AC,0,0x010C,0x0192,0x010D,0x01B7,0x0292,0x01EE,
+                0x01EF,0x0110,0x0160,0x2039,0x0152,0,0,0,
+                0,0x2018,0x2019,0x201C,0x201D,0x2022,0x2013,0x2014,
+                0x0111,0x01E6,0x0161,0x203A,0x0153,0,0,0x0178,
+                0x00A0,0x01E7,0x01E4,0x00A3,0x00A4,0x01E5,0x00A6,0x00A7,
+                0x00A8,0x00A9,0x021E,0x00AB,0x00AC,0x00AD,0x00AE,0x021F,
+                0x00B0,0x00B1,0x01E8,0x01E9,0x00B4,0x00B5,0x00B6,0x00B7,
+                0x014A,0x014B,0x0166,0x00BB,0x0167,0x00BD,0x017D,0x017E,
+                0x00C0,0x00C1,0x00C2,0x00C3,0x00C4,0x00C5,0x00C6,0x00C7,
+                0x00C8,0x00C9,0x00CA,0x00CB,0x00CC,0x00CD,0x00CE,0x00CF,
+                0x00D0,0x00D1,0x00D2,0x00D3,0x00D4,0x00D5,0x00D6,0x00D7,
+                0x00D8,0x00D9,0x00DA,0x00DB,0x00DC,0x00DD,0x00DE,0x00DF,
+                0x00E0,0x00E1,0x00E2,0x00E3,0x00E4,0x00E5,0x00E6,0x00E7,
+                0x00E8,0x00E9,0x00EA,0x00EB,0x00EC,0x00ED,0x00EE,0x00EF,
+                0x00F0,0x00F1,0x00F2,0x00F3,0x00F4,0x00F5,0x00F6,0x00F7,
+                0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x00FF
+        };                                                                      
+
+        if( code < 128 || code >= 256) return code;
+        return table[ code - 128];
+}                                                                               
+
 
 void Encoding::getDefault( Encoding** maps, int maxcodes)
 {

@@ -1,0 +1,7 @@
+#!/bin/sh
+# This script is executed to finish the removal of xfstt
+
+if [ purge = "$1" ]; then
+	update-rc.d xfstt remove > /dev/null
+fi
+

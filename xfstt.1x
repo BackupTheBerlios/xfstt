@@ -1,18 +1,21 @@
-.TH CP 1L "XFSTT" \" -*- nroff -*-
+.TH XFSTT 1x "XFSTT" \" -*- nroff -*-
 .SH NAME
 xfstt \- X11 font server for *ttf fonts
 .SH SYNOPSIS
 .B xfstt
-[[--gslist]--sync][--port n][--dir dirname][--unstrap][--multi][--once][--help]
-[--res resolution][--encoding list]
+[--port n] [--dir dirname] [--unstrap]
+[--multi] [--once] [--user username]
+[[--gslist] --sync]
+[--res resolution] [--encoding list]
+[--help]
 .br
 .SH DESCRIPTION
-Xfstt serves *ttf fonts to one X11 server.  Start xfstt
-then tell X11 about the font server with
-xset fp+ unix:/7100
+Xfstt serves *ttf fonts to X11 servers.  Start xfstt then tell X11 about the 
+font server with
+.B "xset fp+ unix/:7101"
 or (assuming the X11 server runs on host 127.0.0.1)
-xset fp+ inet/127.0.0.1:7100
-.SS OPTIONS
+.B "xset fp+ inet/127.0.0.1:7101"
+.SH OPTIONS
 .TP
 .I "\-\-sync"
 Synchronize the font database with installed fonts and exit when done.
@@ -23,18 +26,26 @@ Print font list in a format usable for ghostscript during --sync.
 Currently the --gslist option has to be before the --sync option:
 xfstt --gslist --sync
 .TP
+.I "\-\-user username
+This is a security feature which is designed to lessen the impact of 
+any future security holes which are found in xfstt. This will cause
+xfstt to set its UID and GID to that of the specified user 
+(if that user doesn't exist then it will use your current UID and GID)
+.TP
 .I "\-\-encoding"
-Remap to different encodings. Default is iso8859-1.
-Usage example: xfstt --encoding iso8859-2,koi8-r,windows-1251
-!!!NOTE: one comma but no blanks between the encodings!!!
+Remap to different encodings. Default is iso8859-1. Usage example: 
+.br
+xfstt --encoding iso8859-2,koi8-r,windows-1251
+.br
+!!! NOTE: one comma but no blanks between the encodings !!!
 .TP
 .I "\-\-port number"
 Change the port number for xfstt's font services.
-The default for X11 font servers is --port 7100.
+This version of Xfstt defaults to --port 7101.
 .TP
 .I "\-\-dir name"
 Change xfstt's font directory.
-The default is --dir /usr/ttfonts.
+The default is --dir /usr/share/fonts/truetype.
 .TP
 .I "\-\-res value"
 Force the resolution for underspecified fonts to value (typically 96 or 120).
@@ -64,4 +75,20 @@ Behave like a daemon.
 .TP
 .I "\-\-help"
 Print brief usage information on standard output and exit.
-.TP
+.SH Debian Specific Notes
+This version of xfstt has been modified to comply with Debian policy.
+The modifications are already reflected in this man page. However for
+reference, I have decided to include this section.
+.P
+The first change has been that the default font directory is now
+.I "/usr/share/fonts/truetype/" 
+whereas the original xfstt used the default font directory of
+/usr/ttfonts (or /var/ttfonts). This change was done to comply with
+the Filesystem Standard
+.P 
+The second difference is that the default port number was moved to
+.I 7101
+where the original xfstt used port number 7100. This was done to
+avoid conflict with xfs which traditionally is on that port.
+.SH "SEE ALSO"
+xfs(1), xset(1), X(1), inetd(8).
