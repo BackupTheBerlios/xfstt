@@ -1,6 +1,6 @@
                       Xfstt Frequently Asked Questions
 
-	$Id: FAQ,v 1.3 2003/02/13 04:05:19 guillem Exp $
+	$Id: FAQ,v 1.4 2003/03/22 13:47:58 guillem Exp $
 
 This document addresses common questions (and some not so common ones)
 about xfstt, the X11 TrueType Font Server. You will want to read this file
@@ -100,7 +100,7 @@ This FAQ is current as of version 1.4 of xfstt.
 
 -----------------------------------------------------------------------------
 
-2.0  It doesn't work! I get something like "bad font path"!
+2.0 It doesn't work! I get something like "bad font path"!
 
 	A font server needs a fair chance to offer font services to
 	clients. If you start the font server and the X server at
@@ -462,7 +462,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	subsystem. Currently there are no plans to do this. Feel free
 	to work on this yourself and send in any patches.
 
-4.3  Why another free ttf font server?
+4.3 Why another free ttf font server?
 
 	Xfstt was actually the first free TrueType font server.
 	It was written from scratch, the useful freetype library
