@@ -3,6 +3,7 @@ SVN
 	Changed mail address
 	Generate the manpage at build time, to use variable paths and version
 	Remove win32 obsolete code
+	Use new error, warning and info functions
 
 1.6
 	Fixed ttSyncAll only looking at fontdir subdirectories
