@@ -6,6 +6,7 @@ SVN
 	Use new error, warning and info functions
 	Changed some data types names
 	Fix hyphen used as minus sign in manpage
+	Fix build failure on Irix with gcc 3.2 (Thanks to Dirk Tilger)
 
 1.6
 	Fixed ttSyncAll only looking at fontdir subdirectories

@@ -32,6 +32,7 @@ Patches:
 	Andrew Wheatley (iso8859-14 encoding support)
 	Atsawin Chowanakritsanakul (iso8859-11 encoding support)
 	Andre Albsmeier (--notcp support)
+	Dirk Tilger <miriup@users.berlios.de> (Irix gcc 3.2 bug)
 
 Ideas:
 	Jan Anderson

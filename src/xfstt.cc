@@ -884,7 +884,7 @@ prepare2connect(int portno)
 	select(maxsd + 1, &sdlist, 0L, 0L, 0L);
 
 	int sd = 0;
-	unsigned int saLength = sizeof(struct sockaddr);
+	socklen_t saLength = sizeof(struct sockaddr);
 	if (FD_ISSET(sd_unix, &sdlist))
 		sd = accept(sd_unix, (struct sockaddr *)&s_unix, &saLength);
 	else if (!noTCP && FD_ISSET(sd_inet, &sdlist))
