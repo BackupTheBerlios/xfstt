@@ -1,7 +1,7 @@
 /*
  * Test ttf engine performance
  *
- * $Id: perftest.cc,v 1.1 2002/11/14 12:08:09 guillem Exp $
+ * $Id: perftest.cc,v 1.2 2003/01/05 10:16:28 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -21,7 +21,6 @@
  *
  */
 
-#define TTFONTDIR	"/usr/share/fonts/truetype"
 #define MAXFONTBUFSIZE (2048*2048)
 
 #include "ttf.h"
@@ -48,7 +47,7 @@ static int
 ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, char *ttdir)
 {
 	int nfonts = 0;
-	printf("xfstt: perftest in directory " TTFONTDIR "/%s\n", ttdir);
+	printf("xfstt: perftest in directory " FONTDIR "/%s\n", ttdir);
 	DIR *dirp = opendir(".");
 
 	while (dirent *de = readdir(dirp)) {
@@ -113,8 +112,8 @@ ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, char *ttdir)
 int
 main(int argc, char **argv)
 {
-	if (chdir(TTFONTDIR)) {
-		fputs("xfstt: " TTFONTDIR " does not exist!\n", stderr);
+	if (chdir(FONTDIR)) {
+		fputs("xfstt: " FONTDIR " does not exist!\n", stderr);
 		return -1;
 	}
 
@@ -136,7 +135,7 @@ main(int argc, char **argv)
 	nfonts += ttPerfDir(&raster, ptsize, &fe, ".");
 	DIR *dirp = opendir(".");
 	while (dirent *de = readdir(dirp)) {
-		chdir(TTFONTDIR);
+		chdir(FONTDIR);
 		if (de->d_name[0] != '.' && !chdir(de->d_name))
 			nfonts += ttPerfDir(&raster, ptsize, &fe, de->d_name);
 	}

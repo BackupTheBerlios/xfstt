@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.1 2002/11/14 12:08:08 guillem Exp $
+ * $Id: xfstt.cc,v 1.2 2003/01/05 10:16:28 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -30,14 +30,8 @@
  */
 #define UNSTRAPLIMIT	10500U
 
-// Change these if you don't like being FHS complient
-#define TTFONTDIR	"/usr/share/fonts/truetype"
-#define TTCACHEDIR	"/var/cache/xfstt"
-
 #define TTINFO_LEAF	"ttinfo.dir"
 #define TTNAME_LEAF	"ttname.dir"
-
-#define PIDFILE		"/var/run/xfstt.pid"	// be a good little daemon
 
 #define MAXOPENFONTS	256
 #define MAXREPLYSIZE	(1 << 22)
@@ -96,8 +90,8 @@ U16 maxLastChar = 255;
 
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
-char *fontdir = TTFONTDIR;
-char *cachedir = TTCACHEDIR;
+char *fontdir = FONTDIR;
+char *cachedir = CACHEDIR;
 char *pidfilename = PIDFILE;
 
 int defaultres = 0;
@@ -134,10 +128,11 @@ usage(int verbose)
 	       default_port);
 	printf(_("\t--notcp    don't open TCP socket, use unix domain only\n"));
 	printf(_("\t--dir      change font directory (default %s)\n"),
-	       TTFONTDIR);
+	       FONTDIR);
 	printf(_("\t--cache    change font cache directory (default %s)\n"),
-	       TTCACHEDIR);
-	printf(_("\t--pidfile  change pid file location (default %s)\n"), PIDFILE);
+	       CACHEDIR);
+	printf(_("\t--pidfile  change pid file location (default %s)\n"),
+	       PIDFILE);
 	printf(_("\t--res      force default resolution to this value\n"));
 	printf(_("\t--encoding change encoding (default %s)\n"),
 	       encodings[0]->strName);
