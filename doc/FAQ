@@ -1,10 +1,10 @@
                       Xfstt Frequently Asked Questions
 
-	$Id: FAQ,v 1.1 2002/11/14 12:08:07 guillem Exp $
+	$Id: FAQ,v 1.2 2003/02/13 04:01:18 guillem Exp $
 
-This document addresses common questions (and some not so common ones) about
-xfstt, the X11 TrueType Font Server. You will want to read this file to
-see if it answers your questions before you go asking the maintainer or
+This document addresses common questions (and some not so common ones)
+about xfstt, the X11 TrueType Font Server. You will want to read this file
+to see if it answers your questions before you go asking the maintainer or
 in any public forums of course.
 
 This FAQ is current as of version 1.4 of xfstt.
@@ -36,10 +36,11 @@ This FAQ is current as of version 1.4 of xfstt.
 
 3.0 How do I put fonts in categories?
 3.1 use with Java (tm)
-3.2 use with netscape/communicator (tm)
-3.3 use with staroffice (tm)
-3.4 How do I print documents which use *.ttf fonts?
-3.5 Does xfstt have anti-aliasing/grayscaling technology?
+3.2 use with Netscape/Communicator (tm)
+3.3 use with StarOffice (tm)
+3.4 How to use with Solaris?
+3.5 How do I print documents which use *.ttf fonts?
+3.6 Does xfstt have anti-aliasing/grayscaling technology?
 
 4.0 I am having problems compiling xfstt!
 4.1 I found a bug in xfstt! What do I do?
@@ -53,12 +54,12 @@ This FAQ is current as of version 1.4 of xfstt.
 
 1.0 What is xfstt?
 
-	Xfstt means "X11 Font Server for TT fonts".
-	TT fonts are generally regarded to be the best scalable
+	Xfstt means "X11 Font Server for TrueType fonts".
+	TrueType fonts are generally regarded to be the best scalable
 	fonts for low resolution devices like displays.
 
 	Examples where good scalable fonts improve the visual quality
-	considerably are netscape(tm), gimp and java(tm).
+	considerably are Netscape (tm), gimp and Java (tm).
 	A fonts.properties file for use with java is provided.
 
 	Xfstt is freely available under the LGPL. This basically means:
@@ -67,11 +68,12 @@ This FAQ is current as of version 1.4 of xfstt.
 
 1.1 How do I test it?
 
-	mkdir /usr/share/fonts/truetype and put some *ttf fonts there, now run
+	mkdir /usr/share/fonts/truetype and put some *ttf fonts there, now
+	run:
 
 	make xfstt && make install
 	xfstt --sync
-	xfstt &
+	xfstt --daemon
 	xset fp+ unix/:7101
 	xlsfonts
 	xcoral -fn "TTM20_Times New Roman"
@@ -79,12 +81,12 @@ This FAQ is current as of version 1.4 of xfstt.
 	xset -fp unix/:7101
 
 	If your X server cannot handle the unix protocol replace the
-	unix/:7101 part by inet/127.0.0.1:7101 (assuming the machine
+	"unix/:7101" part by "inet/127.0.0.1:7101" (assuming the machine
 	running xfstt has 127.0.0.1 as internet address).
 
 1.2 How do I use it?
 
-	Add unix/:7101 to the fontpath in your X11 configuration file.
+	Add "unix/:7101" to the fontpath in your X11 configuration file.
 	Start xfstt a few seconds before starting X11.
 
 	The font name for a 24 point Arial would be "TTM24_Arial" or
@@ -150,29 +152,33 @@ This FAQ is current as of version 1.4 of xfstt.
 	the package would prevent xfstt from being put on CDROMs.
 
 	*.ttf fonts are often included as bonus for printers, word
-	processors, graphics applications, operating systems,...
+	processors, graphics applications, operating systems, ...
 
 	There are a lot of cheap CDs with hundreds of *.ttf fonts.
 
 	On the web there are many places where you can download fonts:
-	http://www.winsite.com/win3/fonts/truetype/index.html
-	http://www.microsoft.com/truetype
-	http://www.hooked.net/~flubble/typography.html
-	http://home1.gte.net/tiaralyn/pctt.htm
-	http://www.homunculus.com/access/CustomDirs/Fonts.html
-	http://indigo.simplenet.com/fontz
-	http://www.pagesz.net/~mhare/fonts/index.htm
-	http://klink.net/~rcklueg/font1.html
-	http://www.fonthead.com/main.html
-	http://members.aol.com/ChiChiX/pages/fonts.html
-	http://moon.yerphi.am/~hovik/Archive/Archive-PC/Fonts
-	http://www.geocities.com/SoHo/7554/downloads/fonts
+
+	<http://www.winsite.com/win3/fonts/truetype/index.html>
+	<http://www.microsoft.com/truetype>
+	<http://www.hooked.net/~flubble/typography.html>
+	<http://home1.gte.net/tiaralyn/pctt.htm>
+	<http://www.homunculus.com/access/CustomDirs/Fonts.html>
+	<http://indigo.simplenet.com/fontz>
+	<http://www.pagesz.net/~mhare/fonts/index.htm>
+	<http://klink.net/~rcklueg/font1.html>
+	<http://www.fonthead.com/main.html>
+	<http://members.aol.com/ChiChiX/pages/fonts.html>
+	<http://moon.yerphi.am/~hovik/Archive/Archive-PC/Fonts>
+	<http://www.geocities.com/SoHo/7554/downloads/fonts>
+
 	and many many other web sites
 
 2.4 How does one add fonts?
 
-	Copy *.ttf fonts into the /usr/share/fonts/truetype/ directory or put some
-	softlinks to font directories in there. A typical example is
+	Copy *.ttf fonts into the /usr/share/fonts/truetype/ directory or
+	put some softlinks to font directories in there. A typical example
+	is:
+
 	ln -s /DOS/windows/fonts /usr/share/fonts/truetype/winfonts
 
 	Now run "xfstt --sync" in order to have the new fonts recognized.
@@ -187,9 +193,10 @@ This FAQ is current as of version 1.4 of xfstt.
 	way to query typographic information about fonts. So the only way
 	to provide this information without changing this protocol is to
 	"sideband" the typographic info into the fontname. The typographic
-	info provided by xfstt is the panose information. For details of the
-	panose specification have a look at
-	http://www.w3.org/pub/WWW/Fonts/Panose/pan2.html
+	info provided by xfstt is the panose information. For details of
+	the panose specification have a look at
+
+	<http://www.w3.org/pub/WWW/Fonts/Panose/pan2.html>
 
 2.6 Why shouldn't I serve fonts via TCP/IP to my friends overseas?
 
@@ -258,27 +265,27 @@ This FAQ is current as of version 1.4 of xfstt.
 
 2.12 The TrueType fonts are bigger/smaller than other fonts!
 
-        Most operating systems handling ttf fonts assume default
-        resolutions of 96dpi, 120dpi or higher. Most X servers
-        tell Xfstt to assume a default resolution of 72 dpi.
-        A 12pt font at 96dpi looks the same as a 16pt font at
-        72dpi and vice-versa.
+	Most operating systems handling ttf fonts assume default
+	resolutions of 96dpi, 120dpi or higher. Most X servers
+	tell Xfstt to assume a default resolution of 72 dpi.
+	A 12pt font at 96dpi looks the same as a 16pt font at
+	72dpi and vice-versa.
 
 2.12.1 The TrueType fonts are too small!
 
-        The solution is to tell the X server that the default
-        resolution is different from the default 72 dpi. To
-        do this start the X server with the -dpi option.
-        Alternatively xfstt provides the --res option. Example:
-        xfstt --res 96
+	The solution is to tell the X server that the default
+	resolution is different from the default 72 dpi. To
+	do this start the X server with the -dpi option.
+	Alternatively xfstt provides the --res option. Example:
+	xfstt --res 96
 
 2.12.2 The TrueType fonts are too big!!
 
-     As stated above, some X servers can't communicate
-     correctly with Xfstt, and Xfstt may sometimes pick 96dpi
-     as it's default, when it should be 72dpi or 75dpi.  This
-     means that 12pt Arial looks the same as 16pt Helvetica.
-     To fix this, run Xfstt as: xfstt --res 72
+	As stated above, some X servers can't communicate
+	correctly with Xfstt, and Xfstt may sometimes pick 96dpi
+	as it's default, when it should be 72dpi or 75dpi.  This
+	means that 12pt Arial looks the same as 16pt Helvetica.
+	To fix this, run Xfstt as: xfstt --res 72
 
 2.13 How does one request an encoding different from iso8859-1?
 
@@ -300,9 +307,9 @@ This FAQ is current as of version 1.4 of xfstt.
 
 	If you are upgrading from a version older than 0.9.8 or so
 	then chances are you are caught in the middle of some changes
-	that went on. 
-	
-	There are a few possibilities. 
+	that went on.
+
+	There are a few possibilities.
 
 	1) xfstt runs but the X Server acts like it isn't there
 
@@ -311,24 +318,24 @@ This FAQ is current as of version 1.4 of xfstt.
 	of xfstt "side by side" with xfs (the original X Font Server).  since
 	it traditionally uses 7100.
 
-	2) xfstt wont run 
+	2) xfstt wont run
 
 	This could be either because 7101 is already used (see Solaris above)
 	or because of the other big change, the font locations moved.
 
-	The main problem is that /usr/ttfonts was fine but encouraged the 
+	The main problem is that /usr/ttfonts was fine but encouraged the
 	clutter of /usr. To avoid this bad habit (not to mention that under
 	Linux it breaks the FHS - the filesystem standard) it was moved to
 	/usr/share/fonts/truetype
 
 	Just move all of your fonts there and it should work.
 
-2.16 Xfstt is broken with Linux Kernel 2.4.0! 
+2.16 Xfstt is broken with Linux Kernel 2.4.0!
 
 	This was a known bug for a while. Actually, its fixed as of
 	xfstt 1.2 Whats funny is, I see no reason why it shouldn't have
 	been broken under the older kernels. It was some bad code that
-	I added to fix someone elses problem. 
+	I added to fix someone elses problem.
 
 	Oops. Should work now. If you are stuck with an old version of Xfstt
 	(can't imagine why that might be) just switch to inet instead of
@@ -344,18 +351,18 @@ This FAQ is current as of version 1.4 of xfstt.
 
 -----------------------------------------------------------------------------
 
-3.0  How do I put fonts in categories?
+3.0 How do I put fonts in categories?
 
 	Create some subdirectories in /usr/share/fonts/truetype, e.g.
 	modern, script, brush, old, symbol, ...
 	and put the appropriate fonts in there. The corresponding font
 	names will be -modern-*, -script-*, -brush-* and so on
 
-3.1 use with java (tm) 1.1 and up
+3.1 Use with Java (tm) 1.1 and up
 
 	Overwrite the fonts.properties file in $(JAVA_HOME)/lib/
 
-3.2 use with netscape (tm)
+3.2 Use with Netscape (tm)
 
 	Since X11 netscape 3 doesn't use scrollable listboxes for font
 	selection having more than a dozen *ttf fonts makes selecting
@@ -368,7 +375,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	Also the listbox for fontsizes only shows the size 0; enable
 	scaling and type in the requested size in the box next to it.
 
-3.3  use with staroffice (tm)
+3.3 Use with StarOffice (tm)
 
 	Starting in version 0.9.8 xfstt recognizes the not well formed
 	staroffice request for fonts with "-*" names. When using an older
@@ -381,9 +388,9 @@ This FAQ is current as of version 1.4 of xfstt.
 	(Many more details of these problems are in the IX 1998/05 magazine
 	or in Brion Vibber's Truetype HOWTO).
 
-3.4 How to use with solaris?
+3.4 How to use with Solaris?
 
-	There is a report that port 7101 on solaris is already
+	There is a report that port 7101 on Solaris is already
 	occupied. Use another port, e.g. "xfstt --port 6666".
 
 3.5 How do I print documents which use *.ttf fonts?
@@ -395,7 +402,7 @@ This FAQ is current as of version 1.4 of xfstt.
 
 	A solution is to use ghostscript's ability to render ttf fonts.
 	In order to help ghostscript figure out which fonts are available
-	the --gslist option was added to xfstt. Usage example
+	the --gslist option was added to xfstt. Usage example:
 	xfstt --gslist --sync > fontmap
 
 3.6 Does xfstt have anti-aliasing/grayscaling technology?
@@ -414,8 +421,8 @@ This FAQ is current as of version 1.4 of xfstt.
 	Also for some not understood reasons on FreeBSD you have to use
 	gmake instead of standard make.
 
-	If this doesn't help get a binary release (e.g. from the 
-	Debian distribution http://www.debian.org).
+	If this doesn't help get a binary release (e.g. from the
+	Debian distribution <http://www.debian.org/>).
 
 4.1 I found a bug in xfstt! What do I do?
 
@@ -432,11 +439,12 @@ This FAQ is current as of version 1.4 of xfstt.
 
 	Now if you have the most current version and the bug is still there,
 	then by all means report it. Just send me an email (try to put
-	xfstt in the subject so it gets higher priority). 
+	xfstt in the subject so it gets higher priority).
 
-	Also...the same goes for any fixes you want to make. If you fix
-	a bug...by all means send along the code. Same goes for new features.
-	
+	Also... the same goes for any fixes you want to make. If you fix
+	a bug... by all means send along the code. Same goes for new
+	features.
+
 4.2 Will it be merged with the X server?
 
 	Merging it with the X server creates some opportunities. It makes
@@ -454,10 +462,9 @@ This FAQ is current as of version 1.4 of xfstt.
 	subsystem. Currently there are no plans to do this. Feel free
 	to work on this yourself and send in any patches.
 
-
 4.3  Why another free ttf font server?
 
-	Xfstt was actually the first free truetype font server.
+	Xfstt was actually the first free TrueType font server.
 	It was written from scratch, the useful freetype library
 	not being ready in early 1997.
 
