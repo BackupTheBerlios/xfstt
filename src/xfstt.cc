@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.4 2003/03/21 18:44:39 guillem Exp $
+ * $Id: xfstt.cc,v 1.5 2003/06/04 04:38:59 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -838,7 +838,7 @@ prepare2connect(int portno)
 		s_inet.sin_family = AF_INET;
 		s_inet.sin_port = htons(portno);
 		s_inet.sin_addr.s_addr = htonl(INADDR_ANY);
-		if (bind(sd_inet,(struct sockaddr *)&s_inet, sizeof(s_inet))) {
+		if (bind(sd_inet, (struct sockaddr *)&s_inet, sizeof(s_inet))) {
 			fprintf(stderr, _("Cannot open TCPIP port %d\n"), portno);
 			fprintf(stderr, _("Better try another port!\n"));
 		}
