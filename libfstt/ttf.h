@@ -1,7 +1,7 @@
 /*
- * Header for the xfstt (X Font Server for TT Files) font engine
+ * Header for the xfstt (X Font Server for TrueType) font engine
  *
- * $Id: ttf.h,v 1.3 2003/08/06 20:21:46 guillem Exp $
+ * $Id: ttf.h,v 1.4 2003/08/06 20:24:04 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
