@@ -1,7 +1,7 @@
 /*
  * Font scaler
  *
- * $Id: raster_scale.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id: raster_scale.cc,v 1.3 2003/06/25 04:23:54 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -367,8 +367,8 @@ Rasterizer::putGlyphBitmap(int glyphNo, U8 *bmp, U8 *endbmp, GlyphMetrics *gm)
 		int hdmx = ttFont->hdmxTable->getGlyphWidth(mppemx, glyphNo);
 #if 0
 		if (hdmx && gm->xAdvance != hdmx)
-			printf("adv(%d) = %3d <-> %3d\n",
-			       glyphNo, gm->xAdvance, hdmx);
+			debug("adv(%d) = %3d <-> %3d\n",
+			      glyphNo, gm->xAdvance, hdmx);
 #endif
 		if (hdmx)
 			gm->xAdvance = hdmx;

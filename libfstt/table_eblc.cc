@@ -1,7 +1,7 @@
 /*
  * Embedded Bitmap Location Table
  *
- * $Id: table_eblc.cc,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ * $Id: table_eblc.cc,v 1.2 2003/06/25 04:23:54 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -76,8 +76,8 @@ EblcTable::readStrike(int glyphNo, int _ppemx, int _ppemy)
 	/* bitDepth = */ readUByte();	// should be 1
 	int flags = readSByte();	// 1 hmetric, 2 vmetric
 
-	printf("EBLC\nglyph(%3d - %3d), size(%2d, %2d), flags %d\n",
-	       startGlyph, endGlyph, ppemx, ppemy, flags);
+	debug("EBLC\nglyph(%3d - %3d), size(%2d, %2d), flags %d\n",
+	      startGlyph, endGlyph, ppemx, ppemy, flags);
 
 	int ofs = tell();
 	seekAbsolute(strikeOfs);
@@ -92,8 +92,8 @@ EblcTable::readSubTableArray(int glyphNo, int ofsSTA)
 	int firstGlyph = readUShort();
 	int lastGlyph = readUShort();
 	int addOffset = readUInt();
-	printf("SubTable glyphs %3d - %3d, addofs 0x%04X\n",
-	       firstGlyph, lastGlyph, addOffset);
+	debug("SubTable glyphs %3d - %3d, addofs 0x%04X\n",
+	      firstGlyph, lastGlyph, addOffset);
 	int ofs = tell();
 	seekAbsolute(ofsSTA + addOffset);
 	readSubTable(firstGlyph, lastGlyph);
@@ -107,40 +107,40 @@ EblcTable::readSubTable(int first, int last)
 	int imgFormat = readUShort();
 	int imageOffset = readUInt();
 
-	printf("idxfmt %d, imgfmt %d, imgofs 0x%05X\n",
-	       idxFormat, imgFormat, imageOffset);
+	debug("idxfmt %d, imgfmt %d, imgofs 0x%05X\n",
+	      idxFormat, imgFormat, imageOffset);
 
 	int i;
 	switch (idxFormat) {
 	case 1:
 		for (i = first; i <= last; ++i)
-			printf("ofs%02X = %04X\n", i, readUInt());
+			debug("ofs%02X = %04X\n", i, readUInt());
 		break;
 	case 2:
-		printf("imgsize %d\n", readUInt());
-		printf("bigGlyphMetrics\n");
+		debug("imgsize %d\n", readUInt());
+		debug("bigGlyphMetrics\n");
 		break;
 	case 3:
 		for (i = first; i <= last; ++i)
-			printf("ofs%04X = %04X\n", i, readUShort());
+			debug("ofs%04X = %04X\n", i, readUShort());
 		break;
 	case 4:
 		i = readUInt();
-		printf("numGlyphs %d\n", i);
+		debug("numGlyphs %d\n", i);
 		while (--i >= 0)
-			printf("ofs%04X = %04X\n", readUShort(), readUShort());
+			debug("ofs%04X = %04X\n", readUShort(), readUShort());
 		break;
 	case 5:
-		printf("imgsize %d\n", readUInt());
-		printf("bigGlyphMetrics\n");
+		debug("imgsize %d\n", readUInt());
+		debug("bigGlyphMetrics\n");
 		seekRelative(8);
 		i = readUInt();
-		printf("numGlyphs %d\n", i);
+		debug("numGlyphs %d\n", i);
 		while (--i >= 0)
-			printf("ofs%04X = %04X\n", readUShort(), readUShort());
+			debug("ofs%04X = %04X\n", readUShort(), readUShort());
 		break;
 	default:
-		printf("Illegal index format!\n");
+		debug("Illegal index format!\n");
 		break;
 	}
 }

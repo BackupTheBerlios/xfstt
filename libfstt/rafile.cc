@@ -1,7 +1,7 @@
 /*
  * Utilities for efficient access to the TTFfile
  *
- * $Id: rafile.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id: rafile.cc,v 1.3 2003/06/25 04:23:54 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -189,7 +189,7 @@ RandomAccessFile::RandomAccessFile(char* fileName)
 	void *fd = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ,
 			      NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (fd == INVALID_HANDLE_VALUE) {
-		fprintf(stderr, "Cannot open \"%s\"\n", fileName);
+		debug("Cannot open \"%s\"\n", fileName);
 		exit(-1);
 	}
 	length = GetFileSize(fd, NULL);
@@ -200,7 +200,7 @@ RandomAccessFile::RandomAccessFile(char* fileName)
 #else
 	int fd = open(fileName, O_RDONLY);
 	if (fd <= 0) {
-		fprintf(stderr, "Cannot open \"%s\"\n", fileName);
+		debug("Cannot open \"%s\"\n", fileName);
 		ptr = base = 0;
 		return;
 	}

@@ -1,7 +1,7 @@
 /*
  * General handling of *ttf files
  *
- * $Id: ttfont.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id: ttfont.cc,v 1.3 2003/06/25 04:23:54 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -344,30 +344,37 @@ void
 TTFont::updateChecksums()
 {
 	U8 *buf = base;
-
-	int nTables = (buf[4] << 8) + buf[5];
-	//printf("nTables = %d\n", nTables);
 	U8 *headTable = 0;
+	int nTables = (buf[4] << 8) + buf[5];
+
+	debug("nTables = %d\n", nTables);
+
 	for (int i = 0; i < nTables; ++i) {
 		U8 *b = &buf[12 + i * 16];
 		int name = (b[0] << 24) + (b[1] << 16) + (b[2] << 8) + b[3];
 		int offset = (b[8] << 24) + (b[9] << 16) + (b[10] << 8) + b[11];
 		int length = (b[12] << 24) + (b[13] << 16) + (b[14] << 8) + b[15];
-		//printf("offset = %08X, length = %08X\n", offset, length);
 		int check = checksum(buf + offset, length);
+
+		debug("offset = %08X, length = %08X\n", offset, length);
+
 		b[4] = (U8)(check >> 24);
 		b[5] = (U8)(check >> 16);
 		b[6] = (U8)(check >> 8);
 		b[7] = (U8)check;
-		//printf("checksum[%d] = %08X\n", i, check);
+
+		debug("checksum[%d] = %08X\n", i, check);
+
 		if (name == 0x68656164) {
 			headTable = buf + offset;
-			//printf("headOffset = %08X\n", offset);
+			debug("headOffset = %08X\n", offset);
 		}
 	}
 
 	int check = checksum(buf, getLength()) - 0xB1B0AFBA;
-	//printf("csAdjust = %08X\n", check);
+
+	debug("csAdjust = %08X\n", check);
+
 	headTable[8] = (U8)(check >> 24);
 	headTable[9] = (U8)(check >> 16);
 	headTable[10] = (U8)(check >> 8);
