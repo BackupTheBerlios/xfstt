@@ -10,6 +10,7 @@
 	Replaced dprintfN with a debug function
 	Cleaned the debugging output
 	Indentation and minor source cosmetic changes
+	Updated to gettext 0.12.1, version 0.11.5 was buggy
 
 	Added a System V init file example
 	Cleaned the examples in doc/examples: font.properties, test.sh
