@@ -1,13 +1,13 @@
 
-	$Id: TODO,v 1.7 2003/02/13 03:55:59 guillem Exp $
+	$Id: TODO,v 1.8 2003/03/21 18:43:28 guillem Exp $
 
 TODO list:
 
  - move all constants to configure space.
    - default ports.
    - hardcoded versions.
- - remove --gslist dependancy on order.
  - add option to bind to specific interfaces.
+ - fix the need to sync to be able to use gslist.
  - add signal handler (HUP?) to re-sync fonts dir.
  - error messages using syslog (depends on error()).
  - improve error message when cache dir doesn't exist.
