@@ -20,28 +20,18 @@
 void* allocMem( int size)
 {
 	void* ptr;
-#ifdef MAP_ANON
-	ptr = mmap( 0, size, PROT_READ | PROT_WRITE,
-		MAP_PRIVATE | MAP_ANON, -1, 0);
-	if( ptr == (void*)-1)
-		ptr = 0;
-#elif defined(WIN32)
+#ifdef WIN32
 	ptr = VirtualAlloc( NULL, size,
-			MEM_COMMIT, PAGE_READWRITE);
+                        MEM_COMMIT, PAGE_READWRITE);
 #else
-	ptr = malloc( size);
+	ptr = malloc(size);
 #endif
 	return ptr;
 }
 
-void* shrinkMem( void* ptr, int oldsize, int newsize)
+void* shrinkMem( void* ptr, int newsize)
 {
-#if defined(MAP_ANONYMOUS) && !defined(__osf__)
-	if( oldsize > newsize)
-		ptr = mremap( ptr, oldsize, newsize, 0);
-	if( ptr == (void*)-1)
-		ptr = 0;
-#else
+#ifndef WIN32
 	ptr = realloc(ptr, newsize);
 #endif
 	return ptr;
@@ -49,9 +39,7 @@ void* shrinkMem( void* ptr, int oldsize, int newsize)
 
 void deallocMem( void* ptr, int size)
 {
-#ifdef MAP_ANON
-	munmap( ptr, size);
-#elif defined(WIN32)
+#ifdef WIN32
 	VirtualFree( ptr, size, MEM_DECOMMIT);
 #else
 	free( ptr);

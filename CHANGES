@@ -1,4 +1,12 @@
-0.9.20
+1.0
+
+	Fix: illegal encodings causes xfstt to run away
+	FIX: now attempts to unlink unix socket on exit
+	Fix for BSD (was making Zombies - Thanks David Lowe)
+	Changed some types for clean compile
+	Added some Documentation to the FAQ
+
+0.9.99
 	New Maintainer Stephen Carpenter <sjc@debian.org> 
 	added fix for memory bug
 	added windows-sami2

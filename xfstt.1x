@@ -75,20 +75,5 @@ Behave like a daemon.
 .TP
 .I "\-\-help"
 Print brief usage information on standard output and exit.
-.SH Debian Specific Notes
-This version of xfstt has been modified to comply with Debian policy.
-The modifications are already reflected in this man page. However for
-reference, I have decided to include this section.
-.P
-The first change has been that the default font directory is now
-.I "/usr/share/fonts/truetype/" 
-whereas the original xfstt used the default font directory of
-/usr/ttfonts (or /var/ttfonts). This change was done to comply with
-the Filesystem Standard
-.P 
-The second difference is that the default port number was moved to
-.I 7101
-where the original xfstt used port number 7100. This was done to
-avoid conflict with xfs which traditionally is on that port.
 .SH "SEE ALSO"
 xfs(1), xset(1), X(1), inetd(8).

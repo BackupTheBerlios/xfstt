@@ -1,13 +1,13 @@
 Begin3
 Title:		xfstt
-Version:	0.9.99
-Entered-date:	0.9.99 1999/4/26
+Version:	1.0
+Entered-date:	1.0 1999/8/16
 Description:	X Font Server for TrueType fonts
 Keywords:	X11 truetype font server ttf
 Author: 	duerr@de.ibm.com
 Maintained-by:	sjc@debian.org (Stephen Carpenter)
 Primary-site:	ftp://metalab.unc.edu/pub/Linux/X11/fonts
-		87k xfstt_0.9.99.tar.gz
+		87k xfstt_1.0.tar.gz
 		0.5k xfstt.lsm
 Original-site:
 Platforms:	i386/m68k/sparc/alpha/ppc/mips under

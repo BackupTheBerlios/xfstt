@@ -29,6 +29,7 @@
 #include "ttfn.h"
 #include "encoding.h"
 
+#include <sys/types.h>
 #include <dirent.h>
 #include <string.h>
 #include <ctype.h>
@@ -37,10 +38,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <netinet/in.h>
 #include <time.h>
 #include <X11/fonts/FS.h>
@@ -73,8 +74,10 @@ char* fontdir = TTFONTDIR;
 char* cachedir = TTCACHEDIR;
 int defaultres = 0;
 
-uid_t newuid = -2;
-gid_t newgid = -2;
+uid_t newuid = (uid_t)(-2);
+gid_t newgid = (uid_t)(-2);
+
+char *sockname;
 
 #define MAXENC 16 /* Maximum number of encodings */
 Encoding *encodings[ MAXENC];
@@ -82,7 +85,7 @@ Encoding *encodings[ MAXENC];
 
 static void usage( int verbose)
 {
-	printf( "Xfstt 0.9.10, X font server for TT fonts\n");
+	printf( "Xfstt 1.0, X font server for TT fonts\n");
 	printf( "Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]"
 		"[--user username]\n"
 		"\t\t[--dir ttfdir][--encoding list_of_encodings]"
@@ -111,7 +114,7 @@ static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir, int gslist)
 	int nfonts = 0;
 	if( !gslist)
 		printf( "xfstt: sync in directory \"%s/%s\"\n", fontdir, ttdir);
-	DIR* dirp = opendir( ".");
+	DIR* dirp = opendir(".");
 
 	while( dirent* de = readdir( dirp)) {
 		int namelen = strlen( de->d_name);
@@ -187,12 +190,13 @@ static int ttSyncDir( FILE* infoFile, FILE* nameFile, char* ttdir, int gslist)
 
 static char *cachefile(char *buf, size_t buflen, const char *leafname)
 {
-    unsigned len = strlen(cachedir)+strlen(leafname)+2;
-    if (len > buflen) {
-	fputs("xfstt: Cache directory name is too long\n", stderr);
-	return NULL;
-    }
-    sprintf(buf, "%s/%s", cachedir, leafname);
+	unsigned len = strlen(cachedir)+strlen(leafname)+2;
+	if (len > buflen) {
+		fputs("xfstt: Cache directory name is too long\n", stderr);
+		return (int) NULL;
+	}
+	sprintf(buf, "%s/%s", cachedir, leafname);
+	return buf;
 }
 
 static int ttSyncAll( int gslist=0)
@@ -466,7 +470,7 @@ static XFSFont* openFont( TTFont* ttFont, FontParams* fp,
 	raster->getFontExtent( &xfs->fe);
 
 	int used = (xfs->fe.bitmaps + xfs->fe.bmplen) - xfs->fe.buffer;
-	xfs->fe.buffer = (U8*)shrinkMem( xfs->fe.buffer, xfs->fe.buflen, used);
+	xfs->fe.buffer = (U8*)shrinkMem( xfs->fe.buffer, used);
 	if( xfs->fe.buffer)
 		xfs->fe.buflen = used;
 	else {
@@ -637,6 +641,7 @@ static int prepare2connect( int portno)
 
 		s_unix.sa_family = PF_UNIX;
 		sprintf( s_unix.sa_data, "fs%d", portno);
+		sockname =  s_unix.sa_data;
 		mkdir( "/tmp/.font-unix", 0766);
 		chdir( "/tmp/.font-unix");
 		unlink( s_unix.sa_data);
@@ -668,7 +673,7 @@ static int prepare2connect( int portno)
 	select( maxsd+1, &sdlist, 0L, 0L, 0L);
 
 	int sd = 0;
-	/*unsigned*/ int saLength = sizeof(struct sockaddr);
+	unsigned int saLength = sizeof(struct sockaddr);
 	if( FD_ISSET( sd_unix, &sdlist))
 		sd = accept( sd_unix, (struct sockaddr*)&s_unix, &saLength);
 	else if( FD_ISSET( sd_inet, &sdlist))
@@ -1239,8 +1244,8 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 					ptr[0] = ntohs( ptr[0]);
 					ptr[1] = ntohs( ptr[1]);
 					dprintf2( "rg %d..%d\n",ptr[0],ptr[1]);
-					for( U16 i = ptr[0]; i <= ptr[1]; ++i)
-						(ext++)->left = i;
+					for( U16 j = ptr[0]; j <= ptr[1]; ++j)
+						(ext++)->left = j;
 				}
 			} else
 				while( --nranges >= 0)
@@ -1326,8 +1331,8 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 					ptr[0] = ntohs( ptr[0]);
 					ptr[1] = ntohs( ptr[1]);
 					dprintf2( "rg %d..%d\n",ptr[0],ptr[1]);
-					for( U16 i = ptr[0]; i <= ptr[1]; ++i)
-						(ofs++)->position = i;
+					for( U16 j = ptr[0]; j <= ptr[1]; ++j)
+						(ofs++)->position = j;
 				}
 			} else
 				while( --nranges >= 0)
@@ -1521,10 +1526,14 @@ void closeTTFdb()
 // pid file is properly disposed of when we are killed
 // possibly a better (more robust) signal handler could be written - sjc
 
-void delPIDfile( int signal)
+void delPIDfile(int signal)
 {
-	unlink( PIDFILE);
-	exit( 0);
+	unlink(PIDFILE);
+	if (sockname) {
+		chdir( "/tmp/.font-unix"); 
+		unlink(sockname);
+	}
+	exit(0);
 }
 
 void setuidgid ( char * name)
@@ -1546,7 +1555,6 @@ int main( int argc, char** argv)
 	int inetdConnection = 0;
 	int portno = 7101;
 	int gslist = 0;
-	char *user;
 
 	Encoding::getDefault( encodings, MAXENC);
 
@@ -1583,7 +1591,7 @@ int main( int argc, char** argv)
 				fprintf( stderr, "Valid encodings are:\n");
 				for( Encoding* maps = 0;;) {
 					maps = Encoding::enumerate(maps);
-					if( !maps) break;
+					if( !maps) exit(0);
 					fprintf( stderr, "\t%s\n", maps->strName);
 				}
 			}
@@ -1620,7 +1628,7 @@ int main( int argc, char** argv)
 		fprintf( stderr, "--inetd and --multi option collission\n");
 	}
 	
-	if (newuid == -2) {
+	if (newuid == (uid_t)(-2)) {
 		newuid = getuid();
 		newgid = getgid();
 	}
@@ -1669,10 +1677,20 @@ int main( int argc, char** argv)
 					shutdown( sd, 2);
 				close( sd);
 				break;
+			} else if ( multiConnection ) {
+				// Redundant on most systems
+				// Needed for BSD Thanks David Lowe
+				int status;
+				waitpid(-1, &status, WNOHANG);
 			}
 		}
 		close( sd);
 	} while( multiConnection);
+	
+	if (sockname) {
+		chdir( "/tmp/.font-unix");
+		unlink(sockname);
+	}
 
 	dprintf0( "xfstt: closing a connection\n");
 	cleanupMem();

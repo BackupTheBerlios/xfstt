@@ -19,30 +19,50 @@ Encoding::Encoding( char* mapname)
 int Encoding::parse( char* mapnames, Encoding** maps0, int maxcodes)
 {
 	Encoding** maps = maps0;
+	Encoding* m;
 	char *mapname;
 
 	mapname = strtok(mapnames,", ");
-	while(mapname && maps - maps0 < maxcodes)		
-		for( Encoding* m = first; m; m = m->next)
-			if( !strcmp( mapname, m->strName)) {
-				*(maps++) = m;
-				mapname = strtok(NULL,", ");
-				break;
-			}
+	while(mapname && maps - maps0 < maxcodes) {
+		m = find(mapname);
+		if (m) {
+			*(maps++) = m;
+			mapname = strtok(NULL,", ");
+			break;
+		} else {
+			return 0;
+		}
+	}
 
 	return (maps - maps0);
 }
 
+// Encoding::find 
+//          search the list of encodings for an encoding with the
+//          given name. 
 Encoding* Encoding::find( char* mapname)
 {
-	for( Encoding* m = first; m; m = m->next)
-		if( !strcmp( mapname, m->strName))
+	Encoding* m;
+
+	for(m = first; m; m = m->next) {
+		if( !strcmp(mapname, m->strName)) {
 			return m;
+		}
+		if (m == last) { 
+			// FIXME: list is broken. Should NOT be circular. 
+			//        however for some reason it is. Must figure
+                        //        out why - sjc 16-Oct-1999
+			return 0;
+		}
+	}
 	return 0;
 }
 
 Encoding* Encoding::enumerate( Encoding* iterator)
 {
+	if (iterator == last) {
+		return 0; // FIXME: see find function FIXME
+	}
 	return iterator ? iterator->next : first;
 }
 
@@ -1461,8 +1481,8 @@ int windows_sami2::map2unicode( int code)
 
 void Encoding::getDefault( Encoding** maps, int maxcodes)
 {
-	maps[ 0] = &exemplar_iso8859_1;
-	if( maxcodes <= 1) return;
-	maps[ 1] = 0;
+	maps[0] = &exemplar_iso8859_1;
+	if(maxcodes <= 1) return;
+	maps[1] = 0;
 }
 

@@ -1,3 +1,12 @@
+xfstt (1.0) unstable; urgency=low
+
+  * Fixed compile errors and some possible bugs
+  * Fixed bug in --encoding to stop hangs (BUG#47383)
+  * Now Unlinks unix domain socket on exit
+  * Augmented Documentation to reflect changes
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Thu,  4 Nov 1999 18:00:54 -0500
+
 xfstt (0.9.99) unstable; urgency=low
 
   * Debian maintainer is now upstream maintainer

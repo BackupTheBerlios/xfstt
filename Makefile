@@ -41,8 +41,8 @@ OBJS =	RAFile.o	\
 all : xfstt
 
 install :
-	mkdir /usr/share/fonts/truetype ;	\
-	mkdir /var/cache/xfstt;			\
+	mkdir -p /usr/share/fonts/truetype ;	\
+	mkdir -p /var/cache/xfstt;			\
 	ln -s /DOS/windows/fonts /usr/share/fonts/truetype/winfonts ;	\
 	cp xfstt /usr/X11R6/bin/ ;	\
 	cp xfstt.1x /usr/man/X11/man1/ ;	\

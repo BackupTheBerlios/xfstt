@@ -2,6 +2,8 @@ Thank you to all who made xfstt better!
 
 patches:
 	Ove Kaaven
+	Bernhard  Michel
+	David Lowe
 	Mike Markowski
 	Albertas ?
 	David Woodhouse
@@ -25,6 +27,7 @@ patches:
 	Luc Stepniewski
 	Petr Tomasek
 	Andrew Turner
+	Jason Froebe
 
 ideas:
 	Jan Anderson

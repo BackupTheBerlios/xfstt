@@ -133,7 +133,7 @@ public:
 };
 
 void* allocMem( int size);		// mmaping allocation
-void* shrinkMem( void* ptr, int oldsize, int newsize);
+void* shrinkMem( void* ptr, int newsize);
 void deallocMem( void* ptr, int size);
 
 

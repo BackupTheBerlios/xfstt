@@ -1,11 +1,11 @@
                       Xfstt Frequently Asked Questions
 
-This document adresses common questions (and some not so common ones) about
+This document addresses common questions (and some not so common ones) about
 xfstt, the X11 TrueType Font Server. You will want to read this file to
 see if it answers your questions before you go asking the maintainer or
 in any public forums of course.
 
-This FAQ is current as of version 0.9.99 of xfstt. 
+This FAQ is current as of version 1.0 of xfstt. 
 
 1.0  What is xfstt?
 1.1  How do I test it?
@@ -30,7 +30,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 2.14 Why are multiple instances of xfstt running?
 
 3.0  How do I put fonts in categories?
-3.1  use with java (tm)
+3.1  use with Java (tm)
 3.2  use with netscape/communicator (tm)
 3.3  use with staroffice (tm)
 3.4  How do I print documents which use *.ttf fonts?
@@ -42,7 +42,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 4.3  Why another free ttf font server?
 4.4  How are embedded *ttf fonts used?
 4.5  How can I help?
-4.6  Why the LGPL licence though xfstt is not a library?
+4.6  Why the LGPL license though xfstt is not a library?
 
 -----------------------------------------------------------------------------
 
@@ -119,7 +119,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 	isn't there. Either remove the default fontpath or make sure
 	xfstt is started before the X11 server.
 
-	Despite xfstt's marvellous capabilities it cannot do anything
+	Despite xfstt's marvelous capabilities it cannot do anything
 	when it isn't running.
 
 2.2 Xfstt locks up my machine! It makes some applications unstable!
@@ -140,7 +140,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 
 2.3 Why are no fonts included? Where do I get some?
 
-	Free fonts have the wierdest copyrights one can imagine. A typical
+	Free fonts have the weirdest copyrights one can imagine. A typical
 	restriction is "non-commercial use only". Including such fonts in
 	the package would prevent xfstt from being put on CDROMs.
 
@@ -188,7 +188,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 
 2.6 Why shouldn't I serve fonts to my friends overseas via tcpip?
 
-	Make sure you conform to the font licence when serving to
+	Make sure you conform to the font license when serving to
 	multiple clients. The clients must use the same byte order
 	as the server. Currently the rasterization results are not
 	shared between different xfstt processes, so resources
@@ -277,7 +277,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 
 2.13 How does one request an encoding different from iso8859-1?
 
-	By default xfstt uses the unicode encoding which accidentially
+	By default xfstt uses the unicode encoding which accidentally
 	matches the iso8859-1 encoding for the first 256 characters.
 	Starting in version 0.9.8 the unicode can be remapped to other
 	encodings with the --encoding option. Example:
@@ -288,8 +288,35 @@ This FAQ is current as of version 0.9.99 of xfstt.
 	Currently xfstt implements multiple connections by cloning itself
 	for every new connection. The number of xfstt instances equals
 	the number of connections plus one. The last instance waits for
-	new font clients. It is planned to change this behaviour by using
+	new font clients. It is planned to change this behavior by using
 	a more efficient shared memory method.
+
+2.15 Help! I just upgraded and the new version doesn't work!
+
+	If you are upgrading from a version older than 0.9.8 or so
+	then chances are you are caught in the middle of some changes
+	that went on. 
+	
+	There are a few possibilities. 
+
+	1) xfstt runs but the X Server acts like it isn't there
+
+	This is most probably due to the change from xfstt using a default
+	port of 7100 to a new default of 7101. This is to facilitate the use
+	of xfstt "side by side" with xfs (the original X Font Server).  since
+	it traditionally uses 7100.
+
+	2) xfstt wont run 
+
+	This could be either because 7101 is already used (see Solaris above)
+	or because of the other big change, the font locations moved.
+
+	The main problem is that /usr/ttfonts was fine but encouraged the 
+	clutter of /usr. To avoid this bad habit (not to mention that under
+	Linux it breaks the FHS - the filesystem standard) it was moved to
+	/usr/share/fonts/truetype
+
+	Just move all of your fonts there and it should work.
 
 -----------------------------------------------------------------------------
 
@@ -297,7 +324,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 
 	Create some subdirectories in /usr/share/fonts/truetype, e.g.
 	modern, script, brush, old, symbol, ...
-	and put the appropiate fonts in there. The corresponding font
+	and put the appropriate fonts in there. The corresponding font
 	names will be -modern-*, -script-*, -brush-* and so on
 
 3.1 use with java (tm) 1.1 and up
@@ -340,7 +367,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 	Unfortunately the X Consortium decided in its early days that the
 	display and printer are completely unrelated devices. There was no
 	common architecture for graphics devices. The recent approach to
-	close this gaping architectual hole is to use a X Print Server.
+	close this gaping architectural hole is to use a X Print Server.
 
 	A solution is to use ghostscript's ability to render ttf fonts.
 	In order to help ghostscript figure out which fonts are available
@@ -355,7 +382,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 
 -----------------------------------------------------------------------------
 
-4.0 I have problems to compile xfstt!
+4.0 I have problems compiling xfstt!
 
 	Xfstt is supposed to compile right out of the box. If the
 	error message says something about missing include files
@@ -364,7 +391,7 @@ This FAQ is current as of version 0.9.99 of xfstt.
 	gmake instead of standard make.
 
 	If this doesn't help get a binary release (e.g. from the 
-	debian distribution http://www.debian.org).
+	Debian distribution http://www.debian.org).
 
 4.1 I found a bug in xfstt! What do I do?
 
@@ -374,10 +401,10 @@ This FAQ is current as of version 0.9.99 of xfstt.
 	crashing and running off at 100% CPU usage is not a feature)
 
 	If it is not a feature (or you believe you have a good reason that
-	noone else has thought of that it is a wrong feature) and is a bug
+	no one else has thought of that it is a wrong feature) and is a bug
 	then check to see if you have the current version. Currently the
 	maintainer is also the Debian maintainer, so if you can't find it
-	anywhere else, check the Debian ftp site for it.
+	anywhere else, check the Debian FTP site for it.
 
 	Now if you have the most current version and the bug is still there,
 	then by all means report it. Just send me an email (try to put

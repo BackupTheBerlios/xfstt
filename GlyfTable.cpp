@@ -10,8 +10,10 @@ GlyphTable::GlyphTable( RandomAccessFile& f, int offset, int length)
 
 int GlyphTable::getGlyphData( int glyphNo, LocaTable* locaTable, Rasterizer* raster)
 {
-	int glyphOffset = locaTable->getGlyphOffset( glyphNo);
-	if( glyphOffset < 0 || glyphOffset >= getLength())
+	// this unsigned fixes a compile warning but may be the wrong way
+	// fix it
+	unsigned int glyphOffset = locaTable->getGlyphOffset( glyphNo);
+	if( glyphOffset >= getLength())
 		return 0;
 	seekAbsolute( glyphOffset);
 
