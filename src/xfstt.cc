@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.5 2003/06/04 04:38:59 guillem Exp $
+ * $Id: xfstt.cc,v 1.6 2003/06/18 04:42:26 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -1783,6 +1783,14 @@ main(int argc, char **argv)
 		return 0;
 	}
 
+	if (inetdConnection && multiConnection) {
+		multiConnection = 0;
+		fprintf(stderr,
+			_("xfstt: --inetd and --multi option collission\n"));
+		// we don't know what to do ...so exit.
+		return 1;
+	}
+
 	if (daemon) {
 		if (fork())
 			_exit(0);
@@ -1794,12 +1802,6 @@ main(int argc, char **argv)
 			_exit(0);
 	}
 
-	if (inetdConnection && multiConnection) {	// inetd
-		multiConnection = 0;
-		fprintf(stderr, _("--inetd and --multi option collission\n"));
-		exit(1); // we don't know what to do ...so exit.
-	}
-	
 	if (newuid == (uid_t)(-2)) {
 		newuid = getuid();
 		newgid = getgid();
