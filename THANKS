@@ -1,8 +1,8 @@
 Thank you to all who made xfstt better!
 
-patches:
+Patches:
 	Ove Kaaven
-	Bernhard  Michel
+	Bernhard Michel
 	David Lowe
 	Mike Markowski
 	Albertas ?
@@ -28,8 +28,9 @@ patches:
 	Petr Tomasek
 	Andrew Turner
 	Jason Froebe
+	Andrew Wheatley (iso8859-14 encoding support)
 
-ideas:
+Ideas:
 	Jan Anderson
 	Emmanuel Blot
 	Brian Crowder
