@@ -1,5 +1,6 @@
 SVN
 	Added warning output and cleaned autogen.sh
+	Changed mail address
 
 1.6
 	Fixed ttSyncAll only looking at fontdir subdirectories

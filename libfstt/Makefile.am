@@ -2,9 +2,9 @@
 #
 # libfstt Makefile
 #
-#	$Id: Makefile.am,v 1.1 2002/11/14 12:08:16 guillem Exp $
+#	$Id$
 #
-# Copyright (C) 2002 Guillem Jover <guillem.jover@menta.net>
+# Copyright (C) 2002 Guillem Jover <guillem@hadrons.org>
 #
 
 localedir = $(datadir)/locale

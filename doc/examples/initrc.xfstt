@@ -7,9 +7,9 @@
 #
 # by Stephen Carpenter <sjc@debian.org>
 # and Gergely Egervary <mauzi@lin.lkg.c3.hu>
-# modified by Guillem Jover <guillem.jover@menta.net>
+# modified by Guillem Jover <guillem@hadrons.org>
 #
-# $Id: initrc.xfstt,v 1.1 2003/07/28 22:46:42 guillem Exp $
+# $Id$
 #
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin

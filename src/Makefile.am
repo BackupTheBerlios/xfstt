@@ -2,9 +2,9 @@
 #
 # xfstt Makefile
 #
-#	$Id: Makefile.am,v 1.2 2003/01/05 10:16:28 guillem Exp $
+#	$Id$
 #
-# Copyright (C) 2002 Guillem Jover <guillem.jover@menta.net>
+# Copyright (C) 2002 Guillem Jover <guillem@hadrons.org>
 #
 
 localedir = $(datadir)/locale

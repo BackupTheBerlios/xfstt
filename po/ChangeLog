@@ -1,3 +1,8 @@
+2004-05-04  Guillem Jover  <guillem@hadrons.org>
+
+	* Makevars: Changed mail address.
+	* POTFILES.in: Likewise.
+
 2003-07-29  Guillem Jover  <guillem.jover@menta.net>
 
 	* Makevars: Updated from gettext 0.12.1.

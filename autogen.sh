@@ -4,7 +4,7 @@
 #
 #	$Id$
 #
-# Authors:	Guillem Jover <guillem.jover@menta.net>
+# Authors:	Guillem Jover <guillem@hadrons.org>
 #		Midnight Commander Authors
 #
 # License:
