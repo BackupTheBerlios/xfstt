@@ -1,20 +1,14 @@
 
-	$Id: TODO,v 1.1 2002/11/14 12:08:05 guillem Exp $
+	$Id: TODO,v 1.2 2002/11/19 04:46:25 guillem Exp $
 
 TODO list:
 
- + autoconfiscate.
- + move X Window dependancies to configure space.
  - move all constants to configure space.
    - hardcoded dirs.
    - default ports.
    - hardcoded versions.
- + i18n.
- + split library code.
-   + add a README file
  - remove --gslist dependancy on order.
  - add option to bind to specific interfaces.
- + add option to specify pid location.
  - add signal handler to re-sync fonts dir.
  - error messages using syslog (depends on error()).
  - add memory sharing support (multi-threading?).
@@ -29,10 +23,8 @@ TODO list:
 
 Documentation:
  - differences: xfstt vs xtt-fs.
- + rewrite README and INSTALL -> autoconf + i18n transition. (partially)
 
 Code cleanup:
- + code cleanup.
  - remove dprintfN and move it to its own module.
  - replace dprintN with a debug function.
  - add an error() function and normalize all > stderr.
