@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.13 2003/07/29 04:04:45 guillem Exp $
+ * $Id: xfstt.cc,v 1.14 2003/07/31 06:27:29 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -874,13 +874,20 @@ U8 buf[MAXREQSIZE + 256];
 static int
 connecting(int sd)
 {
+	debug("Connecting\n");
+
 	int i = read(sd, buf, MAXREQSIZE);	// read fsConnClientPrefix
 
 	fsConnClientPrefix *req = (fsConnClientPrefix *)buf;
+
 	if (i < (int)sizeof(fsConnClientPrefix))
 		return 0;
 
-	debug("Connecting\n");
+	if (req->byteOrder != 'l' && req->byteOrder != 'B') {
+		fputs(_("xfstt: invalid byteorder, giving up\n"), stderr);
+		return 0;
+	}
+
 	debug("%s endian connection\n",
 	      (req->byteOrder == 'l') ? "little" : "big");
 	debug("version %d.%d\n", req->major_version, req->minor_version);
