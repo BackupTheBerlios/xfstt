@@ -1,0 +1,14 @@
+1) Type in
+	make xfstt && make install
+2) Copy some truetype *.ttf files into /usr/ttfonts, then run
+	xfstt --sync
+3) Start xfstt in the background
+	xfstt &
+4) Tell your X11 server about the new font service
+	xset fp+ unix/:7100
+   or add the new fontpath to the X11 config file
+	FontPath "unix/:7100"
+
+These install instructions should suffice for 98% of all users. For more
+advanced requirements refer to the xfstt(1x) man page or the FAQ.
+

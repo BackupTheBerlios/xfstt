@@ -1,0 +1,58 @@
+0.9.7
+	fix "nround" bug
+	fix "hdmx xxexp" bug
+	fix "huge bitmaps" problem
+	redo "multi inet" fix for bad socket implementations
+0.9.6
+	avoid anon mmaps for freebsd
+	fix "dash in fontname" bug
+	fix "multi inet" bug
+	fix "comic cvt" bug
+	solve pointsize/pixelsize conflicts
+	finish "instctrl" cmd
+	change "listFontsWithXInfo" to v2 protocol
+0.9.5
+	fix "fstobdf" bug
+	fix "scanlinepad != 32" bug
+	fix some bitmap byte order issues
+	fix "huge fontlist" bug
+	fix "flip region" bug
+	improve "--unstrap" behaviour
+	add "--port" option
+	add "--once" option
+	change default to --multi
+0.9.4
+	fix "listFontsWithXInfo" bug
+	fix "overlapping contours" bug
+	fix "big endian request length" bug
+	fix "unicode" bug
+	streamline hint engine
+	add "--version" option
+0.9.3
+	improve composite glyph metrics
+	fix "algerian" bug
+	simplify drawing
+0.9.2
+	add "--unstrap" option
+0.9.1
+	remove need to always bit/byte swap to satisfy font client
+	add monospace signature to XLFD names if appropriate
+	codepage patch for navigator 4
+	add "--multi" option
+0.9.0
+	change composite glyph handling
+	scan line converter algorithm cleanup
+	fix handling of FS protocol range requests
+0.1.5
+	bugfixes only
+0.1.1
+	bugfixes only
+0.1.0
+	change scan line converter algorithm for much improved font quality
+0.0.2
+	add XLFD support
+	add inet protocol for connecting to X11 server
+	move byte reordering from engine to font serving layer
+0.0.1
+	first public code drop
+

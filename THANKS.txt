@@ -1,0 +1,20 @@
+Thank you to all who made xfstt better!
+
+patches:
+	Luc Stepniewski
+	Pablo Saratxaga
+	Colin McCormack
+	Andrew Turner
+	Christoph Lameter
+
+ideas:
+	Jan Anderson
+	Guido Notari
+	Stephen Montgomery
+	Michael Lanertz
+	Yaron M. Minsky
+	Emmanuel Blot
+	Felix von Leitner
+	Ian Justman
+	Marcelo Fernandes Vianna
+
