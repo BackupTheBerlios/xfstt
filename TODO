@@ -1,5 +1,5 @@
 
-	$Id: TODO,v 1.10 2003/06/18 05:42:03 guillem Exp $
+	$Id: TODO,v 1.11 2003/06/25 04:39:21 guillem Exp $
 
 TODO list:
 
@@ -10,7 +10,6 @@ TODO list:
  - fix the need to sync to be able to use gslist.
  - add signal handler (HUP?) to re-sync fonts dir.
  - error messages using syslog (depends on error()).
- - improve error message when cache dir doesn't exist.
  - add IPv6 support.
  - add memory sharing support (multi-threading?).
  - add anti-aliasing support (using the X render extension).
