@@ -1,7 +1,7 @@
 /*
  * Header for the xfstt (X Font Server for TT Files) font engine
  *
- * $Id: ttf.h,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id: ttf.h,v 1.3 2003/08/06 20:21:46 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -900,7 +900,7 @@ private:
 
 	// resulting bitmap
 #define SCANLINEPAD	(1 << LOGSLP)
-#define	SLPMASK		(SCANLINEPAD - 1)
+#define SLPMASK		(SCANLINEPAD - 1)
 
 #if (LOGSLP == 3)
 #define TYPESLP		U8

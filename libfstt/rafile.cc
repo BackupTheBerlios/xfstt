@@ -1,7 +1,7 @@
 /*
  * Utilities for efficient access to the TTFfile
  *
- * $Id: rafile.cc,v 1.3 2003/06/25 04:23:54 guillem Exp $
+ * $Id: rafile.cc,v 1.4 2003/08/06 20:20:49 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -183,7 +183,7 @@ operator delete(void *ptr)
 #endif /* MEMDEBUG */
 
 
-RandomAccessFile::RandomAccessFile(char* fileName)
+RandomAccessFile::RandomAccessFile(char *fileName)
 {
 #ifdef WIN32
 	void *fd = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ,
