@@ -1,11 +1,11 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.10 2003/07/28 21:41:12 guillem Exp $
+ * $Id: xfstt.cc,v 1.11 2003/07/28 22:21:54 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
- * portions are (C) 2002 Guillem Jover
+ * portions are (C) 2002-2003 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1031,7 +1031,8 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		sync();
 #endif
 
-		int length = ((fsReq *)buf)->length << 2;
+		fsReq *fsreq = (fsReq *)buf;
+		int length = fsreq->length << 2;
 		if (length > MAXREQSIZE) {
 			debug("request too big: %d bytes\n", length);
 
@@ -1063,7 +1064,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		sync();
 #endif
 
-		switch (buf[0]) {	// request type
+		switch (fsreq->reqType) {
 		case FS_Noop:
 			debug("FS_Noop\n");
 			break;
@@ -1452,7 +1453,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)buf;
 			debug("FS_QueryXExtents%s fid = %ld, ",
-			      (buf[0] == FS_QueryXExtents16 ? "16" : "8"),
+			      (fsreq->reqType == FS_QueryXExtents8 ? "8" : "16"),
 			      req->fid);
 			debug("range=%d, nranges=%ld\n",
 			      req->range, req->num_ranges);
@@ -1654,7 +1655,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		default:
-			debug("Unknown FS request 0x%02X !\n", buf[0]);
+			debug("Unknown FS request 0x%02X !\n", fsreq->reqType);
 			{
 			fsRequestError reply;
 			reply.type = FS_Error;
@@ -1662,8 +1663,8 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			reply.sequenceNumber = seqno;
 			reply.length = sizeof(reply) >> 2;
 			reply.timestamp = 0;
-			reply.major_opcode = buf[0];
-			reply.minor_opcode = buf[1];
+			reply.major_opcode = fsreq->reqType;
+			reply.minor_opcode = fsreq->data;
 
 			write(sd, (void *)&reply, sizeof(reply));
 			}
