@@ -1,7 +1,7 @@
 /*
  * Font scaler
  *
- * $Id: raster_scale.cc,v 1.3 2003/06/25 04:23:54 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -430,9 +430,6 @@ Rasterizer::scaleGlyph()
 		pp->yold = scaleY(pp->ynow, pp->xnow);
 		pp->xnow = pp->xold;
 		pp->ynow = pp->yold;
-#ifdef WIN32
-		pp->xgoal = pp->ygoal = 0;
-#endif
 	}
 
 	switch (status) {
@@ -463,15 +460,6 @@ Rasterizer::printOutline(void)
 
 		debug(" %c", (pp->flags & ON_CURVE) ? '*' : ' ');
 
-#ifdef WIN32
-		debug("  (%6d %6d)", pp->xgoal, pp->ygoal);
-
-		debug("  %c%c", (pp->xnow == pp->xgoal) ? '+' : '@',
-			 (pp->ynow == pp->ygoal) ? '+' : '@');
-
-		debug("  %d %d", pp->xnow - pp->xgoal,
-			 pp->ynow - pp->ygoal);
-#endif
 		debug("\n");
 		if (i == endPoints[j]) {
 			++j;

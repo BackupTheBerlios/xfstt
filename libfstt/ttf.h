@@ -1,7 +1,7 @@
 /*
  * Header for the xfstt (X Font Server for TrueType) font engine
  *
- * $Id: ttf.h,v 1.5 2003/08/07 06:20:44 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -201,9 +201,6 @@ typedef struct {
 	int	xnow, ynow;
 	int	xold, yold;
 	int	flags;
-#ifdef WIN32
-	int	xgoal, ygoal, fgoal;
-#endif
 } point;
 
 struct FontInfo {

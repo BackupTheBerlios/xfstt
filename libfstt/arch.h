@@ -1,7 +1,7 @@
 /*
  * Architecture specifics, little endian 32bit
  *
- * $Id: arch.h,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -72,7 +72,6 @@ inline int muldiv(int a, int b, int c)
 
 #ifndef MULDIV
 // 64bit types are only needed for temporary MULDIV results
-#  ifndef WIN32
 #    ifdef __alpha
 typedef long			S64;
 typedef unsigned long		U64;
@@ -80,22 +79,11 @@ typedef unsigned long		U64;
 typedef long long		S64;
 typedef unsigned long long	U64;
 #    endif
-#  else
-typedef __int64			S64;
-typedef unsigned __int64	U64;
-#  endif
 #endif
 
 //=========== add special cases here ==================
 
-#ifdef WIN32
-typedef void *__ptr_t;
-#  define setbuffer(x1,x2,x3)
-#  include <stdlib.h>
-extern FILE *outfile;
-#else
-#  define outfile stdout
-#endif
+#define outfile stdout
 
 #ifdef __sgi
 #  undef LOGSLP

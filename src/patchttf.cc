@@ -1,7 +1,7 @@
 /*
  * Quick and dirty hack to patch a ttf file and to fix the checksums
  *
- * $Id: patchttf.cc,v 1.2 2003/01/05 10:16:28 guillem Exp $
+ * $Id$
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -156,7 +156,6 @@ patchttf(int argc, char **argv)
 	return 0;
 }
 
-#ifndef WIN32
 int
 main(int argc, char **argv)
 {
@@ -171,5 +170,4 @@ main(int argc, char **argv)
 
 	return err;
 }
-#endif
 
