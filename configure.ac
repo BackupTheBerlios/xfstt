@@ -2,12 +2,12 @@
 #
 # xfstt configure.ac
 #
-#	$Id: configure.ac,v 1.1 2002/11/14 12:08:05 guillem Exp $
+#	$Id: configure.ac,v 1.2 2002/11/19 04:47:49 guillem Exp $
 #
 
 AC_INIT([xfstt],[1.4])
 AC_PREREQ(2.53)
-AC_REVISION($Revision: 1.1 $)
+AC_REVISION($Revision: 1.2 $)
 AC_CONFIG_SRCDIR([src/xfstt.cc])
 AC_CONFIG_AUX_DIR(config)
 
@@ -55,7 +55,7 @@ AC_CHECK_FUNCS([gettimeofday pathconf memset munmap mkdir rmdir select socket sq
 # Checks for i18n
 ALL_LINGUAS=""
 AM_GNU_GETTEXT
-AM_GNU_GETTEXT_VERSION(0.10.40)
+AM_GNU_GETTEXT_VERSION(0.11.5)
 
 AC_CONFIG_FILES([Makefile
 		doc/Makefile
