@@ -1,5 +1,5 @@
 
-	$Id: INSTALL,v 1.5 2003/07/29 03:50:35 guillem Exp $
+	$Id$
 
 Installation Notes
 ------------------
@@ -7,7 +7,7 @@ Installation Notes
 These install instructions should suffice for 98% of all users. For more
 advanced requirements refer to the xfstt(1x) man page or the FAQ.
 
-CVS Sources
+SVN Sources
 -----------
 
 0) Maintainer setup
