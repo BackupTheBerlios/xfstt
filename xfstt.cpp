@@ -11,9 +11,11 @@
 #define TTFONTDIR	"/usr/ttfonts"
 
 #define MAXOPENFONTS 256
-#define MAXREPLYSIZE 256000
-#define MAXFONTBUFSIZE (2048*2048)
-#define MINFONTBUFSIZE (512*512)
+#define MAXREPLYSIZE (1<<22)
+#define MAXFONTBUFSIZE (1<<24)
+#define MINFONTBUFSIZE (1<<18)
+
+#define PIDFILE		"/var/run/xfstt.pid"	// be a good little daemon
 
 #include "ttf.h"
 #include "xfstt.h"
@@ -27,6 +29,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -57,12 +60,12 @@ U16 maxLastChar = 255;
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
 char* fontdir = TTFONTDIR;
-Encoding** encodings = 0;
+Encoding *encodings[16];
 int defaultres = 0;
 
 static void usage( int verbose)
 {
-	printf( "Xfstt 0.9.8\n");
+	printf( "Xfstt 0.9.9, X font server for TT fonts\n");
 	printf( "Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]\n");
 	if( !verbose)
 		return;
@@ -374,6 +377,7 @@ static XFSFont* openFont( TTFont* ttFont, FontParams* fp,
 	xfs->fid	= fid;
 	xfs->ttFont	= ttFont;
 	ttFont->getFontInfo( &xfs->fi);
+	xfs->encoding	= encoding;
 
 	//### char range hack in order to prevent XFree crashes
 	FontInfo* fi = &xfs->fi;
@@ -410,14 +414,8 @@ static XFSFont* openFont( TTFont* ttFont, FontParams* fp,
 
 	// init rasterizer
 	raster->useTTFont( ttFont, fp->flags);
-#if 1
 	raster->setPixelSize(
 		fp->pixel[0], fp->pixel[2], fp->pixel[3], fp->pixel[1]);
-#else
-	raster->setPointSize(
-		fp->point[0], fp->point[2], fp->point[3], fp->point[1], 
-		fp->resolution[0], fp->resolution[1]);
-#endif
 
 	xfs->fe.buflen = MAXFONTBUFSIZE;
 	while( !(xfs->fe.buffer = (U8*)allocMem( xfs->fe.buflen)))
@@ -428,7 +426,16 @@ static XFSFont* openFont( TTFont* ttFont, FontParams* fp,
 		}
 
 	raster->getFontExtent( &xfs->fe);
-	xfs->encoding = encoding;
+
+	int used = (xfs->fe.bitmaps + xfs->fe.bmplen) - xfs->fe.buffer;
+	xfs->fe.buffer = (U8*)shrinkMem( xfs->fe.buffer, xfs->fe.buflen, used);
+	if( xfs->fe.buffer)
+		xfs->fe.buflen = used;
+	else {
+		xfs->fid = 0;	//###
+		xfs = 0;
+	}
+
 	return xfs;
 }
 
@@ -546,7 +553,7 @@ static XFSFont* openXLFD( Rasterizer* raster,
 			case 13:
 				for( char* cp = p; *cp; ++cp)
 					*cp = tolower( *cp);
-				encoding = Encoding::findEncoding( ++p);
+				encoding = Encoding::find( ++p);
 				break;
 			}
 	}
@@ -785,6 +792,7 @@ static int working( int sd, Rasterizer* raster, char* replybuf)
 		for( i = 0; i < sz_fsReq; ++i)
 			printf( "%02X ", buf[i]);
 		printf( "\n");
+		sync();
 #endif
 
 		int length = ((fsReq*)buf)->length << 2;
@@ -1318,11 +1326,30 @@ dprintf2( "wmin= %d, wmax= %d)\n", fe->xAdvanceMin, fe->xAdvanceMax);
 					ch, glyphNo, ofs->position);
 			}
 			reply.nbytes = bmp - bmp0;
+#if 1
 			reply.length = (sizeof(reply) + reply.nbytes+3
 					+ ((U8*)ofs - (U8*)ofs0)) >> 2;
 			write( sd, (void*)&reply, sizeof(reply));
 			write( sd, (void*)ofs0, (U8*)ofs - (U8*)ofs0);
 			write( sd, (void*)bmp0, (reply.nbytes+3)&~3);
+#else
+{
+			int nbytes = reply.nbytes;
+			reply.nbytes = 0;
+			reply.replies_hint = 1;
+			reply.length = (sizeof(reply) + 
+					+ ((U8*)ofs - (U8*)ofs0)) >> 2;
+			write( sd, (void*)&reply, sizeof(reply));
+			write( sd, (void*)ofs0, (U8*)ofs - (U8*)ofs0);
+
+			reply.nbytes = nbytes;
+			reply.replies_hint = 0;
+			reply.sequenceNumber	= ++seqno;
+			reply.length = (sizeof(reply) + (bmp-bmp0)) >> 2;
+			write( sd, (void*)&reply, sizeof(reply));
+			write( sd, (void*)bmp0, (reply.nbytes+3)&~3);
+}
+#endif
 			}
 			break;
 
@@ -1435,12 +1462,24 @@ void closeTTFdb()
 	infoSize = nameSize = aliasSize = 0;
 }
 
+// thanks Stephen Carpenter:
+// This is a cheesy little signal handler to make sure that the
+// pid file is properly disposed of when we are killed
+// possibly a better (more robust) signal handler could be written - sjc
+
+void delPIDfile( int signal)
+{
+	unlink( PIDFILE);
+	exit( 0);
+}
+
 int main( int argc, char** argv)
 {
 	int multiConnection = 1;
 	int portno = 7100;
 	int gslist = 0;
-	char* maplist = "";
+
+	Encoding::getDefault( encodings, 16);
 
 	for( int i = 1; i < argc; ++i) {
 		if( !strcmp( argv[i], "--gslist")) {
@@ -1465,7 +1504,16 @@ int main( int argc, char** argv)
 		} else if( !strcmp( argv[i], "--dir")) {
 			fontdir = argv[++i];
 		} else if( !strcmp( argv[i], "--encoding")) {
-			maplist = argv[++i];
+			char* maplist = argv[++i];
+			if( !Encoding::parse( maplist, encodings, 16)) {
+				fprintf( stderr, "Illegal encoding!\n");
+				fprintf( stderr, "Valid encodings are:\n");
+				for( Encoding* maps = 0;;) {
+					maps = Encoding::enumerate(maps);
+					if( !maps) break;
+					fprintf( stderr, "\t%s\n", maps->strName);
+				}
+			}
 		} else if( !strcmp( argv[i], "--help")) {
 			usage( 1);
 			return 0;
@@ -1483,6 +1531,20 @@ int main( int argc, char** argv)
 		}
 	}
 
+	// Make a pid file for easy starting and killing like
+	// a good little daemon
+	if( multiConnection) {
+		FILE* pidfile = fopen( PIDFILE, "w");
+		if( pidfile) {
+			pid_t pid = getpid();
+			fprintf( pidfile, "%d\n", pid);
+			fclose( pidfile);
+			// setup signal handlers to die better
+			(void) signal( SIGINT, delPIDfile);
+			(void) signal( SIGTERM, delPIDfile);
+		}
+	}
+
 	int retry;
 	for( retry = 1; retry > 0; --retry) {
 		if( openTTFdb() > 0) break;
@@ -1493,24 +1555,21 @@ int main( int argc, char** argv)
 		fputs( "Creating a font database failed\n", stderr);
 	}
 
-	encodings = Encoding::getEncodings( maplist);
-
-	if( retry <= 0 || !encodings)
+	if( retry <= 0)
 		fputs( "xfstt: Good bye.\n", stderr);
 	else do {
 		int sd = prepare2connect( portno);
 		if( connecting( sd)) {
 			Rasterizer* raster = new Rasterizer();
-			char* replybuf = new char[ MAXREPLYSIZE];
+			char* replybuf = (char*) allocMem( MAXREPLYSIZE);
 			working( sd, raster, replybuf);
-			delete[] replybuf;
+			deallocMem( replybuf, MAXREPLYSIZE);
 			delete raster;
 		}
 		shutdown( sd, 2);
 		close( sd);
 	} while( multiConnection);
 
-	delete[] encodings;
 	dprintf0( "xfstt: closing connection\n");
 	cleanupMem();
 	return 0;

@@ -7,8 +7,10 @@ public:
 	virtual ~Encoding() {}
 	virtual int map2unicode( int code) = 0;
 	virtual int hasGlyphs( int /*unicodeRange*/[4]) { return 1;}
-	static Encoding** getEncodings( char* mapnames);
-	static Encoding* findEncoding( char* mapname);
+	static void getDefault( Encoding** maps, int max);
+	static int parse( char* mapnames, Encoding** maps, int max);
+	static Encoding* find( char* mapname);
+	static Encoding* enumerate( Encoding* iterator);
 	
 	const char* strName;
 	const int lenName;

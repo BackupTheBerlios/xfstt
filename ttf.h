@@ -132,6 +132,7 @@ public:
 };
 
 void* allocMem( int size);		// mmaping allocation
+void* shrinkMem( void* ptr, int oldsize, int newsize);
 void deallocMem( void* ptr, int size);
 
 
@@ -350,9 +351,13 @@ public:
 class CmapTable
 : public RandomAccessFile
 {
-	int unicodeOffset;
-	int macCharOffset;
-	int nSegments;
+	enum { BYTE_ENCODING = 0, HIGH_BYTE_MAPPING = 2, 
+		SEGMENT_MAPPING = 4, TRIMMED_MAPPING = 6 }; // format
+	int format;
+	int subtableOffset;
+	int f4NSegments;
+	int f6FirstCode;
+	int f6EntryCount;
 public:
 	CmapTable( RandomAccessFile& f, int offset, int length);
 
@@ -436,6 +441,7 @@ class HheaTable
 : public RandomAccessFile
 {
 friend TTFont;
+friend Rasterizer;
 	int yAscent;
 	int yDescent;
 	int advWidth;

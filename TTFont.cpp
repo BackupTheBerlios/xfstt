@@ -118,7 +118,7 @@ TTFont::TTFont( char* fileName, int infoOnly):
 		}
 	}
 
-	if( !(nameTable && os2Table && headTable)) {
+	if( !(nameTable && headTable)) {
 		if( headTable) delete headTable;
 		headTable = 0;
 	}
@@ -180,11 +180,19 @@ int TTFont::getEmUnits()
 
 void TTFont::getFontInfo( FontInfo* fi)
 {
-	fi->firstChar	= os2Table->firstCharNo;
-	fi->lastChar	= os2Table->lastCharNo;
+	if (os2Table) {
+		fi->firstChar	= os2Table->firstCharNo;
+		fi->lastChar	= os2Table->lastCharNo;
 
-	for( int i = 0; i < 10; ++i)
-		fi->panose[ i] = os2Table->panose[ i];
+		for( int i = 0; i < 10; ++i)
+			fi->panose[ i] = os2Table->panose[ i];
+	} else {
+		fi->firstChar	= 0x0020;	// space
+		fi->lastChar	= 0x007f;	// end of Latin 1 in Unicode
+
+		for( int i = 0; i < 10; ++i)
+			fi->panose[ i] = 0;		// any
+	}
 
 	// we need an ascii name even if we only have unicode
 	// => use a conversion buffer
@@ -346,8 +354,13 @@ int TTFont::getXLFDbase( char* result)
 	for( char* p2 = p + lenFamily; p < p2; ++p)
 		if( *p == '-')
 			*p = ' ';
-	strcpy( p, (os2Table->selection & 32) ? "-bold" : "-medium");
-	strcat( p, (os2Table->selection & 1) ? "-i" : "-r");
+	if (os2Table) {
+		strcpy( p, (os2Table->selection & 32) ? "-bold" : "-medium");
+		strcat( p, (os2Table->selection & 1) ? "-i" : "-r");
+	} else {
+		strcpy( p, (headTable->macStyle & 1) ? "-bold" : "-medium");
+		strcat( p, (headTable->macStyle & 2) ? "-i" : "-r");
+	}
 	strcat( p, XLFDEXT);
 
 	for( p = result; *p; ++p)

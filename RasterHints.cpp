@@ -275,16 +275,15 @@ inline void GraphicsState::movePoint( point& pp, int len11D6)
 
 void GraphicsState::recalc()
 {
-	if( f_vec_x) flags = X_TOUCHED; else flags = 0;
+	flags = f_vec_x ? X_TOUCHED : 0;
 	if( f_vec_y) flags |= Y_TOUCHED;
 
 	int fp_cross = absNewMeasure( f_vec_x, f_vec_y);
-	if( !fp_cross)
-		move_x = move_y = 0;
-	else {
+	if( fp_cross) {
 		move_x = (f_vec_x << 14) / fp_cross;
 		move_y = (f_vec_y << 14) / fp_cross;
-	}
+	} else
+		move_x = move_y = 0;
 }
 
 // interpreter
@@ -299,8 +298,8 @@ inline void Rasterizer::execOpcode( RandomAccessFile* const f)
 	// keeping i and pp in registers would help too.
 	//
 	// While I'm at it: Why the heck does g++/egcs/pgcc take
-	// a much bigger stack frame than it really needs?
-	// Unoptimized MS VC++ code only grabs 128 bytes!
+	// a much bigger (up to 5K) stack frame than it really
+	// needs? MS VC++ code only grabs 40 bytes!
 
 	register int m;
 	register point* pp;
@@ -765,7 +764,6 @@ inline void Rasterizer::execOpcode( RandomAccessFile* const f)
 		break;
 	case SHP0:
 	case SHP1:
-		//### why was this inside the loop???
 		pp = (opc & 1) ? &gs.zp0[ gs.rp1] : &gs.zp1[ gs.rp2];
 		n = gs.absNewMeasure( pp->xnow - pp->xold, pp->ynow - pp->yold);
 		for( m = gs.loop; --m >= 0;) {
@@ -798,15 +796,17 @@ inline void Rasterizer::execOpcode( RandomAccessFile* const f)
 	case SHZ1:
 		{
 		m = *(stack--);
+		dprintf2( "SHZ%d rp = p[%d]\n ", opc&1, (opc&1)?gs.rp1:gs.rp2);
 		pp = (opc & 1) ? &gs.zp0[ gs.rp1] : &gs.zp1[ gs.rp2];
 		n = gs.absNewMeasure( pp->xnow - pp->xold, pp->ynow - pp->yold);
 		assert( m >= 0 && m <= 1);
 		for( point *pp1= p[m], *pp2= pp1+nPoints[m]; pp1 < pp2; ++pp1) {
 			if( pp1 == pp) continue;
-			dprintf2( "SHZ%d p[%d] ", opc&1, pp1-p[m]);
-			dprintf2( "by %f, rp = p[%d]", n/FSHIFT, pp-p[m]);
+			dprintf2( "\nSHZ p[%d] by %f", pp1-p[m], n/FSHIFT);
+			dprintf2( "\t(%d %d) -> ", pp1->xnow, pp1->ynow);
 			pp1->xnow += (n * gs.move_x) >> 14;
 			pp1->ynow += (n * gs.move_y) >> 14;
+			dprintf2( "(%d %d)\n", pp1->xnow, pp1->ynow);
 		}
 		}
 		break;
@@ -1602,7 +1602,7 @@ void Rasterizer::iup0( point* const pp,
 	else {
 		int dnew21 = p2->ynow - p1->ynow;
 		dprintf1( "\nd21n %8.3f", dnew21/FSHIFT);
-		pp->ynow = MULDIV( doldp1, dnew21, dold21) + p1->ynow;
+		pp->ynow = MULDIV( doldp1+1, dnew21, dold21) + p1->ynow;
 	}
 
 	dprintf2( " -> %d %d\n", pp->xnow, pp->ynow);
@@ -1628,7 +1628,7 @@ void Rasterizer::iup1( point* const pp,
 	else {
 		int dnew21 = p2->xnow - p1->xnow;
 		dprintf1( "\t(d21n %8.3f)", dnew21/FSHIFT);
-		pp->xnow = MULDIV( doldp1, dnew21, dold21) + p1->xnow;
+		pp->xnow = MULDIV( doldp1+1, dnew21, dold21) + p1->xnow;
 	}
 
 	dprintf2( " -> %d %d\n", pp->xnow, pp->ynow);

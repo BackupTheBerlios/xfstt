@@ -1,44 +1,62 @@
 // Character Map Table
 // (C) Copyright 1997-1998 Herbert Duerr
+// mac7 style ttf support by Ethan Fischer
 
 #include "ttf.h"
 
 CmapTable::CmapTable( RandomAccessFile& f, int offset, int length)
-:	RandomAccessFile( f, offset, length)
-,	unicodeOffset( 0), macCharOffset( 0)
+:	RandomAccessFile( f, offset, length),
+	format(-1), subtableOffset( 0)
 {
 	/*version	= */readUShort();
 	S16 nSubTables	= readSShort();
 
 	for( int i = nSubTables; --i >= 0;) {
-		U16 platformID		= readUShort();
-		U16 encodingID		= readUShort();
-		U32 subtableOffset	= readUInt();
-		if( platformID == 1 && encodingID == 0)	// MAC
-			macCharOffset = subtableOffset;
-		if( platformID == 3 && encodingID == 1)	// Win
-			unicodeOffset = subtableOffset;
+		/*platformID	= */readUShort();
+		/*encodingID	= */readUShort();
+		subtableOffset	= readUInt();
+		//###
 	}
 
-	if( !unicodeOffset)
-		return;
+	if (subtableOffset) {
+		seekAbsolute(subtableOffset);
+		format = readUShort();
+	}
 
-	seekAbsolute( unicodeOffset);
-
-	/*format	= */readUShort();	// == 4
-	/*length	= */readUShort();
-	/*version	= */readUShort();
-	nSegments	= readSShort() >> 1;
-
-	/*searchRange	= */readUShort();
-	/*entrySelector	= */readUShort();
-	/*rangeShift	= */readUShort();
-
-	//short[] endCount;
-	//readShort(); // reserved
-	//short[] startCount;
-	//short[] idDelta;
-	//short[] idRangeOffset;
+	switch (format) {
+	case BYTE_ENCODING: // normal Mac format
+		//format	= readUShort();
+		//length	= readUShort();
+		//version	= readUShort();
+		break;
+	case HIGH_BYTE_MAPPING: // not supported
+		break;
+	case SEGMENT_MAPPING: // normal Windows format
+		//format	= readUShort();	// == 4
+		/*length	= */readUShort();
+		/*version	= */readUShort();
+		f4NSegments	= readSShort() >> 1;
+		//searchRange	= readUShort();
+		//entrySelector	= readUShort();
+		//rangeShift	= readUShort();
+		//short[] endCount;
+		//readShort(); // reserved
+		//short[] startCount;
+		//short[] idDelta;
+		//short[] idRangeOffset;
+		break;
+	case TRIMMED_MAPPING: // newer Mac fonts use this?
+		//format		= readUShort();
+		/*length		= */readUShort();
+		/*version		= */readUShort();
+		f6FirstCode		= readUShort();
+		f6EntryCount	= readUShort();
+		break;
+	case -1: // no encoding tables
+		break;
+	default: // unknown table format
+		break;
+	}
 }
 
 int CmapTable::char2glyphNo( char char8)
@@ -48,23 +66,31 @@ int CmapTable::char2glyphNo( char char8)
 
 int CmapTable::unicode2glyphNo( U16 unicode)
 {
-	if( !unicodeOffset) {	// oh no, we usually have a MAC only format
-		if( macCharOffset == 0 || unicode > 255)
+	if( format == -1)
+		return 0;
+	else if( format == BYTE_ENCODING) {
+		if( unicode > 255)
 			return 0;
-		seekAbsolute( macCharOffset + 6 + unicode);
+		seekAbsolute( subtableOffset + 6 + unicode);
 		int glyphNo = readUByte();
 		dprintf2( "MAC.cmap[ %d] = %d\n", unicode, glyphNo);
+		return glyphNo;
+	} else if ( format == TRIMMED_MAPPING) {
+		if( (unicode < f6FirstCode) || (unicode >= f6FirstCode + f6EntryCount))
+			return 0;
+		seekAbsolute( subtableOffset + 10 + (unicode - f6FirstCode) * 2);
+		int glyphNo = readUShort();
 		return glyphNo;
 	}
 
 	// search for endCount
 	int lower = 0;
-	int upper = nSegments - 1;
+	int upper = f4NSegments - 1;
 	int index = 0;
 	while( upper > lower) {
 		index = (upper + lower) >> 1;
 		//### read header and do more checking
-		seekAbsolute( unicodeOffset + 14 + (index << 1));
+		seekAbsolute( subtableOffset + 14 + (index << 1));
 		if( readUShort() >= unicode)
 			upper = index;
 		else
@@ -72,18 +98,18 @@ int CmapTable::unicode2glyphNo( U16 unicode)
 	}
 
 	// check corresponding startCount
-	int ofs = unicodeOffset + 16 + (nSegments << 1) + (lower << 1);
+	int ofs = subtableOffset + 16 + (f4NSegments << 1) + (lower << 1);
 	seekAbsolute( ofs);
 	U16 startCount = readUShort();
 		if( unicode < startCount)
 			return 0;
 
 	// get idDelta
-	seekAbsolute( ofs += (nSegments << 1));
+	seekAbsolute( ofs += (f4NSegments << 1));
 	int idDelta = readSShort();
 
 	// get idRangeOffset
-	seekAbsolute( ofs += (nSegments << 1));
+	seekAbsolute( ofs += (f4NSegments << 1));
 	U16 idRangeOffset = readUShort();
 
 	// calculate GlyphIndex
@@ -98,19 +124,28 @@ U16 CmapTable::nextUnicode( U16 unicode)
 {
 	++unicode;
 
-	if( !unicodeOffset) {	// oh no, we usually have a MAC only format
-		if( macCharOffset == 0 || unicode > 255)
+	if( format == -1)
+		return 0;
+	else if( format == BYTE_ENCODING) {
+		if( unicode > 255)
 			return 0;
+		return unicode;
+	} else if ( format == TRIMMED_MAPPING) {
+		if( unicode < f6FirstCode)
+			return f6FirstCode;
+		else if( unicode >= f6FirstCode + f6EntryCount)
+			return 0;
+		
 		return unicode;
 	}
 
 	int lower = 0;
-	int upper = nSegments - 1;
+	int upper = f4NSegments - 1;
 	if( lower > upper)
 	    return 0;
 	while( upper > lower) {
 		int index = (upper + lower) >> 1;
-		seekAbsolute( unicodeOffset + 14 + (index << 1));
+		seekAbsolute( subtableOffset + 14 + (index << 1));
 		if( readUShort() >= unicode)
 			upper = index;
 		else
@@ -118,7 +153,7 @@ U16 CmapTable::nextUnicode( U16 unicode)
 	}
 
 	// check corresponding startCount
-	seekAbsolute( unicodeOffset + 16 + (nSegments << 1) + (lower << 1));
+	seekAbsolute( subtableOffset + 16 + (f4NSegments << 1) + (lower << 1));
 	int startCount = readUShort();
 	if( startCount == 0xffff)
 	    return 0;
@@ -129,10 +164,14 @@ U16 CmapTable::nextUnicode( U16 unicode)
 
 U16 CmapTable::firstUnicode()
 {
-	if( !unicodeOffset)
+	if( format == -1)
 		return 0;
+	else if( format == BYTE_ENCODING)
+		return 0;
+	else if ( format == TRIMMED_MAPPING)
+		return f6FirstCode;
 
-	seekAbsolute( unicodeOffset + 16 + (nSegments << 1));
+	seekAbsolute( subtableOffset + 16 + (f4NSegments << 1));
 	U16 i = readUShort();
 	dprintf1( "First Unicode = %d\n", i);
 	return i;
@@ -140,10 +179,14 @@ U16 CmapTable::firstUnicode()
 
 U16 CmapTable::lastUnicode()
 {
-	if( !unicodeOffset)
+	if( format == -1)
+		return 0;
+	else if( format == BYTE_ENCODING)
 		return 255;
+	else if ( format == TRIMMED_MAPPING)
+		return f6FirstCode + f6EntryCount - 1;
 
-	seekAbsolute( unicodeOffset + 14 + ((nSegments-2) << 1));
+	seekAbsolute( subtableOffset + 14 + ((f4NSegments-2) << 1));
 	U16 i = readUShort();
 	dprintf1( "Last Unicode = %d\n", i);
 	return i;

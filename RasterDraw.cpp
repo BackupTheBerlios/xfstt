@@ -34,7 +34,7 @@ static inline dot* drawDots( dot* p, int x1, int y1, int x2, int y2)
 		t = x1; x1 = x2; x2 = t;
 	}
 
-	int ygoal = ((y2 - 31) | 63) - 32;
+	int ygoal = ((y2 - 32) | 63) - 31;
 
 	// better use interval=64 Bresenham algorithm
 	for( x2 -= x1, y2 -= y1; ygoal > y1; ygoal -= 64) {
@@ -97,7 +97,7 @@ static void drawHorizontal( U8* const bmp, int height, int dX)
 		if( p[1].x - p[0].x < 96)
 			continue;
 
-		int x1 = (p[0].x + 32) >> SHIFT;	/*32,31*/
+		int x1 = (p[0].x + 31) >> SHIFT;	/*32,31*/
 
 		int y = height - (p->y >> SHIFT);
 		TYPESLP* ptr = (TYPESLP*)&bmp[ y * dX];

@@ -4,7 +4,7 @@
 
 2.0  It doesn't work! I get something like "fontpath not found"!
 2.1  The X11 server doesn't start when xfstt isn't running!
-2.2  Xfstt locks up my machine!
+2.2 Xfstt locks up my machine! It makes some applications unstable!
 2.3  Why are no fonts included? Where do I get some?
 2.4  How does one add fonts?
 2.5  What are these weird fontnames displayed by xlsfonts when using xfstt?
@@ -103,11 +103,18 @@
 	Despite xfstt's marvellous capabilities it cannot do anything
 	when it isn't running.
 
-2.2 Xfstt locks up my machine!
+2.2 Xfstt locks up my machine! It makes some applications unstable!
 
 	Sorry about that. Xfstt itself cannot lock up the machine.
 	The X server that stops handling user requests is to blame.
 	If you are a developer please add this your TODO list...
+
+	Due to the sad history of X11 fonts many X11 applications are
+	not properly tested for the huge number of fonts, proportional
+	and scalable fonts and the big glyph sizes Xfstt can provide.
+	If you have applications that suffer from buffer overruns please
+	fix the applications, reduce the number of fonts or use not too
+	big font sizes.
 
 2.3 Why are no fonts included? Where do I get some?
 
@@ -120,6 +127,7 @@
 
 	There are a lot of cheap CDs with hundreds of *.ttf fonts.
 
+	On the web there are many places where you can download fonts:
 	http://www.winsite.com/win3/fonts/truetype/index.html
 	http://www.microsoft.com/truetype
 	http://www.hooked.net/~flubble/typography.html
@@ -177,7 +185,7 @@
 
 	Most *.ttf fonts are proportional (i.e. 'W' is wider than 'i').
 	Due to the sad history of font support in X11 many X programs
-	only know how handle monospaced fonts.
+	still don't know how to handle proportional fonts.
 
 	It may be possible to also serve monospaced versions of proportional
 	fonts. This feature is not implemented yet. Since this will probably
@@ -187,15 +195,17 @@
 
 2.8 Big font sizes don't work, some glyphs look like garbage!
 
-	The X11 font server protocol limits replies to 256kB. If a font is
-	scaled with a big size the glyph bitmaps may not fit into 256kB.
-	One would have to split up the reply. Many popular X11 servers do
-	not handle split up replies yet.
+	Most X11 font server protocol prefer replies limited to 256kB.
+	If a font is scaled with a big size the glyph bitmaps may not
+	fit into 256kB. Bigger replies tend to cause the X11 server to
+	return "BadAlloc Failures" for XOpenFont requests which confuses
+	and kills many applications. One would have to split up the reply.
+	Many popular X11 servers do not handle split up replies yet.
 
 	Xfstt tries to serve as many glyphs as possible. If there is no
-	room left in the 256kB it skips the remaining characters. Since
-	the X server already made up his opinion how big these "phantom
-	glyphs" are, it tries to display something: garbage
+	room left in a limited reply it skips the remaining characters.
+	Since the X server already made up his opinion how big these
+	"phantom glyphs" are, it tries to display something: garbage
 
 	In this case the X server should be started with the options
 	-deferglyphs 8 -deferglyphs 16
@@ -235,9 +245,9 @@
 	A 12pt font at 96dpi is the same as a 16pt font at 72dpi.
 
 	The solution is to tell the X server that the default
-	resolution is different from the default 72 dpi. 
-	As long as there is no such option in XFree xfstt will
-	provide the --res option. A typical usage example is
+	resolution is different from the default 72 dpi. To
+	do this start the X server with the -dpi option. 
+	Alternatively xfstt provides the --res option. Example:
 	xfstt --res 96
 
 2.13 How does one request an encoding different from iso8859-1?
@@ -259,7 +269,7 @@
 
 3.1 use with java (tm) 1.1 and up
 
-	Overwrite the fonts.properties file in $JAVA_HOME/lib/
+	Overwrite the fonts.properties file in $(JAVA_HOME)/lib/
 
 3.2 use with netscape (tm)
 
@@ -273,9 +283,14 @@
 
 3.3  use with staroffice (tm)
 
-	Starting in version 0.9.8 xfstt recognizes the not 100% compliant
+	Starting in version 0.9.8 xfstt recognizes the not well formed
 	staroffice request for fonts with "-*" names. When using an older
 	xfstt version you can't access its fonts in staroffice.
+
+	Starwrite will only display fonts it can also print. Tell StarOffice
+	about the printable fonts in xp3/fontmetrics/afm and xp3/psstd.fonts,
+	tell gostscript about the fonts in the fontmap file.
+	(Many more details of these problems are in the IX 1998/05 magazine)
 
 3.4 How do I print documents which use *.ttf fonts?
 
@@ -287,11 +302,11 @@
 	Another way is to use ghostscript's ability to render ttf fonts.
 	In order to help ghostscript figure out which fonts are available
 	the --gslist option was added to xfstt. Usage example
-	xfstt --gslist --sync > gs-ttf-list
+	xfstt --gslist --sync > fontmap
 
 3.5 Does xfstt have anti-aliasing/grayscaling technology?
 
-	The font engine in xfstt knows grayscaling. Unfortunately neither
+	The font engine in xfstt does grayscaling. Unfortunately neither
 	the X11 font server protocol nor most X11 servers allow grayscaled
 	fonts.
 
@@ -333,14 +348,14 @@
 4.3 How can I help?
 
 	Xfstt is reported to work on i386/m68k/sparc/alpha/mips/ppc on
-	linux/freebsd/aix/irix platforms. Porting it to a different
+	linux/freebsd/aix/irix/sco platforms. Porting it to a different
 	platform may require small modifications in the architecture
 	dependent header file "arch.h".
 
-	Read in 4.1 about the great benefits that could be achieved by
-	deeply embedding scalable font technology into a completely
-	revised X11 font subsystem. Read and understand the limitations of
-	the current X11 font subsystem and try to do something about it.
+	Item 4.1 of this FAQ dreams up the great benefits that could be
+	achieved by deeply embedding scalable font technology into a carefully
+	revised X11 font subsystem. Read and understand the limitations of the
+	current X11 font subsystem and try to do something about it.
 
 4.4 Why the LGPL licence though xfstt is not a library?
 

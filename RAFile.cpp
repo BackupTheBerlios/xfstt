@@ -1,6 +1,7 @@
 // Utilities for efficient access to the TTFfile
 // (C) Copyright 1997-1998 Herbert Duerr
 
+#define DEBUG 1
 #include "ttf.h"
 
 #ifdef WIN32
@@ -29,6 +30,17 @@ void* allocMem( int size)
 			MEM_COMMIT, PAGE_READWRITE);
 #else
 	ptr = malloc( size);
+#endif
+	return ptr;
+}
+
+void* shrinkMem( void* ptr, int oldsize, int newsize)
+{
+#ifdef MAP_ANONYMOUS
+	if( oldsize > newsize)
+		ptr = mremap( ptr, oldsize, newsize, 0);
+	if( ptr == (void*)-1)
+		ptr = 0;
 #endif
 	return ptr;
 }

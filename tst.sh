@@ -6,7 +6,7 @@ sync
 time xfstt --once > lst &
 #time xfstt --once --encoding windows-1251,iso8859-2,koi8-r > lst &
 sleep 1
-echo try to connect via $fontpath
+echo trying to connect via $fontpath
 xset +fp $fontpath
 xlsfonts > fonts.lst
 xfontsel -pattern "-*-*-*-*-*-tt-*-*-*-*-*-*-*-*"

@@ -7,11 +7,11 @@ CFLAGS = $(OPT) -DMAGNIFY=0 -DNDEBUG
 #CFLAGS = -g -Wall -pedantic $(MISCOPT) -DMAGNIFY=0
 #CFLAGS = -O -Wall -pedantic -DDEBUG $(MISCOPT)
 
-LFLAGS = -L/usr/X11R6/lib
+LFLAGS = -L/usr/X11R6/lib -L/usr/openwin/lib/X11
 #LFLAGS = -g -L/usr/X11R6/lib
 
-CC = cc
-LD = cc
+CC = c++
+LD = c++
 
 OBJS =	RAFile.o	\
 	TTFont.o	\
@@ -71,7 +71,7 @@ patchttf : patchttf.cpp
 
 tgz:
 	cp xfstt.tgz xfstt.tgz.bak	;			\
-	tar cvf xfstt.tar Makefile *.h *cpp *.txt *.sh *lsm *spec *1x &&\
+	tar cvf xfstt.tar Makefile *.h *cpp *.txt *.sh *lsm *1x &&\
 	tar rvf xfstt.tar font.properties FAQ INSTALL CHANGES COPYING &&\
 	gzip -9 xfstt.tar		&&			\
 	cp xfstt.tar.gz /dosd/source/xfstt.tgz &&		\

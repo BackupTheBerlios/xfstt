@@ -170,11 +170,17 @@ void Rasterizer::getFontExtent( FontExtent* fe)
 	if( status == FONT_DONE)
 		return;
 
-	int i;
-	i = ttFont->os2Table->winAscent;
-	fe->yWinAscent = ((yy * i) << xxexp) >> 11;
-	i = ttFont->os2Table->winDescent;
-	fe->yWinDescent = ((yy * i) << xxexp) >> 11;
+	if (ttFont->os2Table) {
+		int i = ttFont->os2Table->winAscent;
+		fe->yWinAscent = ((yy * i) << xxexp) >> 11;
+		i = ttFont->os2Table->winDescent;
+		fe->yWinDescent = ((yy * i) << xxexp) >> 11;
+	} else {
+		int i = ttFont->hheaTable->yAscent;
+		fe->yWinAscent = ((yy * i) << xxexp) >> 11;
+		i = -ttFont->hheaTable->yDescent;
+		fe->yWinDescent = ((yy * i) << xxexp) >> 11;
+	}
 
 	fe->xLeftMin	=
 	fe->xRightMin	=

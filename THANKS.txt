@@ -1,9 +1,12 @@
 Thank you to all who made xfstt better!
 
 patches:
+	Stephen Carpenter
 	Tasos Chronis
 	David Crowley
+	Anthony David
 	Vladimir Eltsov
+	Ethan Fischer
 	Noah Friedman
 	Nikolay Grygoryev
 	Christoph Lameter
@@ -11,6 +14,7 @@ patches:
 	Pablo Saratxaga
 	Constantinos Sourelis
 	Luc Stepniewski
+	Petr Tomasek
 	Andrew Turner
 
 ideas:

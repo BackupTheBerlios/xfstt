@@ -1,3 +1,9 @@
+0.9.9
+	add some more encodings
+	use daemon pid file
+	support mac7 fonts
+	allow bigger glyphs
+	shrink preallocated mmaps
 0.9.8
 	fix "staroffice pattern" problem
 	fix "irix replysize" bug
