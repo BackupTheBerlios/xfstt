@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.3 2003/01/05 10:20:20 guillem Exp $
+ * $Id: xfstt.cc,v 1.4 2003/03/21 18:44:39 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -112,7 +112,7 @@ static void
 usage(int verbose)
 {
 	printf(_("xfstt %s, X font server for truetype fonts\n"), VERSION);
-	printf(_("Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]"
+	printf(_("Usage: xfstt [--gslist][--sync][--port portno][--unstrap]"
 		"[--user username]\n"
 		"\t\t[--dir ttfdir][--cache ttfcachedir][--pidfile pidfile]\n"
 		"\t\t[--encoding list_of_encodings][--res resolution]\n"
@@ -1707,6 +1707,8 @@ main(int argc, char **argv)
 	int inetdConnection = 0;
 	int portno = default_port;
 	int gslist = 0;
+	int sync_db = 0;
+	int daemon = 0;
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
@@ -1716,12 +1718,9 @@ main(int argc, char **argv)
 
 	for (int i = 1; i < argc; ++i) {
 		if (!strcmp(argv[i], "--gslist")) {
-			gslist = 1;
+			gslist = sync_db = 1;
 		} else if (!strcmp(argv[i], "--sync")) {
-			if (ttSyncAll(gslist) <= 0)
-				fputs(_("xfstt: sync failed\n"), stderr);
-			cleanupMem();
-			return 0;
+			sync_db = 1;
 		} else if (!strcmp(argv[i], "--port")) {
 			if (i <= argc)
 				portno = xatoi(argv[++i]);
@@ -1770,20 +1769,29 @@ main(int argc, char **argv)
 			printf(_("xfstt unstrapped: you must start X11 "
 				"with \"-deferglyphs 16\" option!\n"));
 		} else if (!strcmp(argv[i], "--daemon")) {
-			// Not sure if all this is needed
-			// but AFAIK its the right way to daemon-ize
-			if (fork())
-				_exit(0);
-			fclose(stdin);
-			fclose(stdout);
-			fclose(stderr);
-			setsid();
-			if (fork())
-				_exit(0);
+			daemon = 1;
 		} else {
 			usage(0);
 			return -1;
 		}
+	}
+
+	if (sync_db) {
+		if (ttSyncAll(gslist) <= 0)
+			fputs(_("xfstt: sync failed\n"), stderr);
+		cleanupMem();
+		return 0;
+	}
+
+	if (daemon) {
+		if (fork())
+			_exit(0);
+		fclose(stdin);
+		fclose(stdout);
+		fclose(stderr);
+		setsid();
+		if (fork())
+			_exit(0);
 	}
 
 	if (inetdConnection && multiConnection) {	// inetd
