@@ -1,6 +1,6 @@
                       Xfstt Frequently Asked Questions
 
-	$Id: FAQ,v 1.5 2003/04/07 03:56:16 guillem Exp $
+	$Id: FAQ,v 1.6 2003/06/25 04:55:59 guillem Exp $
 
 This document addresses common questions (and some not so common ones)
 about xfstt, the X11 TrueType Font Server. You will want to read this file
@@ -136,7 +136,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	It is xfstt fault when a bad font crashes it and it is the
 	the X servers fault when it stops handling user requests after
 	a font server has died.
-	If you are a developer please add this your TODO list...
+	If you are a developer please add this to your TODO list...
 
 	Due to the sad history of X11 fonts many X11 applications are
 	not properly tested for the huge number of fonts, proportional
@@ -410,7 +410,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	In order to help ghostscript figure out which fonts are available
 	the --gslist option was added to xfstt. Usage example:
 
-	xfstt --gslist --sync > fontmap
+	xfstt --gslist > fontmap
 
 3.6 Does xfstt have anti-aliasing/grayscaling technology?
 
@@ -497,7 +497,10 @@ This FAQ is current as of version 1.4 of xfstt.
 
 4.6 Why the LGPL licence though xfstt is not a library?
 
-	It is an (almost) trivial exercise to combine parts of the
-	package into a library. The LGPL licence has considerable
-	benefits for developers using libraries.
+	The library code has been split in an independent directory, it's
+	still provided as a static library because API compatibility is not
+	guaranteed, take a look at the README under libfstt.
+
+	The LGPL licence has considerable benefits for developers using
+	libraries.
 
