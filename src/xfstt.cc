@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.14 2003/07/31 06:27:29 guillem Exp $
+ * $Id: xfstt.cc,v 1.15 2003/08/06 20:11:14 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -262,7 +262,7 @@ static int
 ttSyncAll(int gslist = 0)
 {
 	if (!gslist)
-		debug("TrueType synching\n");
+		debug("TrueType syncing\n");
 
 	if (chdir(fontdir)) {
 		fprintf(stderr, _("xfstt: \"%s\" does not exist!\n"), fontdir);
@@ -283,7 +283,7 @@ ttSyncAll(int gslist = 0)
 	FILE *nameFile = fopen(ttnamefilename, "wb");
 	delete ttinfofilename;
 	delete ttnamefilename;
-	
+
 	if (infoFile <= 0 || nameFile <= 0) {
 		fputs(_("xfstt: Cannot write to font database!\n"), stderr);
 		return -1;
@@ -411,7 +411,7 @@ listTTFNFonts(char *pattern, int index, char *buf)
 		while (--len > 0 && *(alias++) != '\"');
 		if (len <= 0)
 			return -1;
-		char* name = alias;
+		char *name = alias;
 		while (--len > 0 && *(alias++) != '\"');
 		*buf = alias - name - 1;
 		strncpy(buf + 1, name, *(U8 *)buf);
@@ -679,7 +679,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 				fp->resolution[1] = xatoi(++p);
 				break;
 			case 13:
-				for (char* cp = p; *cp; ++cp)
+				for (char *cp = p; *cp; ++cp)
 					*cp = tolower(*cp);
 				encoding = Encoding::find(++p);
 				break;
@@ -726,7 +726,8 @@ openTTFdb()
 	}
 
 	char *ttinfofilename = cachefile(TTINFO_LEAF);
-	if (!ttinfofilename) return 0;
+	if (!ttinfofilename)
+		return 0;
 
 	int fd = open(ttinfofilename, O_RDONLY);
 	if (0 >= fd) {
