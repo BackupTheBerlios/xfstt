@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.9 2003/06/25 04:37:30 guillem Exp $
+ * $Id: xfstt.cc,v 1.10 2003/07/28 21:41:12 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -471,7 +471,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 	 int fid, Encoding *encoding)
 {
 	debug("point %d, pixel %d, res %d\n",
-		fp->point[0], fp->pixel[0], fp->resolution[0]);
+	      fp->point[0], fp->pixel[0], fp->resolution[0]);
 
 	if (!ttFont || ttFont->badFont())
 		return 0;
@@ -525,7 +525,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 	}
 
 	debug("point %d, pixel %d, res %d\n", fp->point[0], fp->pixel[0],
-		 fp->resolution[0]);
+	      fp->resolution[0]);
 
 	// init rasterizer
 	raster->useTTFont(ttFont, fp->flags);
@@ -565,7 +565,7 @@ openTTFN(Rasterizer *raster, char *ttfnName, FontParams *fp, int fid)
 
 	// parse attributes
 	debug("point %d, pixel %d, res %d\n",
-		fp->point[0], fp->pixel[0], fp->resolution[0]);
+	      fp->point[0], fp->pixel[0], fp->resolution[0]);
 
 	int m_index = 0, p_index = 0, r_index = 0;
 	for (ttfnName += 2;;) {
@@ -691,7 +691,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 
 	debug("\nopenXLFD(\"%s\"), %s\n", xlfdName, encoding->strName);
 	debug("size %d, resx %d, resy %d\n",
-		 fp->point[0], fp->resolution[0], fp->resolution[1]);
+	      fp->point[0], fp->resolution[0], fp->resolution[1]);
 
 	TTFNdata* ttfn = (TTFNdata *)(infoBase + sizeof(TTFNheader));
 	// XXX: linear search should be replaced
@@ -882,7 +882,7 @@ connecting(int sd)
 
 	debug("Connecting\n");
 	debug("%s endian connection\n",
-		 (req->byteOrder == 'l') ? "little" : "big");
+	      (req->byteOrder == 'l') ? "little" : "big");
 	debug("version %d.%d\n", req->major_version, req->minor_version);
 
 	if ((req->byteOrder == 'l' && (*(U32 *)req & 0xff) != 'l')
@@ -1204,8 +1204,8 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				fp0.point[0] = fp0.point[1] = res->point_size;
 				fp0.point[2] = fp0.point[3] = 0;
 				debug("xres = %d, yres = %d, size = %d\n",
-					 res->x_resolution, res->y_resolution,
-					 res->point_size / 10);
+				      res->x_resolution, res->y_resolution,
+				      res->point_size / 10);
 			}
 			}
 			break;
@@ -1239,7 +1239,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 
 			pattern[req->nbytes] = 0;
 			debug("FS_ListFonts \"%s\" * %ld\n",
-				 pattern, req->maxNames);
+			      pattern, req->maxNames);
 
 			fsListFontsReply reply;
 			reply.type = FS_Reply;
@@ -1308,7 +1308,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			error.length = sizeof(error) >> 2;
 
 			debug(" fsError size = %u bytes, %u ints\n",
-				 sizeof(error), error.length);
+			      sizeof(error), error.length);
 			write(sd, (void *)&error, sizeof(error));
 #endif
 			}
@@ -1349,7 +1349,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				debug(" not found\n");
 			}
 			debug("fhint = %04lX, fmask = %04lX, fid = %ld\n",
-				 req->format_hint, req->format_mask, req->fid);
+			      req->format_hint, req->format_mask, req->fid);
 			}
 			break;
 
@@ -1389,11 +1389,11 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				= (U8)fi->lastChar;
 
 			debug("minchar = 0x%02X%02X, ",
-				 reply.s1.font_hdr_char_range_min_char_high,
-				 reply.s1.font_hdr_char_range_min_char_low);
+			      reply.s1.font_hdr_char_range_min_char_high,
+			      reply.s1.font_hdr_char_range_min_char_low);
 			debug("maxchar = 0x%02X%02X\n",
-				 reply.s1.font_hdr_char_range_max_char_high,
-				 reply.s1.font_hdr_char_range_max_char_low);
+			      reply.s1.font_hdr_char_range_max_char_high,
+			      reply.s1.font_hdr_char_range_max_char_low);
 
 			reply.s1.font_header_draw_direction = LeftToRightDrawDirection;
 			// XXX: reply.s1.font_header_default_char_high = 0;
@@ -1416,11 +1416,11 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			reply.s1.font_header_font_descent = fe->yWinDescent;
 
 			debug("FM= (asc= %d, dsc= %d, ",
-				 fe->yAscentMax, fe->yDescentMax);
+			      fe->yAscentMax, fe->yDescentMax);
 			debug("wasc= %d, wdsc= %d, ",
-				 fe->yWinAscent, fe->yWinDescent);
+			      fe->yWinAscent, fe->yWinDescent);
 			debug("wmin= %d, wmax= %d)\n",
-				 fe->xAdvanceMin, fe->xAdvanceMax);
+			      fe->xAdvanceMin, fe->xAdvanceMax);
 
 			// we need to have some property data, otherwise
 			// the X server complains
@@ -1452,10 +1452,10 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)buf;
 			debug("FS_QueryXExtents%s fid = %ld, ",
-				(buf[0] == FS_QueryXExtents16 ? "16" : "8"),
-				req->fid);
+			      (buf[0] == FS_QueryXExtents16 ? "16" : "8"),
+			      req->fid);
 			debug("range=%d, nranges=%ld\n",
-				req->range, req->num_ranges);
+			      req->range, req->num_ranges);
 
 			XFSFont *xfs = findFont(req->fid, sd, seqno);
 			if (!xfs)
@@ -1515,9 +1515,9 @@ working(int sd, Rasterizer *raster, char *replybuf)
 #if DEBUG & 2
 				debug("GM[%3d = %3d] = ", ch, glyphNo);
 				debug("(l= %d, r= %d, ",
-					 ext->left, ext->right);
+				      ext->left, ext->right);
 				debug("w= %d, a= %d, d= %d);\n",
-					 ext->width, ext->ascent, ext->descent);
+				      ext->width, ext->ascent, ext->descent);
 #endif
 			}
 			write(sd, (void *)&reply, sizeof(reply));
@@ -1539,9 +1539,9 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsQueryXBitmaps16Req *req = (fsQueryXBitmaps16Req *)buf;
 			debug("FS_QueryXBitmaps16 fid = %ld, fmt = %04lX\n",
-				 req->fid, req->format);
+			      req->fid, req->format);
 			debug("range=%d, nranges=%ld\n",
-				 req->range, req->num_ranges);
+			      req->range, req->num_ranges);
 
 			XFSFont *xfs = findFont(req->fid, sd, seqno);
 			if (!xfs)
@@ -1608,7 +1608,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 
 #if DEBUG & 2
 				debug("OFS[%3d = %3d] = %ld\n",
-					 ch, glyphNo, ofs->position);
+				      ch, glyphNo, ofs->position);
 #endif
 			}
 			reply.nbytes = bmp - bmp0;
