@@ -12,8 +12,8 @@ xlsfonts > fonts.lst
 xfontsel -pattern "-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
 #xfontsel -pattern "-*-*-medium-r-normal-tt-*-*-*-*-*-*-iso8859-1"
 #rxvt +sb -fn "TTM160_Courier New" -geometry 32x10
-xcoral -fn "TTM12_Courier New" -mfn "TTM16_Times New Roman" RasterHints.cpp &
-xcoral -bg white -fg black -fn "TTP18_Courier New" xfstt.cpp
+xcoral -fn "TTM12_Courier New" -mfn "TTM16_Times New Roman" libfstt/raster_hints.cc &
+xcoral -bg white -fg black -fn "TTP18_Courier New" src/xfstt.cc
 echo disconnecting from $fontpath
 xset -fp $fontpath
 echo test complete.

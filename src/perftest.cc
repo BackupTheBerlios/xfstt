@@ -1,5 +1,25 @@
-// test ttf engine performance
-// (C) Copyright 1997-1998 Herbert Duerr
+/*
+ * Test ttf engine performance
+ *
+ * $Id: perftest.cc,v 1.1 2002/11/14 12:08:09 guillem Exp $
+ *
+ * Copyright (C) 1997-1998 Herbert Duerr
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
 
 #define TTFONTDIR	"/usr/share/fonts/truetype"
 #define MAXFONTBUFSIZE (2048*2048)
@@ -24,101 +44,106 @@
 
 int numGlyphs = 0;
 
-static int ttPerfDir( Rasterizer* raster, int pt, FontExtent* fe, char* ttdir)
+static int
+ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, char *ttdir)
 {
 	int nfonts = 0;
-	printf( "xfstt: perftest in directory " TTFONTDIR "/%s\n", ttdir);
-	DIR* dirp = opendir( ".");
+	printf("xfstt: perftest in directory " TTFONTDIR "/%s\n", ttdir);
+	DIR *dirp = opendir(".");
 
-	while( dirent* de = readdir( dirp)) {
-		int namelen = strlen( de->d_name);
-		if( namelen - 4 <= 0) continue;
-		char* ext = &de->d_name[ namelen - 4];
-		if( ext[0] != '.') continue;
-		if( tolower( ext[1]) != 't') continue;
-		if( tolower( ext[2]) != 't') continue;
-		if( tolower( ext[3]) != 'f') continue;
+	while (dirent *de = readdir(dirp)) {
+		int namelen = strlen(de->d_name);
+		if (namelen - 4 <= 0) continue;
+		char *ext = &de->d_name[namelen - 4];
+		if (ext[0] != '.') continue;
+		if (tolower(ext[1]) != 't') continue;
+		if (tolower(ext[2]) != 't') continue;
+		if (tolower(ext[3]) != 'f') continue;
 
 		struct stat statbuf;
-		stat( de->d_name, &statbuf);
-		if( !S_ISREG( statbuf.st_mode))
+		stat(de->d_name, &statbuf);
+		if (!S_ISREG(statbuf.st_mode))
 			continue;
 
 		struct timeval t0, t1;
-		gettimeofday( &t0, 0);
+		gettimeofday(&t0, 0);
 
-static int countFonts = 0;
-printf( "opening \"%s\",\tno. %5d\n", de->d_name, countFonts++);
-fflush( stdout);
-if( !strcmp( "DAVSDING.TTF", de->d_name))	continue;
-if( !strcmp( "FH0495.TTF", de->d_name))		continue;
-if( !strcmp( "GAELACH.TTF", de->d_name))	continue;
+		static int countFonts = 0;
+		printf("opening \"%s\",\tno. %5d\n", de->d_name, countFonts++);
+		fflush(stdout);
+		if (!strcmp("DAVSDING.TTF", de->d_name))
+			continue;
+		if (!strcmp("FH0495.TTF", de->d_name))
+			continue;
+		if (!strcmp("GAELACH.TTF", de->d_name))
+			continue;
 
-		TTFont* ttFont = new TTFont( de->d_name);
-		if( ttFont->badFont()) {
+		TTFont *ttFont = new TTFont(de->d_name);
+		if (ttFont->badFont()) {
 			delete ttFont;
 			continue;
 		}
 
 		FontInfo fi;
-		ttFont->getFontInfo( &fi);
-		if( fi.faceLength > 31)
+		ttFont->getFontInfo(&fi);
+		if (fi.faceLength > 31)
 			fi.faceLength = 31;
-		fi.faceName[ fi.faceLength] = 0;
-		printf( "TTF( \"%s\")", fi.faceName);
+		fi.faceName[fi.faceLength] = 0;
+		printf("TTF(\"%s\")", fi.faceName);
 
-		raster->useTTFont( ttFont);
-		raster->setPointSize( pt, 0, 0, pt, 96, 96);
+		raster->useTTFont(ttFont);
+		raster->setPointSize(pt, 0, 0, pt, 96, 96);
 
 		numGlyphs += ttFont->maxpTable->getNumGlyphs();
-		raster->getFontExtent( fe);
+		raster->getFontExtent(fe);
 
 		delete ttFont;
 		++nfonts;
 
-		gettimeofday( &t1, 0);
+		gettimeofday(&t1, 0);
 		double dt = (t1.tv_sec - t0.tv_sec) * 1.0e+3;
 		dt += (t1.tv_usec - t0.tv_usec) * 1.0e-3;
-		printf( "\t\t\t\t\t%7.3f ms\n"+(fi.faceLength>>3), dt);
+		printf("\t\t\t\t\t%7.3f ms\n"+(fi.faceLength >> 3), dt);
 	}
 
-	closedir( dirp);
+	closedir(dirp);
 	return nfonts;
 }
 
-int main( int argc, char** argv)
+int
+main(int argc, char **argv)
 {
-	if( chdir( TTFONTDIR)) {
-		fputs( "xfstt: " TTFONTDIR " does not exist!\n", stderr);
+	if (chdir(TTFONTDIR)) {
+		fputs("xfstt: " TTFONTDIR " does not exist!\n", stderr);
 		return -1;
 	}
 
 	int ptsize = 0;
-	if( argc > 1)
-		ptsize = atoi( argv[1]);
-	if( ptsize <= 0)
+	if (argc > 1)
+		ptsize = atoi(argv[1]);
+	if (ptsize <= 0)
 		ptsize = 12;
 
-	printf( "perftest( ptsize = %d, resolution = 96)\n", ptsize);
+	printf("perftest(ptsize = %d, resolution = 96)\n", ptsize);
 
 	FontExtent fe;
-	fe.buflen	= MAXFONTBUFSIZE;
-	fe.buffer	= (U8*)allocMem( fe.buflen);
+	fe.buflen = MAXFONTBUFSIZE;
+	fe.buffer = (U8 *)allocMem(fe.buflen);
 
 	Rasterizer raster;
 
 	int nfonts = 0;
-	nfonts += ttPerfDir( &raster, ptsize, &fe, ".");
-	DIR* dirp = opendir( ".");
-	while( dirent* de = readdir( dirp)) {
-		chdir( TTFONTDIR);
-		if( de->d_name[0] != '.' && !chdir( de->d_name))
-			nfonts += ttPerfDir( &raster, ptsize, &fe, de->d_name);
+	nfonts += ttPerfDir(&raster, ptsize, &fe, ".");
+	DIR *dirp = opendir(".");
+	while (dirent *de = readdir(dirp)) {
+		chdir(TTFONTDIR);
+		if (de->d_name[0] != '.' && !chdir(de->d_name))
+			nfonts += ttPerfDir(&raster, ptsize, &fe, de->d_name);
 	}
-	printf( "\nTested %d fonts (%d glyphs)\n", nfonts, numGlyphs);
+	printf("\nTested %d fonts (%d glyphs)\n", nfonts, numGlyphs);
 
-	deallocMem( fe.buffer, fe.buflen);
-	closedir( dirp);
+	deallocMem(fe.buffer, fe.buflen);
+	closedir(dirp);
 	return 0;
 }
 

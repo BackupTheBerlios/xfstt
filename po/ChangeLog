@@ -1,0 +1,9 @@
+2002-08-10  Guillem Jover  <guillem.jover@menta.net>
+
+	* Makevars: New file, requiered by gettext 0.11.5.
+
+2002-08-07  Guillem Jover  <guillem.jover@menta.net>
+
+	* ChaneLog: New file.
+	* POTFILES.in: Likewise.
+

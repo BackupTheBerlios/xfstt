@@ -1,0 +1,14 @@
+
+	$Id: README,v 1.1 2002/11/14 12:08:16 guillem Exp $
+
+libfstt
+~~~~~~~
+
+The library code from xfstt has been split, I'll try to clean and
+improve the API.
+
+Please don't link dynamically against this library, because I'm going
+to break API compatibility at random, to clean the interface. When the
+code has been stabilized a new version with a dynamic library will
+be released.
+

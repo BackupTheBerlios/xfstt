@@ -1,15 +1,41 @@
-// TTFN is an alternative to XLFD suited for arbitrarily scalable fonts
-//
-// why?
-// a list request for the XLFD pattern "-*-Times-*100*" does not tell
-// what this 100 means: Is it the pixelSize, the pointSize, the x resolution,
-// the y resolution or the average width? Is it part of a 2x2 matrix used for
-// rotating fonts? This *100* also matches 1000...1009 or 1100, 2100...
-//
-// The approach here is to be more specific depending on the context:
-//	OpenFont name != ListFont result != ListFont pattern
-// OpenFont names provide the fontname and rasterizer specific attributes
-// ListFont results provide the fontname and raster independant attributes
+/*
+ * TTFN is an alternative to XLFD suited for arbitrarily scalable fonts
+ *
+ * $Id: ttfn.h,v 1.1 2002/11/14 12:08:09 guillem Exp $
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
+
+/*
+ * Why?
+ *
+ * A list request for the XLFD pattern "-*-Times-*100*" does not tell
+ * what this 100 means: Is it the pixelSize, the pointSize, the x resolution,
+ * the y resolution or the average width? Is it part of a 2x2 matrix used for
+ * rotating fonts? This *100* also matches 1000...1009 or 1100, 2100...
+ *
+ * The approach here is to be more specific depending on the context:
+ *	OpenFont name != ListFont result != ListFont pattern
+ * OpenFont names provide the fontname and rasterizer specific attributes
+ * ListFont results provide the fontname and raster independant attributes
+ *
+ */
+
+#ifndef TTFN_H
+#define TTFN_H
 
 /***************************************************************************
  * this struct is for XListFonts results
@@ -28,11 +54,11 @@
 
 typedef struct {
 	U8	nameLen;
-	char	magic[2];			// magic == "TT"
-	char	charset;			// U=unicode, A=ascii, S=symbol
-	char	panoseMagic;			// 'P'
-	char	panose[10][2];			// in hex
-	char	modifier;			// italic
+	char	magic[2];		// magic == "TT"
+	char	charset;		// U=unicode, A=ascii, S=symbol
+	char	panoseMagic;		// 'P'
+	char	panose[10][2];		// in hex
+	char	modifier;		// italic
 	char	underscore;
 	//char	fontName[];
 } TPFontName;
@@ -66,4 +92,6 @@ typedef struct {
  * example:
  *	12 point subscripted Arial has the font name "TTM12F4_Arial"
  */
+
+#endif
 

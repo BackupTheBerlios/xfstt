@@ -1,20 +1,55 @@
-1) Type in
-	make && make install
-   (use gmake instead of the standard make on FreeBSD)
 
-2) Create a writeable directory /usr/share/fonts/truetype, copy some truetype *.ttf
-   files or create soflinks to truetype directories in there, then run
-	xfstt --sync
+	$Id: INSTALL,v 1.1 2002/11/14 12:08:06 guillem Exp $
 
-3) Start xfstt in the background
-	xfstt &
-
-4) Tell your X11 server about the new font service
-	xset fp+ unix/:7101
-   or add the new fontpath to the X11 config file
-	FontPath "unix/:7101"
-   Read FAQ item 2.1 if you are having problems after doing this.
+Installation Notes
+------------------
 
 These install instructions should suffice for 98% of all users. For more
 advanced requirements refer to the xfstt(1x) man page or the FAQ.
+
+CVS Sources
+-----------
+
+0) Maintainer setup
+
+ You will need this software:
+
+	autoconf >= 2.53
+	automake >= 1.5
+	gettext  == 0.10.40
+
+ $ ./autogen.sh
+
+ At this stage the source should be equivalent to the distributed tar source.
+
+Distributed tar Sources
+-----------------------
+
+1) Compiling
+
+ $ ./configure [options]
+
+ $ make && make install
+   (use gmake instead of the standard make on FreeBSD)
+
+2) Create a writeable directory /usr/share/fonts/truetype, copy some
+   truetype *.ttf files or create soflinks to truetype directories
+   in there, then run
+
+	xfstt --sync
+
+3) Start xfstt in the background
+
+	xfstt &
+
+4) Tell your X11 server about the new font service
+
+	xset fp+ unix/:7101
+
+   or add the new fontpath to the X11 config file, Section "Files", on
+   XFree86 4.0 the file can be found on /etc/X11/XF86Config-4
+
+	FontPath "unix/:7101"
+
+   Read FAQ item 2.1 if you are having problems after doing this.
 

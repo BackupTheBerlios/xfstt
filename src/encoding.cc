@@ -1,70 +1,94 @@
-// remap from unicode to other encodings
-// (C) Copyright 1998 Herbert Duerr
+/*
+ * Remap from unicode to other encodings
+ *
+ * $Id: encoding.cc,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ *
+ * Copyright (C) 1998 Herbert Duerr
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * 
+ */
 
 #include "encoding.h"
 #include <string.h>
 
- // Map box drawing gliphs to 0x00 .. 0x1f for curses based program
+// Map box drawing gliphs to 0x00 .. 0x1f for curses based program
 static unsigned short boxtable[32] = {
-		0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 
-		0x0020, 0x0020, 0x0020, 0x2518, 0x2510, 0x250c, 0x2514, 0x253c, 
-		0x0020, 0x0020, 0x2500, 0x0020, 0x0020, 0x251c, 0x2524, 0x2534, 
-		0x252c, 0x2502, 0x0020, 0x0020, 0x2510, 0x0020, 0x0020, 0x0020, 
-	};
+	0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 0x0020, 
+	0x0020, 0x0020, 0x0020, 0x2518, 0x2510, 0x250c, 0x2514, 0x253c, 
+	0x0020, 0x0020, 0x2500, 0x0020, 0x0020, 0x251c, 0x2524, 0x2534, 
+	0x252c, 0x2502, 0x0020, 0x0020, 0x2510, 0x0020, 0x0020, 0x0020, 
+};
 
-Encoding* Encoding::first	= 0;
-Encoding* Encoding::last	= 0;
+Encoding* Encoding::first = 0;
+Encoding* Encoding::last = 0;
 
-Encoding::Encoding( char* mapname)
-: strName( mapname), lenName( strlen( mapname))
+Encoding::Encoding(char* mapname):
+	strName(mapname), lenName(strlen(mapname))
 {
-	if( !first) first = this;
-	else last->next = this;
+	if (!first)
+		first = this;
+	else
+		last->next = this;
+
 	last = this;
 	next = 0;
 }
 
-int Encoding::parse( char* mapnames, Encoding** maps0, int maxcodes)
+int
+Encoding::parse(char* mapnames, Encoding** maps0, int maxcodes)
 {
 	Encoding** maps = maps0;
 	Encoding* m;
 	char *mapname;
 
-	mapname = strtok(mapnames,", ");
-	while(mapname && maps - maps0 < maxcodes) {
+	mapname = strtok(mapnames, ", ");
+	while (mapname && maps - maps0 < maxcodes) {
 		m = find(mapname);
 		if (m) {
 			*(maps++) = m;
-			mapname = strtok(NULL,", ");
+			mapname = strtok(NULL, ", ");
 		} else {
-			mapname = strtok(NULL,", ");
+			mapname = strtok(NULL, ", ");
 		}
 	}
 	return (maps - maps0);
 }
 
-// Encoding::find 
-//          search the list of encodings for an encoding with the
-//          given name. 
-Encoding* Encoding::find( char* mapname)
+// Search the list of encodings for an encoding with the given name.
+Encoding*
+Encoding::find(char* mapname)
 {
 	Encoding* m;
 
-	for(m = first; m; m = m->next) {
-		if( !strcmp(mapname, m->strName)) {
+	for (m = first; m; m = m->next) {
+		if (!strcmp(mapname, m->strName)) {
 			return m;
 		}
 		if (m == last) { 
 			// FIXME: list is broken. Should NOT be circular. 
 			//        however for some reason it is. Must figure
-                        //        out why - sjc 16-Oct-1999
+                        //        out why - sjc 1999-10-16
 			return 0;
 		}
 	}
 	return 0;
 }
 
-Encoding* Encoding::enumerate( Encoding* iterator)
+Encoding*
+Encoding::enumerate(Encoding* iterator)
 {
 	if (iterator == last) {
 		return 0; // FIXME: see find function FIXME
@@ -73,17 +97,17 @@ Encoding* Encoding::enumerate( Encoding* iterator)
 }
 
 
-//  Thaks to Atsawin Chowanakritsanakul
-//--- Latin/Thai aka TIS-620
-class iso8859_11
-: public Encoding
+// Thanks to Atsawin Chowanakritsanakul
+// Latin/Thai aka TIS-620
+class iso8859_11: public Encoding
 {
 public:
-	iso8859_11() : Encoding("iso8859-11") {}
-	int map2unicode( int code);
+	iso8859_11(): Encoding("iso8859-11") {}
+	int map2unicode(int code);
 } exemplar_iso8859_11;
 
-int iso8859_11::map2unicode( int code)
+int
+iso8859_11::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0020,0x0E01,0x0E02,0x0E03,0x0E04,0x0E05,0x0E06,0x0E07,
@@ -100,23 +124,23 @@ int iso8859_11::map2unicode( int code)
 		0x0E58,0x0E59,0x0E5A,0x0E5B,     0,     0,     0,     0
 	};
 
-        if( code < 160 || code >= 256) return code;
-        return table[ code - 160];
+        if (code < 160 || code >= 256) return code;
+        return table[code - 160];
 }
 
-//--- contributed by David Woodhouse
-class iso8859_15
-: public Encoding                                                               
+// Thanks to David Woodhouse
+class iso8859_15: public Encoding                                                               
 {
 public:
-        iso8859_15() : Encoding("iso8859-15") {}
-        int map2unicode( int code);
+        iso8859_15(): Encoding("iso8859-15") {}
+        int map2unicode(int code);
 } exemplar_iso8859_15;                                                          
 
-int iso8859_15::map2unicode( int code)
+int
+iso8859_15::map2unicode(int code)
 {
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-        switch( code) {
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+        switch (code) {
         case 0xa4:      return 0x20AC;
         case 0xa6:      return 0x160;
         case 0xa8:      return 0x161;
@@ -130,33 +154,31 @@ int iso8859_15::map2unicode( int code)
 }                                                                               
 
 
-//---
-class iso8859_1
-: public Encoding
+class iso8859_1: public Encoding
 {
 public:
-	iso8859_1() : Encoding("iso8859-1") {}
-	int map2unicode( int code);
+	iso8859_1(): Encoding("iso8859-1") {}
+	int map2unicode(int code);
 } exemplar_iso8859_1;
 
-int iso8859_1::map2unicode( int code)
+int
+iso8859_1::map2unicode(int code)
 {
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code == 0x80) code = 0x20AC;	// euro currency symbol
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code == 0x80) code = 0x20AC;	// euro currency symbol
 	return code;
 }
 
 
-//---
-class iso8859_2
-: public Encoding
+class iso8859_2: public Encoding
 {
 public:
-	iso8859_2() : Encoding("iso8859-2") {}
-	int map2unicode( int code);
+	iso8859_2(): Encoding("iso8859-2") {}
+	int map2unicode(int code);
 } exemplar_iso8859_2;
 
-int iso8859_2::map2unicode( int code)
+int
+iso8859_2::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0a0, 0x104, 0x2d8, 0x141, 0x0a4, 0x13d, 0x15a, 0xa7,
@@ -173,22 +195,22 @@ int iso8859_2::map2unicode( int code)
 		0x159, 0x16f, 0x0fa, 0x171, 0x0fc, 0x0fd, 0x163, 0x2d9
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code == 0x80) return 0x20AC;	// euro currency symbol
-	if( code <= 0xa0 || code >= 256) return code;
-	return table[ code - 0xa0];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code == 0x80) return 0x20AC;	// euro currency symbol
+	if (code <= 0xa0 || code >= 256) return code;
+	return table[code - 0xa0];
 }
 
-//---
-class iso8859_3
-: public Encoding
+
+class iso8859_3: public Encoding
 {
 public:
-	iso8859_3() : Encoding("iso8859-3") {}
-	int map2unicode( int code);
+	iso8859_3(): Encoding("iso8859-3") {}
+	int map2unicode(int code);
 } exemplar_iso8859_3;
 
-int iso8859_3::map2unicode( int code)
+int
+iso8859_3::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0a0, 0x126, 0x2d8, 0x0a3, 0x0a4, 0x0a5, 0x124, 0x0a7,
@@ -205,22 +227,22 @@ int iso8859_3::map2unicode( int code)
 		0x11d, 0x0f9, 0x0fa, 0x0fb, 0x0fc, 0x16d, 0x15d, 0x2d9
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code == 0x80) return 0x20AC;	// euro currency symbol
-	if( code <= 0xa0 || code >= 256) return code;
-	return table[ code - 0xa0];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code == 0x80) return 0x20AC;	// euro currency symbol
+	if (code <= 0xa0 || code >= 256) return code;
+	return table[code - 0xa0];
 }
 
-//---
-class iso8859_4
-: public Encoding
+
+class iso8859_4: public Encoding
 {
 public:
-	iso8859_4() : Encoding("iso8859-4") {}
-	int map2unicode( int code);
+	iso8859_4(): Encoding("iso8859-4") {}
+	int map2unicode(int code);
 } exemplar_iso8859_4;
 
-int iso8859_4::map2unicode( int code)
+int
+iso8859_4::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0a0, 0x104, 0x138, 0x156, 0x0a4, 0x128, 0x13b, 0x0a7,
@@ -237,60 +259,60 @@ int iso8859_4::map2unicode( int code)
 		0x0f8, 0x173, 0x0fa, 0x0fb, 0x0fc, 0x169, 0x16b, 0x2d9
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code == 0x80) return 0x20AC;	// euro currency symbol
-	if( code <= 0xa0 || code >= 256) return code;
-	return table[ code - 0xa0];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code == 0x80) return 0x20AC;	// euro currency symbol
+	if (code <= 0xa0 || code >= 256) return code;
+	return table[code - 0xa0];
 }
 
-//---
-class iso8859_5
-: public Encoding
+
+class iso8859_5: public Encoding
 {
 public:
-	iso8859_5() : Encoding("iso8859-5") {}
-	int map2unicode( int code);
+	iso8859_5(): Encoding("iso8859-5") {}
+	int map2unicode(int code);
 } exemplar_iso8859_5;
 
-int iso8859_5::map2unicode( int code)
+int
+iso8859_5::map2unicode(int code)
 {
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code == 0x80) return 0x20AC;	// euro currency symbol
-	if( code <= 0xa0 || code == 0xad || code >= 256) return code;
-	if( code == 0xf0) return 0x2116;
-	if( code == 0xfd) return 0xa7;
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code == 0x80) return 0x20AC;	// euro currency symbol
+	if (code <= 0xa0 || code == 0xad || code >= 256) return code;
+	if (code == 0xf0) return 0x2116;
+	if (code == 0xfd) return 0xa7;
 	return (code + 0x360);
 }
 
-//---
-class iso8859_6
-: public Encoding
+
+class iso8859_6: public Encoding
 {
 public:
-	iso8859_6() : Encoding("iso8859-6") {}
-	int map2unicode( int code);
+	iso8859_6(): Encoding("iso8859-6") {}
+	int map2unicode(int code);
 } exemplar_iso8859_6;
 
-int iso8859_6::map2unicode( int code)
+int
+iso8859_6::map2unicode(int code)
 {
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 0x30 || code >= 256) return code;
-	if( code <= 0x39) return (code + 0x630);
-	if( code == 0x80) return 0x20AC;	// euro currency symbol
-	if( code <= 0xa4) return code;
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 0x30 || code >= 256) return code;
+	if (code <= 0x39) return (code + 0x630);
+	if (code == 0x80) return 0x20AC;	// euro currency symbol
+	if (code <= 0xa4) return code;
 	return (code + 0x560);
 }
 
-//---
-class iso8859_7
-: public Encoding
+
+class iso8859_7: public Encoding
 {
 public:
-	iso8859_7() : Encoding("iso8859-7") {}
-	int map2unicode( int code);
+	iso8859_7(): Encoding("iso8859-7") {}
+	int map2unicode(int code);
 } exemplar_iso8859_7;
 
-int iso8859_7::map2unicode( int code)
+int
+iso8859_7::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0a0, 0x2bd, 0x2bc, 0x0a3, 0x0a4, 0x0a5, 0x0a6, 0x0a7,
@@ -299,46 +321,46 @@ int iso8859_7::map2unicode( int code)
 		0x388, 0x389, 0x38a, 0x0bb, 0x38c, 0x0bd
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code == 0x80) return 0x20AC;	// euro currency symbol
-	if( code <= 0xa0 || code >= 256) return code;
-	if( code >= 0xbe) return (code + 0x2d0);
-	return table[ code - 0xa0];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code == 0x80) return 0x20AC;	// euro currency symbol
+	if (code <= 0xa0 || code >= 256) return code;
+	if (code >= 0xbe) return (code + 0x2d0);
+	return table[code - 0xa0];
 }
 
-//---
-class iso8859_8
-: public Encoding
+
+class iso8859_8: public Encoding
 {
 public:
-	iso8859_8() : Encoding("iso8859-8") {}
-	int map2unicode( int code);
+	iso8859_8(): Encoding("iso8859-8") {}
+	int map2unicode(int code);
 } exemplar_iso8859_8;
 
-int iso8859_8::map2unicode( int code)
+int
+iso8859_8::map2unicode(int code)
 {
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code <= 0xa9 || code >= 256) return code;
-	if( code == 0xaa) return 0xd7;
-	if( code == 0xaf) return 0x203e;
-	if( code == 0xdf) return 0x2017;
-	return (code + 0x4f0);	// thanks Stanislav Malyshev
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code <= 0xa9 || code >= 256) return code;
+	if (code == 0xaa) return 0xd7;
+	if (code == 0xaf) return 0x203e;
+	if (code == 0xdf) return 0x2017;
+	return (code + 0x4f0);	// Thanks Stanislav Malyshev
 }
 
-//---
-class iso8859_9
-: public Encoding
+
+class iso8859_9: public Encoding
 {
 public:
-	iso8859_9() : Encoding("iso8859-9") {}
-	int map2unicode( int code);
+	iso8859_9(): Encoding("iso8859-9") {}
+	int map2unicode(int code);
 } exemplar_iso8859_9;
 
-int iso8859_9::map2unicode( int code)
+int
+iso8859_9::map2unicode(int code)
 {
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 0xd0 || code >= 255) return code;
-	switch( code) {
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 0xd0 || code >= 255) return code;
+	switch (code) {
 	case 0x80:	return 0x20AC;
 	case 0xd0:	return 0x11e;
 	case 0xdd:	return 0x130;
@@ -351,16 +373,16 @@ int iso8859_9::map2unicode( int code)
 }
 
 
-//--- thanks Vladimir Eltsov and Nikolay Grygoryev
-class koi8_r
-: public Encoding
+// Thanks Vladimir Eltsov and Nikolay Grygoryev
+class koi8_r: public Encoding
 {
 public:
-	koi8_r() : Encoding("koi8-r") {}
-	int map2unicode( int code);
+	koi8_r(): Encoding("koi8-r") {}
+	int map2unicode(int code);
 } exemplar_koi8_r;
 
-int koi8_r::map2unicode( int code)
+int
+koi8_r::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x2500,0x2502,0x250c,0x2510,0x2514,0x2518,0x251c,0x2524,
@@ -381,21 +403,22 @@ int koi8_r::map2unicode( int code)
 		0x042c,0x042b,0x0417,0x0428,0x042d,0x0429,0x0427,0x042a
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
+
 // Thanks to Vitaly V. Bursov
-class koi8_u
-: public Encoding
+class koi8_u: public Encoding
 {
 public:
-	koi8_u() : Encoding("koi8-u") {}
-	int map2unicode( int code);
+	koi8_u(): Encoding("koi8-u") {}
+	int map2unicode(int code);
 } exemplar_koi8_u;
 
-int koi8_u::map2unicode( int code)
+int
+koi8_u::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x2500,0x2502,0x250c,0x2510,0x2514,0x2518,0x251c,0x2524,
@@ -416,21 +439,20 @@ int koi8_u::map2unicode( int code)
 		0x042c,0x042b,0x0417,0x0428,0x042d,0x0429,0x0427,0x042a
 	};
 
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class windows_1251
-: public Encoding
+class windows_1251: public Encoding
 {
 public:
 	windows_1251() : Encoding("windows-1251") {}
-	int map2unicode( int code);
+	int map2unicode(int code);
 } exemplar_windows_1251;
 
-int windows_1251::map2unicode( int code)
+int
+windows_1251::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0402,0x0403,0x201A,0x0453,0x201E,0x2026,0x2020,0x2021,
@@ -451,21 +473,22 @@ int windows_1251::map2unicode( int code)
 		0x0448,0x0449,0x044A,0x044B,0x044C,0x044D,0x044E,0x044F
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
-//--- thanks Petr Tomasek
-class iso8859_10
-: public Encoding
+
+// Thanks Petr Tomasek
+class iso8859_10: public Encoding
 {
 public:
-	iso8859_10() : Encoding("iso8859-10") {}
-	int map2unicode( int code);
+	iso8859_10(): Encoding("iso8859-10") {}
+	int map2unicode(int code);
 } exemplar_iso8859_10;
 
-int iso8859_10::map2unicode( int code)
+int
+iso8859_10::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x20AC,0x0081,0x0082,0x0083,0x0084,0x0085,0x0086,0x0087,
@@ -486,22 +509,21 @@ int iso8859_10::map2unicode( int code)
 		0x00F8,0x0173,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x016B
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class windows_1250
-: public Encoding
+class windows_1250: public Encoding
 {
 public:
-	windows_1250() : Encoding("windows-1250") {}
-	int map2unicode( int code);
+	windows_1250(): Encoding("windows-1250") {}
+	int map2unicode(int code);
 } exemplar_windows_1250;
 
-int windows_1250::map2unicode( int code)
+int
+windows_1250::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x20AC,0,0x201A,0,0x201E,0x22EF,0x2020,0x2021,
@@ -522,22 +544,21 @@ int windows_1250::map2unicode( int code)
 		0x0159,0x016F,0x00FA,0x0171,0x00FC,0x00FD,0x0163,0x02D9
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class windows_1252
-: public Encoding
+class windows_1252: public Encoding
 {
 public:
-	windows_1252() : Encoding("windows-1252") {}
-	int map2unicode( int code);
+	windows_1252(): Encoding("windows-1252") {}
+	int map2unicode(int code);
 } exemplar_windows_1252;
 
-int windows_1252::map2unicode( int code)
+int
+windows_1252::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x20AC,0,0x201A,0x0192,0x201E,0x22EF,0x2020,0x2021,
@@ -558,22 +579,21 @@ int windows_1252::map2unicode( int code)
 		0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x00FF
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class windows_1253
-: public Encoding
+class windows_1253: public Encoding
 {
 public:
-	windows_1253() : Encoding("windows-1253") {}
-	int map2unicode( int code);
+	windows_1253(): Encoding("windows-1253") {}
+	int map2unicode(int code);
 } exemplar_windows_1253;
 
-int windows_1253::map2unicode( int code)
+int
+windows_1253::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x20AC,0,0x201A,0x0192,0x201E,0x22EF,0x2020,0x2021,
@@ -594,22 +614,21 @@ int windows_1253::map2unicode( int code)
 		0x03C8,0x03C9,0x03CA,0x03CB,0x03CC,0x03CD,0x03CE,0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class windows_1254
-: public Encoding
+class windows_1254: public Encoding
 {
 public:
-	windows_1254() : Encoding("windows-1254") {}
-	int map2unicode( int code);
+	windows_1254(): Encoding("windows-1254") {}
+	int map2unicode(int code);
 } exemplar_windows_1254;
 
-int windows_1254::map2unicode( int code)
+int
+windows_1254::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x20AC,0,0x201A,0x0192,0x201E,0x22EF,0x2020,0x2021,
@@ -630,22 +649,21 @@ int windows_1254::map2unicode( int code)
 		0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x0131,0x015F,0x00FF
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class windows_1255
-: public Encoding
+class windows_1255: public Encoding
 {
 public:
-	windows_1255() : Encoding("windows-1255") {}
-	int map2unicode( int code);
+	windows_1255(): Encoding("windows-1255") {}
+	int map2unicode(int code);
 } exemplar_windows_1255;
 
-int windows_1255::map2unicode( int code)
+int
+windows_1255::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x20AC,0,0x201A,0x0192,0x201E,0x22EF,0x2020,0x2021,
@@ -666,22 +684,21 @@ int windows_1255::map2unicode( int code)
 		0x05E8,0x05E9,0x05EA,0,0,0,0,0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class windows_1256
-: public Encoding
+class windows_1256: public Encoding
 {
 public:
-	windows_1256() : Encoding("windows-1256") {}
-	int map2unicode( int code);
+	windows_1256(): Encoding("windows-1256") {}
+	int map2unicode(int code);
 } exemplar_windows_1256;
 
-int windows_1256::map2unicode( int code)
+int
+windows_1256::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x060C,0,0x201A,0,0x201E,0x22EF,0x2020,0x2021,
@@ -702,22 +719,21 @@ int windows_1256::map2unicode( int code)
 		0,0x00F9,0,0x00FB,0x00FC,0,0,0x00FF
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_437
-: public Encoding
+class cp_437: public Encoding
 {
 public:
-	cp_437() : Encoding("cp-437") {}
-	int map2unicode( int code);
+	cp_437(): Encoding("cp-437") {}
+	int map2unicode(int code);
 } exemplar_cp_437;
 
-int cp_437::map2unicode( int code)
+int
+cp_437::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,0x00E7,
@@ -738,22 +754,21 @@ int cp_437::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_737
-: public Encoding
+class cp_737: public Encoding
 {
 public:
-	cp_737() : Encoding("cp-737") {}
-	int map2unicode( int code);
+	cp_737(): Encoding("cp-737") {}
+	int map2unicode(int code);
 } exemplar_cp_737;
 
-int cp_737::map2unicode( int code)
+int
+cp_737::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0391,0x0392,0x0393,0x0394,0x0395,0x0396,0x0397,0x0398,
@@ -774,22 +789,21 @@ int cp_737::map2unicode( int code)
 		0x00B0,0x00A3,0x0387,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_850
-: public Encoding
+class cp_850: public Encoding
 {
 public:
-	cp_850() : Encoding("cp-850") {}
-	int map2unicode( int code);
+	cp_850(): Encoding("cp-850") {}
+	int map2unicode(int code);
 } exemplar_cp_850;
 
-int cp_850::map2unicode( int code)
+int
+cp_850::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,0x00E7,
@@ -810,22 +824,21 @@ int cp_850::map2unicode( int code)
 		0x00B0,0x00A8,0x00B7,0x00B9,0x00B3,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_851
-: public Encoding
+class cp_851: public Encoding
 {
 public:
-	cp_851() : Encoding("cp-851") {}
-	int map2unicode( int code);
+	cp_851(): Encoding("cp-851") {}
+	int map2unicode(int code);
 } exemplar_cp_851;
 
-int cp_851::map2unicode( int code)
+int
+cp_851::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x0386,0x00E7,
@@ -846,22 +859,21 @@ int cp_851::map2unicode( int code)
 		0x00B0,0x00A8,0x03C9,0x03CB,0x03B0,0x03CE,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_852
-: public Encoding
+class cp_852: public Encoding
 {
 public:
-	cp_852() : Encoding("cp-852") {}
-	int map2unicode( int code);
+	cp_852(): Encoding("cp-852") {}
+	int map2unicode(int code);
 } exemplar_cp_852;
 
-int cp_852::map2unicode( int code)
+int
+cp_852::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x016F,0x0107,0x00E7,
@@ -882,22 +894,21 @@ int cp_852::map2unicode( int code)
 		0x00B0,0x00A8,0x02D9,0x0171,0x0158,0x0159,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_853
-: public Encoding
+class cp_853: public Encoding
 {
 public:
-	cp_853() : Encoding("cp-853") {}
-	int map2unicode( int code);
+	cp_853(): Encoding("cp-853") {}
+	int map2unicode(int code);
 } exemplar_cp_853;
 
-int cp_853::map2unicode( int code)
+int
+cp_853::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x0109,0x00E7,
@@ -918,22 +929,20 @@ int cp_853::map2unicode( int code)
 		0x00B0,0x00A8,0x02D9,0,0x00B3,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_855
-: public Encoding
+class cp_855: public Encoding
 {
 public:
-	cp_855() : Encoding("cp-855") {}
-	int map2unicode( int code);
+	cp_855(): Encoding("cp-855") {}
+	int map2unicode(int code);
 } exemplar_cp_855;
 
-int cp_855::map2unicode( int code)
+int cp_855::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0452,0x0402,0x0453,0x0403,0x0451,0x0401,0x0454,0x0404,
@@ -954,22 +963,21 @@ int cp_855::map2unicode( int code)
 		0x042D,0x0449,0x0429,0x0447,0x0427,0,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_857
-: public Encoding
+class cp_857: public Encoding
 {
 public:
-	cp_857() : Encoding("cp-857") {}
-	int map2unicode( int code);
+	cp_857(): Encoding("cp-857") {}
+	int map2unicode(int code);
 } exemplar_cp_857;
 
-int cp_857::map2unicode( int code)
+int
+cp_857::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,0x00E7,
@@ -990,22 +998,21 @@ int cp_857::map2unicode( int code)
 		0x00B0,0x00A8,0x00B7,0x00B9,0x00B3,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_860
-: public Encoding
+class cp_860: public Encoding
 {
 public:
-	cp_860() : Encoding("cp-860") {}
-	int map2unicode( int code);
+	cp_860(): Encoding("cp-860") {}
+	int map2unicode(int code);
 } exemplar_cp_860;
 
-int cp_860::map2unicode( int code)
+int
+cp_860::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E3,0x00E0,0x00C1,0x00E7,
@@ -1026,22 +1033,21 @@ int cp_860::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_861
-: public Encoding
+class cp_861: public Encoding
 {
 public:
-	cp_861() : Encoding("cp-861") {}
-	int map2unicode( int code);
+	cp_861(): Encoding("cp-861") {}
+	int map2unicode(int code);
 } exemplar_cp_861;
 
-int cp_861::map2unicode( int code)
+int
+cp_861::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,0x00E7,
@@ -1062,22 +1068,21 @@ int cp_861::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_862
-: public Encoding
+class cp_862: public Encoding
 {
 public:
-	cp_862() : Encoding("cp-862") {}
-	int map2unicode( int code);
+	cp_862(): Encoding("cp-862") {}
+	int map2unicode(int code);
 } exemplar_cp_862;
 
-int cp_862::map2unicode( int code)
+int
+cp_862::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x05D0,0x05D1,0x05D2,0x05D3,0x05D4,0x05D5,0x05D6,0x05D7,
@@ -1098,22 +1103,21 @@ int cp_862::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_863
-: public Encoding
+class cp_863: public Encoding
 {
 public:
-	cp_863() : Encoding("cp-863") {}
-	int map2unicode( int code);
+	cp_863(): Encoding("cp-863") {}
+	int map2unicode(int code);
 } exemplar_cp_863;
 
-int cp_863::map2unicode( int code)
+int
+cp_863::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00C2,0x00E0,0x00B6,0x00E7,
@@ -1134,24 +1138,23 @@ int cp_863::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_864
-: public Encoding
+class cp_864: public Encoding
 {
 public:
-	cp_864() : Encoding("cp-864") {}
-	int map2unicode( int code);
+	cp_864(): Encoding("cp-864") {}
+	int map2unicode(int code);
 } exemplar_cp_864;
 
-int cp_864::map2unicode( int code)
+int
+cp_864::map2unicode(int code)
 {
-static unsigned short table[] = {
+	static unsigned short table[] = {
 		0x00B0,0x00B7,0x2219,0x221A,0x2592,0x2500,0x2502,0x253C,
 		0x2524,0x252C,0x251C,0x2534,0x2510,0x250C,0x2514,0x2518,
 		0x00DF,0x221E,0x03A6,0x00B1,0x00BD,0x00BC,0x2248,0x00AB,
@@ -1170,24 +1173,23 @@ static unsigned short table[] = {
 		0x0642,0,0,0x0644,0x0643,0x064A,0x25A0,0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_865
-: public Encoding
+class cp_865: public Encoding
 {
 public:
-	cp_865() : Encoding("cp-865") {}
-	int map2unicode( int code);
+	cp_865(): Encoding("cp-865") {}
+	int map2unicode(int code);
 } exemplar_cp_865;
 
-int cp_865::map2unicode( int code)
+int
+cp_865::map2unicode(int code)
 {
-static unsigned short table[] = {
+	static unsigned short table[] = {
 		0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,0x00E7,
 		0x00EA,0x00EB,0x00E8,0x00EF,0x00EE,0x00EC,0x00C4,0x00C5,
 		0x00C9,0x00E6,0x00C6,0x00F4,0x00F6,0x00F2,0x00FB,0x00F9,
@@ -1206,22 +1208,21 @@ static unsigned short table[] = {
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_866
-: public Encoding
+class cp_866: public Encoding
 {
 public:
-	cp_866() : Encoding("cp-866") {}
-	int map2unicode( int code);
+	cp_866(): Encoding("cp-866") {}
+	int map2unicode(int code);
 } exemplar_cp_866;
 
-int cp_866::map2unicode( int code)
+int
+cp_866::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0410,0x0411,0x0412,0x0413,0x0414,0x0415,0x0416,0x0417,
@@ -1242,22 +1243,21 @@ int cp_866::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x2116,0x00A4,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_869
-: public Encoding
+class cp_869: public Encoding
 {
 public:
-	cp_869() : Encoding("cp-869") {}
-	int map2unicode( int code);
+	cp_869(): Encoding("cp-869") {}
+	int map2unicode(int code);
 } exemplar_cp_869;
 
-int cp_869::map2unicode( int code)
+int
+cp_869::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0,0,0,0,0,0,0x0386,0,
@@ -1278,22 +1278,21 @@ int cp_869::map2unicode( int code)
 		0x00B0,0x00A8,0x03C9,0x03CB,0x03B0,0x03CE,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class cp_895
-: public Encoding
+class cp_895: public Encoding
 {
 public:
-   cp_895() : Encoding("cp-895") {}
-   int map2unicode( int code);
+	cp_895(): Encoding("cp-895") {}
+	int map2unicode(int code);
 } exemplar_cp_895;
 
-int cp_895::map2unicode( int code)
+int
+cp_895::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x010C,0x00FC,0x00E9,0x010F,0x00E4,0x010E,0x0164,0x010D,
@@ -1314,22 +1313,21 @@ int cp_895::map2unicode( int code)
 		0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x25A0,0x00A0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
 
-//---
-class wingreek
-: public Encoding
+class wingreek: public Encoding
 {
 public:
-   wingreek() : Encoding("wingreek-0") {}
-   int map2unicode( int code);
+	wingreek(): Encoding("wingreek-0") {}
+	int map2unicode(int code);
 } exemplar_wingreek;
 
-int wingreek::map2unicode( int code)
+int
+wingreek::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0,0x0000,0x0001,0x0002,0x0003,0x0004,0x0005,0x0006,
@@ -1366,22 +1364,21 @@ int wingreek::map2unicode( int code)
 		0x1FA3,0x1FA2,0x1FF7,0x1FA7,0x1FA6,0,0,0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code >= 256) return code;
-	return table[ code];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code >= 256) return code;
+	return table[code];
 }
 
 
-//---
-class symbol
-: public Encoding
+class symbol: public Encoding
 {
 public:
-   symbol() : Encoding("symbol-0") {}
-   int map2unicode( int code);
+	symbol(): Encoding("symbol-0") {}
+	int map2unicode(int code);
 } exemplar_symbol;
 
-int symbol::map2unicode( int code)
+int
+symbol::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0000,0x0001,0x0002,0x0003,0x0004,0x0005,0x0006,0x0007,
@@ -1418,22 +1415,21 @@ int symbol::map2unicode( int code)
 		0,0,0,0,0,0,0,0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code >= 256) return code;
-	return table[ code];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code >= 256) return code;
+	return table[code];
 }
 
 
-//---
-class wingding
-: public Encoding
+class wingding: public Encoding
 {
 public:
-   wingding() : Encoding("wingding-0") {}
-   int map2unicode( int code);
+	wingding(): Encoding("wingding-0") {}
+	int map2unicode(int code);
 } exemplar_wingding;
 
-int wingding::map2unicode( int code)
+int
+wingding::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0x0000,0x0001,0x0002,0x0003,0x0004,0x0005,0x0006,0x0007,
@@ -1470,67 +1466,68 @@ int wingding::map2unicode( int code)
 		0,0,0,0x2718,0x2714,0,0,0
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code >= 256) return code;
-	return table[ code];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code >= 256) return code;
+	return table[code];
 }
 
 
-//---
-class atari_st
-: public Encoding
+class atari_st: public Encoding
 {
 public:
-   atari_st() : Encoding("atari-st") {}
-   int map2unicode( int code);
+	atari_st(): Encoding("atari-st") {}
+	int map2unicode(int code);
 } exemplar_atarist;
 
-int atari_st::map2unicode( int code)
+int
+atari_st::map2unicode(int code)
 {
-   static unsigned short table[] = {
-	0,0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,
-	0x00E7,0x00EA,0x00EB,0x00E8,0x00EF,0x00EE,0x00EC,0x00C4,
-	0x00C5,0x00C9,0x00E6,0x00C6,0x00F4,0x00F6,0x00F2,0x00FB,
-	0x00F9,0x00FF,0x00D6,0x00DC,0x00A2,0x00A3,0x00A5,0x00DF,
-	0x0192,0x00E1,0x00ED,0x00F3,0x00FA,0x00F1,0x00D1,0x00AA,
-	0x00BA,0x00BF,0x2310,0x00AC,0x00BD,0x00BC,0x00A1,0x00AB,
-	0x00BB,0x00E3,0x00F5,0x00D8,0x00F8,0x0153,0x0152,0x00C0,
-	0x00C3,0x00D5,0x00A8,0x00B4,0x2020,0x00B6,0x00A9,0x00AE,
-	0x2122,0x0133,0x0132,0x05D0,0x05D1,0x05D2,0x05D3,0x05D4,
-	0x05D5,0x05D6,0x05D7,0x05D8,0x05D9,0x05DB,0x05DC,0x05DE,
-	0x05E0,0x05E1,0x05E2,0x05E4,0x05E6,0x05E7,0x05E8,0x05E9,
-	0x05EA,0x05DF,0x05DA,0x05DD,0x05E3,0x05E5,0x00A7,0x2227,
-	0x221E,0x03B1,0x03B2,0x0393,0x03C0,0x2211,0x03C3,0x00B5,
-	0x03C4,0x03A6,0x0398,0x2126,0x03B4,0x222E,0x2205,0x2208,
-	0x2229,0x2261,0x00B1,0x2265,0x2264,0x2320,0x2321,0x00F7,
-	0x2248,0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x00B3,
-	0x00AF   };
+	static unsigned short table[] = {
+		0,0x00C7,0x00FC,0x00E9,0x00E2,0x00E4,0x00E0,0x00E5,
+		0x00E7,0x00EA,0x00EB,0x00E8,0x00EF,0x00EE,0x00EC,0x00C4,
+		0x00C5,0x00C9,0x00E6,0x00C6,0x00F4,0x00F6,0x00F2,0x00FB,
+		0x00F9,0x00FF,0x00D6,0x00DC,0x00A2,0x00A3,0x00A5,0x00DF,
+		0x0192,0x00E1,0x00ED,0x00F3,0x00FA,0x00F1,0x00D1,0x00AA,
+		0x00BA,0x00BF,0x2310,0x00AC,0x00BD,0x00BC,0x00A1,0x00AB,
+		0x00BB,0x00E3,0x00F5,0x00D8,0x00F8,0x0153,0x0152,0x00C0,
+		0x00C3,0x00D5,0x00A8,0x00B4,0x2020,0x00B6,0x00A9,0x00AE,
+		0x2122,0x0133,0x0132,0x05D0,0x05D1,0x05D2,0x05D3,0x05D4,
+		0x05D5,0x05D6,0x05D7,0x05D8,0x05D9,0x05DB,0x05DC,0x05DE,
+		0x05E0,0x05E1,0x05E2,0x05E4,0x05E6,0x05E7,0x05E8,0x05E9,
+		0x05EA,0x05DF,0x05DA,0x05DD,0x05E3,0x05E5,0x00A7,0x2227,
+		0x221E,0x03B1,0x03B2,0x0393,0x03C0,0x2211,0x03C3,0x00B5,
+		0x03C4,0x03A6,0x0398,0x2126,0x03B4,0x222E,0x2205,0x2208,
+		0x2229,0x2261,0x00B1,0x2265,0x2264,0x2320,0x2321,0x00F7,
+		0x2248,0x00B0,0x2219,0x00B7,0x221A,0x207F,0x00B2,0x00B3,
+		0x00AF
+	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
-//--- thanks Gilbert Baumann 
-//--- Used to be unicode-2 - now known as iso10646-1  
-class iso10646_1
-: public Encoding
+
+// Thanks Gilbert Baumann 
+// Used to be unicode-2 - now known as iso10646-1  
+class iso10646_1: public Encoding
 {
 public:
-	iso10646_1() : Encoding("iso10646-1") {}
-	int map2unicode( int code) { return code;}
+	iso10646_1(): Encoding("iso10646-1") {}
+	int map2unicode(int code) { return code;}
 } exemplar_iso10646_1;
 
-//--- thanks Mindaugas Riauba
-class windows_1257
-: public Encoding
+
+// Thanks Mindaugas Riauba
+class windows_1257: public Encoding
 {
 public:
-	windows_1257() : Encoding("windows-1257") {}
-	int map2unicode( int code);
+	windows_1257(): Encoding("windows-1257") {}
+	int map2unicode(int code);
 } exemplar_windows_1257;
 
-int windows_1257::map2unicode( int code)
+int
+windows_1257::map2unicode(int code)
 {
 	static unsigned short table[] = {
 		0,0,0x201a,0,0x201e,0x2026,0x2020,0x2021,
@@ -1551,21 +1548,22 @@ int windows_1257::map2unicode( int code)
 		0x0173,0x0142,0x015b,0x016b,0x00fc,0x017c,0x017e,0x02d9
 	};
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-	if( code < 128 || code >= 256) return code;
-	return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code < 128 || code >= 256) return code;
+	return table[code - 128];
 }
 
-//--- contributed by Ove Kaaven  **added 4/14/1999 for v0.9.99 **
-class windows_sami2
-: public Encoding                                                               
+
+// Thanks to Ove Kaaven  **added 4/14/1999 for v0.9.99 **
+class windows_sami2: public Encoding
 {
 public:
         windows_sami2() : Encoding("windows-sami2") {}
-        int map2unicode( int code);
+        int map2unicode(int code);
 } exemplar_windows_sami2;                                                       
 
-int windows_sami2::map2unicode( int code)
+int
+windows_sami2::map2unicode(int code)
 {
         static unsigned short table[] = {
                 0x20AC,0,0x010C,0x0192,0x010D,0x01B7,0x0292,0x01EE,
@@ -1586,16 +1584,17 @@ int windows_sami2::map2unicode( int code)
                 0x00F8,0x00F9,0x00FA,0x00FB,0x00FC,0x00FD,0x00FE,0x00FF
         };                                                                      
 
-	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
-        if( code < 128 || code >= 256) return code;
-        return table[ code - 128];
+	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+        if (code < 128 || code >= 256) return code;
+        return table[code - 128];
 }                                                                               
 
 
-void Encoding::getDefault( Encoding** maps, int maxcodes)
+void
+Encoding::getDefault(Encoding** maps, int maxcodes)
 {
 	maps[0] = &exemplar_iso8859_1;
-	if(maxcodes <= 1) return;
+	if (maxcodes <= 1) return;
 	maps[1] = 0;
 }
 

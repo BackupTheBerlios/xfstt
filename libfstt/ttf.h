@@ -1,76 +1,102 @@
-// Header for the xfstt (X Font Server for TT Files) font engine
-// (C) Copyright 1997-1998 Herbert Duerr
+/*
+ * Header for the xfstt (X Font Server for TT Files) font engine
+ *
+ * $Id: ttf.h,v 1.1 2002/11/14 12:08:16 guillem Exp $
+ *
+ * Copyright (C) 1997-1998 Herbert Duerr
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
 
-// usage example to get font info, glyph extents and glyph bitmaps:
-//
-//	raster = new Rasterizer();
-//	font = new TTFont( "fontname.ttf");
-//	raster->getFontInfo( &fontInfo);
-//	raster->setPixelSize( 20, 0, 0, 20);
-//	raster->getFontExtent( &fontExtent);
-//	delete font;
-//	delete raster;
+#ifndef TTF_H
+#define TTF_H
+
+/*
+ * usage example to get font info, glyph extents and glyph bitmaps:
+ *
+ *	raster = new Rasterizer();
+ *	font = new TTFont("fontname.ttf");
+ *	raster->getFontInfo(&fontInfo);
+ *	raster->setPixelSize(20, 0, 0, 20);
+ *	raster->getFontExtent(&fontExtent);
+ *	delete font;
+ *	delete raster;
+ *
+ */
 
 #include "arch.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <assert.h>
 
 #ifndef MULDIV
-	#define MULDIV(a,b,c) (int)(((S64)(a) * (b) + (c>>1)) / (c))
+#  define MULDIV(a,b,c) (int)(((S64)(a) * (b) + (c >> 1)) / (c))
 #endif
 
 #ifndef DEBUG
-	#define dprintf0( s)
-	#define dprintf1( s, x1)
-	#define dprintf2( s, x1, x2)
-	#define dprintf3( s, x1, x2, x3)
-	#define STATIC static
+#  define dprintf0(s)
+#  define dprintf1(s, x1)
+#  define dprintf2(s, x1, x2)
+#  define dprintf3(s, x1, x2, x3)
+#  define STATIC static
 #else
-	#define dprintf0( s)			fprintf( outfile, (s))
-	#define dprintf1( s, x1)		fprintf( outfile, (s), (x1))
-	#define dprintf2( s, x1, x2)		\
-		fprintf( outfile, (s), (x1), (x2))
-	#define dprintf3( s, x1, x2, x3)	\
-		fprintf( outfile, (s), (x1), (x2), (x3))
-	#define STATIC
+#  define dprintf0(s)			fprintf(outfile, (s))
+#  define dprintf1(s, x1)		fprintf(outfile, (s), (x1))
+#  define dprintf2(s, x1, x2)		fprintf(outfile, (s), (x1), (x2))
+#  define dprintf3(s, x1, x2, x3)	fprintf(outfile, (s), (x1), (x2), (x3))
+#  define STATIC
 #endif
 
 #ifndef MEMDEBUG
-	inline void cleanupMem() {}
+inline void cleanupMem() {}
 #else
-	void cleanupMem();
-#endif 
-
-#ifndef MAGNIFY
-	extern int MAGNIFY;
+void cleanupMem();
 #endif
 
-class RandomAccessFile
-{
+#ifndef MAGNIFY
+extern int MAGNIFY;
+#endif
+
+class RandomAccessFile {
 protected:
-	U8 *ptr, *base;		// low offset for frequently used members
+	U8	*ptr, *base;	// low offset for frequently used members
+
 private:
-	U8* absbase;		//### hack for fileOffset();
-	int length;
+	U8	*absbase;	// XXX: hack for fileOffset();
+	int	length;
+
 public:
-	RandomAccessFile( char* fileName);
-	RandomAccessFile( RandomAccessFile& f, int offset, int _length) {
+	RandomAccessFile(char *fileName);
+	RandomAccessFile(RandomAccessFile &f, int offset, int _length) {
 		length = _length;
 		absbase = f.base;
 		ptr = base = f.base + offset;
 	}
-//###	virtual ~RandomAccessFile()	{}
+	// XXX:	virtual ~RandomAccessFile()	{}
 
-	int openError()			{ return (absbase==0);}
+	int openError()			{ return (absbase == 0); }
 	void closeRAFile();
 
-	void reset()			{ ptr = base;}
-	void seekAbsolute( int ofs)	{ ptr = base + ofs;}
-	void seekRelative( int rel)	{ ptr += rel;}
-	int tell()			{ return (ptr - base);}
-	int fileOffset()		{ return (ptr - absbase);}
-	U32 getLength()			{ return length;}
+	void reset()			{ ptr = base; }
+	void seekAbsolute(int ofs)	{ ptr = base + ofs; }
+	void seekRelative(int rel)	{ ptr += rel; }
+	int tell()			{ return (ptr - base); }
+	int fileOffset()		{ return (ptr - absbase); }
+	U32 getLength()			{ return length; }
 
 	U32 calcChecksum();
 
@@ -89,29 +115,29 @@ public:
 	}
 	S16 readSShort() {
 		S16 i = ptr[0];
-		i = (i<<8) | ptr[1];
+		i = (i << 8) | ptr[1];
 		ptr += 2;
 		return i;
 	}
 	U16 readUShort() {
 		U16 i = ptr[0];
-		i = (i<<8) | ptr[1];
+		i = (i << 8) | ptr[1];
 		ptr += 2;
 		return i;
 	}
 	S32 readSInt() {
 		S32 i = ptr[0];
-		i = (i<<8) | ptr[1];
-		i = (i<<8) | ptr[2];
-		i = (i<<8) | ptr[3];
+		i = (i << 8) | ptr[1];
+		i = (i << 8) | ptr[2];
+		i = (i << 8) | ptr[3];
 		ptr += 4;
 		return i;
 	}
 	U32 readUInt() {
 		U32 i = ptr[0];
-		i = (i<<8) | ptr[1];
-		i = (i<<8) | ptr[2];
-		i = (i<<8) | ptr[3];
+		i = (i << 8) | ptr[1];
+		i = (i << 8) | ptr[2];
+		i = (i << 8) | ptr[3];
 		ptr += 4;
 		return i;
 	}
@@ -127,14 +153,14 @@ public:
 	}
 #endif /* HAS64BIT_TYPES */
 
-	void writeByte( U8 byte) {
+	void writeByte(U8 byte) {
 		*(ptr++) = byte;
 	}
 };
 
-void* allocMem( int size);		// mmaping allocation
-void* shrinkMem( void* ptr, int newsize);
-void deallocMem( void* ptr, int size);
+void *allocMem(int size);		// mmaping allocation
+void *shrinkMem(void *ptr, int newsize);
+void deallocMem(void *ptr, int size);
 
 
 class NameTable;
@@ -169,53 +195,60 @@ class KernTable;
 class VheaTable;
 class MortTable;
 
-enum{ ON_CURVE = 1, X_TOUCHED = 0x40, Y_TOUCHED = 0x80, END_SUBGLYPH = 0x100};
-typedef struct{ int xnow, ynow, xold, yold, flags
-#ifdef WIN32
-	, xgoal, ygoal, fgoal
-#endif
-;} point;
+enum {
+	ON_CURVE = 1,
+	X_TOUCHED = 0x40,
+	Y_TOUCHED = 0x80,
+	END_SUBGLYPH = 0x100
+};
 
-struct FontInfo
-{
+typedef struct {
+	int	xnow, ynow;
+	int	xold, yold;
+	int	flags;
+#ifdef WIN32
+	int	xgoal, ygoal, fgoal;
+#endif
+} point;
+
+struct FontInfo {
 	U16	firstChar, lastChar;
 	U8	panose[10];
 	int	faceLength;
-	char	faceName[ 32];
+	char	faceName[32];
 };
 
-// table of tables
-class TTFont
-: public RandomAccessFile
-{
-friend class Rasterizer;
-public:	//### perftest needs maxpTable
-	NameTable* nameTable;
-	HeadTable* headTable;
-	MaxpTable* maxpTable;
-	CmapTable* cmapTable;
-	LocaTable* locaTable;
-	GlyphTable* glyphTable;
+// Table of Tables
+class TTFont: public RandomAccessFile {
+	friend class Rasterizer;
 
-	FpgmTable* fpgmTable;
-	PrepTable* prepTable;
-	CvtTable* cvtTable;
+public:	// XXX: perftest needs maxpTable
+	NameTable	*nameTable;
+	HeadTable	*headTable;
+	MaxpTable	*maxpTable;
+	CmapTable	*cmapTable;
+	LocaTable	*locaTable;
+	GlyphTable	*glyphTable;
 
-	HheaTable* hheaTable;
-	HmtxTable* hmtxTable;
-	OS2Table* os2Table;
+	FpgmTable	*fpgmTable;
+	PrepTable	*prepTable;
+	CvtTable	*cvtTable;
 
-	LtshTable* ltshTable;
-	HdmxTable* hdmxTable;
-	VdmxTable* vdmxTable;
+	HheaTable	*hheaTable;
+	HmtxTable	*hmtxTable;
+	OS2Table	*os2Table;
 
-	GaspTable* gaspTable;
-	KernTable* kernTable;
+	LtshTable	*ltshTable;
+	HdmxTable	*hdmxTable;
+	VdmxTable	*vdmxTable;
 
-	EbdtTable* ebdtTable;
-	EblcTable* eblcTable;
-	MortTable* mortTable;
-	VheaTable* vheaTable;
+	GaspTable	*gaspTable;
+	KernTable	*kernTable;
+
+	EbdtTable	*ebdtTable;
+	EblcTable	*eblcTable;
+	MortTable	*mortTable;
+	VheaTable	*vheaTable;
 
 	enum {
 		NAME_MAGIC	= 0x6E616D65,
@@ -244,186 +277,208 @@ public:	//### perftest needs maxpTable
 		MORT_MAGIC	= 0x6D6F7274
 	};
 
-	int* endPoints;
-	point* points;
+	int	*endPoints;
+	point	*points;
+
 public:
-	TTFont( char* fileName, int infoOnly = 0);
+	TTFont(char *fileName, int infoOnly = 0);
 	~TTFont();
 
 	int badFont();
-	void getFontInfo( FontInfo* fi);
+	void getFontInfo(FontInfo *fi);
 
-	int getGlyphNo8( char charNo);
-	int getGlyphNo16( int charNo);
+	int getGlyphNo8(char charNo);
+	int getGlyphNo16(int charNo);
 	int getEmUnits();
 
-	int getMaxWidth( int mppemx);
-	int getGlyphWidth( int mppemx, int glyphNo);
-	int getGlyphMetrics( int glyphNo);
+	int getMaxWidth(int mppemx);
+	int getGlyphWidth(int mppemx, int glyphNo);
+	int getGlyphMetrics(int glyphNo);
 
-	int getXLFDbase( char* xlfd);
+	int getXLFDbase(char *xlfd);
 
 	// for comparing with reference implementation
-	int patchGlyphCode( GlyphTable* glyph, int instruction);
-	int checksum( U8* buf, int len);
+	int patchGlyphCode(GlyphTable *glyph, int instruction);
+	int checksum(U8 *buf, int len);
 	void updateChecksums();
-	int write2File( char* filename);
-	void patchName( U8* patchData, int patchLength);
+	int write2File(char *filename);
+	void patchName(U8 *patchData, int patchLength);
+};
+
+class NameTable: public RandomAccessFile {
+	int	strBase;
+	int	nRecords;
+
+public:
+	NameTable(RandomAccessFile &f, int offset, int length);
+
+	enum {
+		NAME_COPYRIGHT = 0,
+		NAME_FAMILY = 1,
+		NAME_SUBFAMILY = 2,
+		NAME_UNIQUE = 3,
+		NAME_FULLNAME = 4,
+		NAME_VERSION = 5,
+		NAME_POSTSCRIPT = 6,
+		NAME_TRADEMARK = 7
+	};
+
+	char *getString(int platformId, int strId, int *len, char *conv = 0);
+};
+
+// Font specific flags
+class HeadTable: public RandomAccessFile {
+	U32	headMagic;
+
+public:	// XXX
+	U32	checksumAdj;
+	U16	flags;
+	U16	emUnits;
+	S16	xmin, ymin;
+	S16	xmax, ymax;
+	U16	macStyle;
+	U16	lowestPP;
+	U16	locaMode;
+
+	enum {
+		FONTCRC_MAGIC = 0xB1B0AFBA,
+		VALIDHEAD_MAGIC = 0x5F0F3CF5
+	};
+
+	enum {
+		Y_BASELINE = 1,
+		X_BASELINE = 2,
+		CODE_VARIES = 4,
+		FORCE_INT = 8,
+		WIDTH_VARIES = 16
+	};
+
+	enum {
+		BOLD = 1,
+		ITALIC = 2
+	};
+
+public:
+	HeadTable(RandomAccessFile &f, int offset, int length);
+
+	int shortLoca()		{ return locaMode == 0; }
+	int badHeadMagic()	{ return headMagic != VALIDHEAD_MAGIC; }
 };
 
 
-// name table
-class NameTable
-: public RandomAccessFile
-{
-	int strBase;
-	int nRecords;
+// Font limits
+class MaxpTable: public RandomAccessFile {
+	friend class TTFont;
+	friend class Rasterizer;
+
+	U16	numGlyphs;
+	U16	maxPoints;
+	U16	maxContours;
+
+	U16	maxCompPoints;
+	U16	maxCompContours;
+	U16	maxZones;
+	U16	maxTwilightPoints;
+	U16	maxStorage;
+	U16	maxFunctionDefs;
+	U16	maxInstructionDefs;
+	U16	maxStackSize;
+	U16	maxCodeSize;
+	U16	maxComponentElements;
+	U16	maxComponentDepth;
+
 public:
-	NameTable( RandomAccessFile& f, int offset, int length);
+	MaxpTable(RandomAccessFile &f, int offset, int length);
 
-	enum {	COPYRIGHT=0,	FAMILY=1,	SUBFAMILY=2,	UNIQUE=3,
-		FULLNAME=4,	VERSION=5,	POSTSCRIPT=6,	TRADEMARK=7};
-
-	char* getString( int platformId, int strId, int* len, char* conv=0);
+	U16 getNumGlyphs()	{ return numGlyphs;}
 };
 
 
-// font specific flags
-class HeadTable
-: public RandomAccessFile
-{
-	U32 headMagic;
-public:	//###
-	U32 checksumAdj;
-	U16 flags;
-	U16 emUnits;
-	S16 xmin, ymin;
-	S16 xmax, ymax;
-	U16 macStyle;
-	U16 lowestPP;
-	U16 locaMode;
+// Character code to glyph number mapping
+class CmapTable: public RandomAccessFile {
+	enum {
+		BYTE_ENCODING = 0,
+		HIGH_BYTE_MAPPING = 2,
+		SEGMENT_MAPPING = 4,
+		TRIMMED_MAPPING = 6
+	}; // format
 
-	enum{ FONTCRC_MAGIC = 0xB1B0AFBA, VALIDHEAD_MAGIC = 0x5F0F3CF5};
-
-	enum{ Y_BASELINE=1, X_BASELINE=2, CODE_VARIES=4,
-		FORCE_INT=8, WIDTH_VARIES=16};
-
-	enum{ BOLD=1, ITALIC=2};
+	int	format;
+	int	subtableOffset;
+	int	f4NSegments;
+	int	f6FirstCode;
+	int	f6EntryCount;
 
 public:
-	HeadTable( RandomAccessFile& f, int offset, int length);
+	CmapTable(RandomAccessFile &f, int offset, int length);
 
-	int shortLoca() { return locaMode == 0;}
-	int badHeadMagic() { return headMagic != VALIDHEAD_MAGIC;}
-};
+	int char2glyphNo(char char8);
+	int unicode2glyphNo(U16 unicode);
 
-
-// font limits
-class MaxpTable
-: public RandomAccessFile
-{
-friend class TTFont;
-friend class Rasterizer;
-
-	U16 numGlyphs;
-	U16 maxPoints;
-	U16 maxContours;
-
-	U16 maxCompPoints;
-	U16 maxCompContours;
-	U16 maxZones;
-	U16 maxTwilightPoints;
-	U16 maxStorage;
-	U16 maxFunctionDefs;
-	U16 maxInstructionDefs;
-	U16 maxStackSize;
-	U16 maxCodeSize;
-	U16 maxComponentElements;
-	U16 maxComponentDepth;
-
-public:
-	MaxpTable( RandomAccessFile& f, int offset, int length);
-
-	U16 getNumGlyphs() { return numGlyphs;}
-};
-
-
-// character code to glyph number mapping
-class CmapTable
-: public RandomAccessFile
-{
-	enum { BYTE_ENCODING = 0, HIGH_BYTE_MAPPING = 2, 
-		SEGMENT_MAPPING = 4, TRIMMED_MAPPING = 6 }; // format
-	int format;
-	int subtableOffset;
-	int f4NSegments;
-	int f6FirstCode;
-	int f6EntryCount;
-public:
-	CmapTable( RandomAccessFile& f, int offset, int length);
-
-	int char2glyphNo( char char8);
-	int unicode2glyphNo( U16 unicode);
-
-	U16 nextUnicode( U16 unicode);
+	U16 nextUnicode(U16 unicode);
 	U16 firstUnicode();
 	U16 lastUnicode();
 };
 
 
-// glyph number to glyph data offset mapping
-class LocaTable
-: public RandomAccessFile
-{
-	int maxGlyph;
-	int isShort;
-public:
-	LocaTable( RandomAccessFile& f, int offset, int length);
+// Glyph number to glyph data offset mapping
+class LocaTable: public RandomAccessFile {
+	int	maxGlyph;
+	int	isShort;
 
-	void setupLoca( int _isShort, int _maxGlyph) {
+public:
+	LocaTable(RandomAccessFile &f, int offset, int length);
+
+	void setupLoca(int _isShort, int _maxGlyph) {
 		isShort = _isShort;
 		maxGlyph = _maxGlyph;
 	}
 
-	int getGlyphOffset( int glyphNo);
+	int getGlyphOffset(int glyphNo);
 };
 
 
-// glyph data
-class GlyphTable
-: /*public*/ RandomAccessFile
-{
-friend class Rasterizer;
-	S16 xmin;
-	//S16 xmin, ymin;
-	//S16 xmax, ymax;
+// Glyph data
+class GlyphTable: /*public*/ RandomAccessFile {
+	friend class Rasterizer;
 
-	int codeOffset;
-	int codeLength;
+	S16	xmin;
+	//S16	xmin, ymin;
+	//S16	xmax, ymax;
 
-public: //### needed by verify.cpp
-	enum{ ON_CURVE = 0x01, X_SHORT = 0x02, Y_SHORT = 0x04,
-		F_SAME = 0x08, X_EXT = 0x10, Y_EXT = 0x20};
+	int	codeOffset;
+	int	codeLength;
 
-	int nEndPoints;
-	int* endPoints;
-	int nPoints;
-	point* points;
+public: // XXX: needed by verify.cpp
+	enum {
+		ON_CURVE = 0x01,
+		X_SHORT = 0x02,
+		Y_SHORT = 0x04,
+		F_SAME = 0x08,
+		X_EXT = 0x10,
+		Y_EXT = 0x20
+	};
+
+	int	nEndPoints;
+	int	*endPoints;
+	int	nPoints;
+	point	*points;
 
 public:
-	GlyphTable( RandomAccessFile& f, int offset, int length);
+	GlyphTable(RandomAccessFile &f, int offset, int length);
 
-	void setupGlyph( point* _points, int* _endPoints) {
+	void setupGlyph(point *_points, int *_endPoints) {
 		endPoints = _endPoints;
 		points = _points;
 	}
 
-	int getGlyphData( int glyphOffset, LocaTable* locaTable, Rasterizer*);
+	int getGlyphData(int glyphOffset, LocaTable *locaTable, Rasterizer*);
 
 private:
-	int getCompositeGlyphData( int gn, LocaTable* locaTable, Rasterizer*);
+	int getCompositeGlyphData(int gn, LocaTable *locaTable, Rasterizer*);
 
-	enum{	ARGS_ARE_WORDS	= 0x0001,
+	enum {
+		ARGS_ARE_WORDS	= 0x0001,
 		ARGS_ARE_XY	= 0x0002,
 		ROUND_XY_TO_GRID= 0x0004,
 		HAS_A_SCALE	= 0x0008,
@@ -433,54 +488,49 @@ private:
 		HAS_XY_SCALE	= 0x0040,
 		HAS_2X2_SCALE	= 0x0080,
 		HAS_CODE	= 0x0100,
-		USE_MY_METRICS	= 0x0200};
+		USE_MY_METRICS	= 0x0200
+	};
 };
 
 
 // Hhea
-class HheaTable
-: public RandomAccessFile
-{
-friend class TTFont;
-friend class Rasterizer;
-	int yAscent;
-	int yDescent;
-	int advWidth;
-	int minLeftBear;
-	int minRightBear;
-	int maxExtent;
-	int caretSlopeNum;
-	int caretSlopeDenom;
-	int isMetric;
-	int nLongHMetrics;
+class HheaTable: public RandomAccessFile {
+	friend class TTFont;
+	friend class Rasterizer;
 
-	HheaTable( RandomAccessFile& f, int offset, int length);
+	int	yAscent;
+	int	yDescent;
+	int	advWidth;
+	int	minLeftBear;
+	int	minRightBear;
+	int	maxExtent;
+	int	caretSlopeNum;
+	int	caretSlopeDenom;
+	int	isMetric;
+	int	nLongHMetrics;
+
+	HheaTable(RandomAccessFile &f, int offset, int length);
 };
 
 
 // Hmtx
-class HmtxTable
-: public RandomAccessFile
-{
-	int nHMetrics;
+class HmtxTable: public RandomAccessFile {
+	int	nHMetrics;
 public:
-	HmtxTable( RandomAccessFile& f, int offset, int length);
+	HmtxTable(RandomAccessFile &f, int offset, int length);
 
-	void setupHmtx( int h) { nHMetrics = h;}
-
-	void getHMetrics( int glyphNo, int* advWidth, int* lsdBear);
+	void setupHmtx(int h)	{ nHMetrics = h; }
+	void getHMetrics(int glyphNo, int *advWidth, int *lsdBear);
 };
 
 
 // OS/2
-class OS2Table
-: public RandomAccessFile
-{
+class OS2Table: public RandomAccessFile {
 public:
 	S16	weightClass;
 	U16	avg_width;
 	U8	panose[10];
-	U32	unicodeRange[ 4];
+	U32	unicodeRange[4];
 	U16	firstCharNo;
 	U16	lastCharNo;
 	U16	selection;
@@ -491,397 +541,486 @@ public:
 	U16	winDescent;
 
 	enum UnicodeRangeFlags {
-		LATIN_0 = 0,	LATIN_1 = 1,	LATIN_A = 2,	LATIN_B = 3,
-		IPA_EXT = 4,	SPACE_MOD = 5,	DIAC_MARKS = 6,	GREEK_0 = 7,
-		GREEK_SYM = 8,	CYRILLIC = 9,	ARMENIAN = 10,	HEBREW_0 = 11,
-		HEBREW_AB = 12,	ARABIC_0 = 13,	ARABIC_1 = 14,	DEVANAGARI = 15,
-		BENGALI = 16,	GURMUKHI = 17,	GUJARATI = 18,	ORIYA = 19,
-		TAMIL = 20,	TELUGU = 21,	KANNADA = 22,	MALAYALAM = 23,
-		THAI = 24,	LAO = 25,	GEORGIAN_0 = 26,GEORGIAN_1 = 27,
-		HANGUL_1 = 28,	LATIN_EA = 29,	GREEK_A = 30,	PUNCT_0 = 31,
-		SUBSUPER = 32,	CURRENCY = 33,	DIAC_SYM = 34,	LETTER = 35,
-		NUMFORMS = 36,	ARROWS = 37,	MATHOP = 38,	MISCTECH = 39,
-		CNTRLPIC = 40,	OCR = 41,	ENCALPHA = 42,	BOXDRAW = 43,
-		BOXELEM = 44,	GSHAPES = 45,	MISCSYMS = 46,	DINGBATS = 47,
-		CJK_SYMS = 48,	HIRAGANA = 49,	KATAGANA = 50,	BOPOMOFO = 51,
-		HANGUL_2 = 52,	CJK_MISC = 53,	CJK_ENC = 54,	CJK_COMP = 55,
-		HANGUL_0 = 56,	RESERVED1 = 57, RESERVED2 = 58, CJK_IDEO0 = 59,
-		PRIVATE = 60,	CJK_IDEO1 = 61,	ALF_PRES = 62,	ARB_PRES0 = 63,
-		HALFMARK = 64,	CJK_FORM = 65,	SFORMV = 66,	ARB_PRESB = 67,
-		WIDTHFORM = 68,	SPECIALS = 69
+		LATIN_0 = 0,
+		LATIN_1 = 1,
+		LATIN_A = 2,
+		LATIN_B = 3,
+		IPA_EXT = 4,
+		SPACE_MOD = 5,
+		DIAC_MARKS = 6,
+		GREEK_0 = 7,
+		GREEK_SYM = 8,
+		CYRILLIC = 9,
+		ARMENIAN = 10,
+		HEBREW_0 = 11,
+		HEBREW_AB = 12,
+		ARABIC_0 = 13,
+		ARABIC_1 = 14,
+		DEVANAGARI = 15,
+		BENGALI = 16,
+		GURMUKHI = 17,
+		GUJARATI = 18,
+		ORIYA = 19,
+		TAMIL = 20,
+		TELUGU = 21,
+		KANNADA = 22,
+		MALAYALAM = 23,
+		THAI = 24,
+		LAO = 25,
+		GEORGIAN_0 = 26,
+		GEORGIAN_1 = 27,
+		HANGUL_1 = 28,
+		LATIN_EA = 29,
+		GREEK_A = 30,
+		PUNCT_0 = 31,
+		SUBSUPER = 32,
+		CURRENCY = 33,
+		DIAC_SYM = 34,
+		LETTER = 35,
+		NUMFORMS = 36,
+		ARROWS = 37,
+		MATHOP = 38,
+		MISCTECH = 39,
+		CNTRLPIC = 40,
+		OCR = 41,
+		ENCALPHA = 42,
+		BOXDRAW = 43,
+		BOXELEM = 44,
+		GSHAPES = 45,
+		MISCSYMS = 46,
+		DINGBATS = 47,
+		CJK_SYMS = 48,
+		HIRAGANA = 49,
+		KATAGANA = 50,
+		BOPOMOFO = 51,
+		HANGUL_2 = 52,
+		CJK_MISC = 53,
+		CJK_ENC = 54,
+		CJK_COMP = 55,
+		HANGUL_0 = 56,
+		RESERVED1 = 57,
+		RESERVED2 = 58,
+		CJK_IDEO0 = 59,
+		PRIVATE = 60,
+		CJK_IDEO1 = 61,
+		ALF_PRES = 62,
+		ARB_PRES0 = 63,
+		HALFMARK = 64,
+		CJK_FORM = 65,
+		SFORMV = 66,
+		ARB_PRESB = 67,
+		WIDTHFORM = 68,
+		SPECIALS = 69
 	};
 
 	enum SelectionFlags {
-		ITALIC = 1,	UNDERSCORE = 2,	NEGATIVE = 4,	OUTLINED = 8,
-		STRIKEOUT = 16,	BOLD = 32,	REGULAR = 64
+		ITALIC = 1,
+		UNDERSCORE = 2,
+		NEGATIVE = 4,
+		OUTLINED = 8,
+		STRIKEOUT = 16,
+		BOLD = 32,
+		REGULAR = 64
 	};
 public:
-	OS2Table( RandomAccessFile& f, int offset, int length);
+	OS2Table(RandomAccessFile &f, int offset, int length);
 };
 
 
 // LTSH
-class LtshTable
-: public RandomAccessFile
-{
+class LtshTable: public RandomAccessFile {
 	int numGlyphs;
-public:
-	LtshTable( RandomAccessFile& f, int offset, int length);
 
-	int getLinearThreshold( int glyphNo);
+public:
+	LtshTable(RandomAccessFile &f, int offset, int length);
+
+	int getLinearThreshold(int glyphNo);
 };
 
 
 // hdmx
-class HdmxTable
-: public RandomAccessFile
-{
-	int nRecords;
-	int recordLen;
-public:
-	HdmxTable( RandomAccessFile& f, int offset, int length);
+class HdmxTable: public RandomAccessFile {
+	int	nRecords;
+	int	recordLen;
 
-	int getMaxWidth( int mppemx);
-	int getGlyphWidth( int mppemx, int glyphNo);
+public:
+	HdmxTable(RandomAccessFile &f, int offset, int length);
+
+	int getMaxWidth(int mppemx);
+	int getGlyphWidth(int mppemx, int glyphNo);
 };
 
 
 // VDMX
-class VdmxTable
-: public RandomAccessFile
-{
-	int nRecords;
-	int nRatios;
+class VdmxTable: public RandomAccessFile {
+	int	nRecords;
+	int	nRatios;
+
 public:
-	VdmxTable( RandomAccessFile& f, int offset, int length);
-	int getYmax( int pelHeight, int xres, int yres, int* ymax, int* ymin);
+	VdmxTable(RandomAccessFile &f, int offset, int length);
+
+	int getYmax(int pelHeight, int xres, int yres, int *ymax, int *ymin);
 };
 
 
 // cvt
-class CvtTable
-: public RandomAccessFile
-{
+class CvtTable: public RandomAccessFile {
 	int nVals;
-public:
-	CvtTable( RandomAccessFile& f, int offset, int length);
 
-	int numVals() { return nVals;}
-	int nextVal() { return readSShort();}
+public:
+	CvtTable(RandomAccessFile &f, int offset, int length);
+
+	int numVals() { return nVals; }
+	int nextVal() { return readSShort(); }
 };
 
 
 // fpgm
-class FpgmTable
-: public RandomAccessFile
-{
-friend class TTFont;
-	FpgmTable( RandomAccessFile& f, int offset, int length);
+class FpgmTable: public RandomAccessFile {
+	friend class TTFont;
+
+	FpgmTable(RandomAccessFile &f, int offset, int length);
 };
 
 
 // prep
-class PrepTable
-: public RandomAccessFile
-{
-friend class TTFont;
-	PrepTable( RandomAccessFile& f, int offset, int length);
+class PrepTable: public RandomAccessFile {
+	friend class TTFont;
+
+	PrepTable(RandomAccessFile &f, int offset, int length);
 };
 
 
 // gasp
-class GaspTable
-: public RandomAccessFile
-{
-	int nRanges;
-public:
-	GaspTable( RandomAccessFile& f, int offset, int length);
+class GaspTable: public RandomAccessFile {
+	int	nRanges;
 
-	enum{ GASP_GRIDFIT = 1, GASP_DOGRAY = 2}; 
-	int getFlags( int mppem);
+public:
+	GaspTable(RandomAccessFile &f, int offset, int length);
+
+	enum {
+		GASP_GRIDFIT = 1,
+		GASP_DOGRAY = 2
+	};
+
+	int getFlags(int mppem);
 };
 
-
-
 // Kern kerning table
-class KernTable
-: public RandomAccessFile
-{
+class KernTable: public RandomAccessFile {
 	int	kernOffset;
 	U16	nPairs;
 	U16	kernLength;
 	U16	coverage;
+
 public:
-	KernTable( RandomAccessFile& f, int offset, int length);
+	KernTable(RandomAccessFile &f, int offset, int length);
 
-	enum {HORIZONTAL=1, MINIMUM=2, CROSS=4, OVERRIDE=8, FORMAT=0xff00};
+	enum {
+		HORIZONTAL = 1,
+		MINIMUM = 2,
+		CROSS = 4,
+		OVERRIDE = 8,
+		FORMAT = 0xff00
+	};
 
-	int getKerning( int leftChar, int rightChar);
+	int getKerning(int leftChar, int rightChar);
 };
 
 
-struct FontExtent
-{
-	int xBlackboxMin, xBlackboxMax;
-	int yBlackboxMin, yBlackboxMax;
-	int xLeftMin, xLeftMax;
-	int xRightMin, xRightMax;
-	int yAscentMin, yAscentMax;
-	int yDescentMin, yDescentMax;
-	int xAdvanceMin, xAdvanceMax;
-	int yAdvanceMin, yAdvanceMax;
-	int yWinAscent, yWinDescent;
+struct FontExtent {
+	int	xBlackboxMin, xBlackboxMax;
+	int	yBlackboxMin, yBlackboxMax;
+	int	xLeftMin, xLeftMax;
+	int	xRightMin, xRightMax;
+	int	yAscentMin, yAscentMax;
+	int	yDescentMin, yDescentMax;
+	int	xAdvanceMin, xAdvanceMax;
+	int	yAdvanceMin, yAdvanceMax;
+	int	yWinAscent, yWinDescent;
 
-	U8* buffer;	// hack
-	U8* bitmaps;	// hack
-	int buflen;	// hack
-	int bmplen;	// hack
-	int numGlyphs;	// hack
-	int bmpFormat;	// hack
+	U8	*buffer;	// hack
+	U8	*bitmaps;	// hack
+	int	buflen;		// hack
+	int	bmplen;		// hack
+	int	numGlyphs;	// hack
+	int	bmpFormat;	// hack
 	// format of buffer:
-	//	CharInfo[ numGlyphs]
-	//	bitmaps[ numGlyphs]
+	//	CharInfo[numGlyphs]
+	//	bitmaps[numGlyphs]
 };
 
-struct GlyphMetrics
-{
-	int xBlackbox, yBlackbox;
-	int xOrigin, yOrigin;
-	int xAdvance, yAdvance;
+struct GlyphMetrics {
+	int	xBlackbox, yBlackbox;
+	int	xOrigin, yOrigin;
+	int	xAdvance, yAdvance;
 };
 
-struct CharInfo
-{
-	GlyphMetrics gm;
-	int offset;
-	int length;
-	int tmpofs;	// scratchpad offset
+struct CharInfo {
+	GlyphMetrics	gm;
+	int		offset;
+	int		length;
+	int		tmpofs;	// scratchpad offset
 };
 
 
 // EBLC embedded bitmap locations
-class EblcTable
-: public RandomAccessFile
-{
-	enum { HORIZONTAL = 0x01, VERTICAL = 0x02};
-public:
-	EblcTable( RandomAccessFile& f, int offset, int length);
+class EblcTable: public RandomAccessFile {
+	enum {
+		HORIZONTAL = 0x01,
+		VERTICAL = 0x02
+	};
 
-	void readStrike( int glyphNo, int _ppemx, int _ppemy);
-	void readSubTableArray( int glyphNo, int ofsSTA);
-	void readSubTable( int first, int last);
+public:
+	EblcTable(RandomAccessFile &f, int offset, int length);
+
+	void readStrike(int glyphNo, int _ppemx, int _ppemy);
+	void readSubTableArray(int glyphNo, int ofsSTA);
+	void readSubTable(int first, int last);
 };
 
 // EBDT embedded bitmap data
-class EbdtTable
-: public RandomAccessFile
-{
+class EbdtTable: public RandomAccessFile {
 public:
-	EbdtTable( RandomAccessFile& f, int offset, int length);
+	EbdtTable(RandomAccessFile &f, int offset, int length);
 
-	int readBitmap( int format, U8* bitmap, GlyphMetrics* gm);
+	int readBitmap(int format, U8 *bitmap, GlyphMetrics *gm);
 };
 
 // EBSC embedded bitmap scaling info
-class EbscTable
-: public RandomAccessFile
-{
+class EbscTable: public RandomAccessFile {
 public:
-	EbscTable( RandomAccessFile& f, int offset, int length);
+	EbscTable(RandomAccessFile &f, int offset, int length);
 };
 
 
 class GraphicsState {
-friend class Rasterizer;	// only Rasterizer needs this
+	friend class Rasterizer;	// only Rasterizer needs this
 
 	GraphicsState() {}
 
-	void init( point** p);
-	int absNewMeasure( int dx, int dy);
-	int absOldMeasure( int dx, int dy);
-	void movePoint( point& pp, int len10D6);
+	void init(point** p);
+	int absNewMeasure(int dx, int dy);
+	int absOldMeasure(int dx, int dy);
+	void movePoint(point &pp, int len10D6);
 	void recalc();
 
-	int f_vec_x;		// freedom vector
-	int p_vec_x;		// projection vector
-	int dp_vec_x;		// dual projection vector
+	int	f_vec_x;	// freedom vector
+	int	p_vec_x;	// projection vector
+	int	dp_vec_x;	// dual projection vector
 
-	int f_vec_y;
-	int p_vec_y;
-	int dp_vec_y;
+	int	f_vec_y;
+	int	p_vec_y;
+	int	dp_vec_y;
 
-	int flags;
-	int move_x;
-	int move_y;
+	int	flags;
+	int	move_x;
+	int	move_y;
 
-	point *zp0, *zp1, *zp2;
-	int rp0, rp1, rp2;	// reference points
-	int loop;		// loop counter
-	int auto_flip;
-	int cvt_cut_in;
-	int round_state;
-	int round_phase;
-	int round_period;
-	int round_thold;
-	int min_distance;
-	int swidth_cut_in;
-	int swidth_value;
-	int delta_base;
-	int delta_shift;
-	int instr_control;
-	int dropout_control;
+	point	*zp0, *zp1, *zp2;
+	int	rp0, rp1, rp2;	// reference points
+	int	loop;		// loop counter
+	int	auto_flip;
+	int	cvt_cut_in;
+	int	round_state;
+	int	round_phase;
+	int	round_period;
+	int	round_thold;
+	int	min_distance;
+	int	swidth_cut_in;
+	int	swidth_value;
+	int	delta_base;
+	int	delta_shift;
+	int	instr_control;
+	int	dropout_control;
 };
 
-enum{ UNITY2D14 = 0x4000};
-enum{ SHIFT = 6, SUBS = 64};
-enum {VGARES = 96};
+enum {
+	UNITY2D14 = 0x4000
+};
+
+enum {
+	SHIFT = 6,
+	SUBS = 64
+};
+
+enum {
+	VGARES = 96
+};
 
 // scan line converter
-class Rasterizer
-{
+class Rasterizer {
 private:
-	typedef struct{ RandomAccessFile* f; int offset; int length;} FDefs;
+	typedef struct {
+		RandomAccessFile	*f;
+		int			offset;
+		int			length;
+	} FDefs;
 	typedef FDefs IDefs;
 
 	// often accessed members should be here (low offsets)
 
-	int *stack, *stackbase;		// stack grows upward
-	point* p[2];			// points (twilight + action zone)
-	int* endPoints;
-	int nPoints[2];			// number of points in zone 0 and 1
-	int nEndPoints;
+	int	*stack, *stackbase;	// stack grows upward
+	point	*p[2];			// points (twilight + action zone)
+	int	*endPoints;
+	int	nPoints[2];		// number of points in zone 0 and 1
+	int	nEndPoints;
 
-	int* cvt;		// control value table
-	int* stor;		// storage area
-	FDefs* fdefs;		// function definitions
-	IDefs* idefs;		// instruction definitions
+	int	*cvt;			// control value table
+	int	*stor;			// storage area
+	FDefs	*fdefs;			// function definitions
+	IDefs	*idefs;			// instruction definitions
 
-	TTFont* ttFont;
+	TTFont*	ttFont;
 
 	// misc
 
-	enum { UNDERLINE = 1, STRIKEOUT = 2, SUBSCRIPT = 4, SUPERSCRIPT = 8};
+	enum {
+		UNDERLINE = 1,
+		STRIKEOUT = 2,
+		SUBSCRIPT = 4,
+		SUPERSCRIPT = 8
+	};
+
 	int flags;
 
-	enum {	INVALID_FONT, NOT_READY,
-		TRAFO_APPLIED, FONT_DONE} status;
+	enum {
+		INVALID_FONT,
+		NOT_READY,
+		TRAFO_APPLIED,
+		FONT_DONE
+	} status;
 
 	// memory allocation status
 
-	int sizePoints[2], sizeContours, sizeStack;
-	int sizeCvt, sizeStor, sizeFDefs, sizeIDefs;
+	int	sizePoints[2], sizeContours, sizeStack;
+	int	sizeCvt, sizeStor, sizeFDefs, sizeIDefs;
 
 	// used by interpreter
 
-	int xx, xy, yx, yy, xxexp;
-	int pointSize;
-	int mppem, mppemx, mppemy;
+	int	xx, xy, yx, yy, xxexp;
+	int	pointSize;
+	int	mppem, mppemx, mppemy;
 
-	GraphicsState gs, default_gs;
+	GraphicsState	gs, default_gs;
 
 	// resulting bitmap
-	#define SCANLINEPAD	(1<<LOGSLP)
-	#define	SLPMASK		(SCANLINEPAD-1)
+#define SCANLINEPAD	(1 << LOGSLP)
+#define	SLPMASK		(SCANLINEPAD - 1)
 
-	#if (LOGSLP == 3)
-		#define TYPESLP	U8
-	#elif (LOGSLP == 4)
-		#define TYPESLP	U16
-	#elif (LOGSLP == 5)
-		#define TYPESLP	U32
-	#elif (LOGSLP == 6)
-		#define TYPESLP	U64
-	#else
-		#error "illegal value for LOGSLP"
-	#endif
+#if (LOGSLP == 3)
+#define TYPESLP		U8
+#elif (LOGSLP == 4)
+#define TYPESLP		U16
+#elif (LOGSLP == 5)
+#define TYPESLP		U32
+#elif (LOGSLP == 6)
+#define TYPESLP		U64
+#else
+#error "illegal value for LOGSLP"
+#endif
 
-public:	//### clean up showttf so this can become private
-	int format;	// >0 scanlinepad, <0 maxwidth
+public:	// XXX: clean up showttf so this can become private
+	int	format;	// >0 scanlinepad, <0 maxwidth
 
-	int width, height;
-	unsigned int length;
-	int dX;
+	int	width, height;
+	unsigned int	length;
+	int	dX;
 
-	int grid_fitting;	// ==0: none, <0: enabled, >0: enabled+working
-	int anti_aliasing;	// ==0: none, <0: enabled, >0: enabled+working
+	int	grid_fitting;	// ==0: none, <0: enabled, >0: enabled+working
+	int	anti_aliasing;	// ==0: none, <0: enabled, >0: enabled+working
 
 public:
-	Rasterizer( int _grid_fitting=1, int _anti_aliasing=0,
-		int _sizeTwilight=0, int _sizePoints=0, int _sizeContours=0,
-		int _sizeStack=0, int _sizeCvt=0, int _sizeStor=0,
-		int _sizeFDefs=0);
+	Rasterizer(int _grid_fitting = 1, int _anti_aliasing = 0,
+		   int _sizeTwilight = 0, int _sizePoints = 0,
+		   int _sizeContours = 0, int _sizeStack = 0,
+		   int _sizeCvt = 0, int _sizeStor = 0, int _sizeFDefs = 0);
 	~Rasterizer();
 
-	void useTTFont( TTFont* _ttFont, int _flags=0);
-	void setPixelSize( int xx,int xy,int yx,int yy);
-	void setPointSize( int xx,int xy,int yx,int yy, int xres,int yres);
-	void getFontExtent( FontExtent* fe);
+	void useTTFont(TTFont *_ttFont, int _flags=0);
+	void setPixelSize(int xx, int xy, int yx, int yy);
+	void setPointSize(int xx, int xy, int yx, int yy, int xres, int yres);
+	void getFontExtent(FontExtent *fe);
 
-	int putChar8Bitmap( char c8, U8* bmp, U8* bmpend, GlyphMetrics* gm);
-	int putChar16Bitmap( int c16, U8* bmp, U8* bmpend, GlyphMetrics* gm);
-	int putGlyphBitmap( int glyph, U8* bmp, U8* bmpend, GlyphMetrics* gm);
+	int putChar8Bitmap(char c8, U8 *bmp, U8 *bmpend, GlyphMetrics *gm);
+	int putChar16Bitmap(int c16, U8 *bmp, U8 *bmpend, GlyphMetrics *gm);
+	int putGlyphBitmap(int glyph, U8 *bmp, U8 *bmpend, GlyphMetrics *gm);
 
-	void printOutline( void);
+	void printOutline(void);
 
 private:
-friend class GlyphTable;
+	friend class GlyphTable;
+
 	void applyTransformation();
 	void scaleGlyph();
-	int scaleX( int x, int y) { return (((xx*x+xy*y) + 16) >> 5) << xxexp;}
-	int scaleY( int y, int x) { return (((yx*x+yy*y) + 16) >> 5) << xxexp;}
-	void hintGlyph( GlyphTable* g, int offset, int length);
-	void putGlyphData( int ne, int np, int* ep, point* pp, int gn, int xm);
+	int scaleX(int x, int y) {
+		return (((xx * x + xy * y) + 16) >> 5) << xxexp;
+	}
+	int scaleY(int y, int x) {
+		return (((yx * x + yy * y) + 16) >> 5) << xxexp;
+	}
+	void hintGlyph(GlyphTable *g, int offset, int length);
+	void putGlyphData(int ne, int np, int *ep, point *pp, int gn, int xm);
 
 	void initInterpreter();
 	void endInterpreter();
 	void calcCVT();
 
-	void execHints( RandomAccessFile* const f, int offset, int length);
-	void execOpcode( RandomAccessFile* const f);
-	static void skipHints( RandomAccessFile* const f);
+	void execHints(RandomAccessFile *const f, int offset, int length);
+	void execOpcode(RandomAccessFile *const f);
+	static void skipHints(RandomAccessFile* const f);
 
-	int round( int x) const;
+	int round(int x) const;
 
-	void interpolate( point&pp, const point& pRef1, const point& pRef2);
-	STATIC void doIUP0( point* const first, point* const last);
-	STATIC void doIUP1( point* const first, point* const last);
-	STATIC void iup0( point* const pp,
-		const point* const pRef1, const point* const pRef2);
-	STATIC void iup1( point* const pp,
-		const point* const pRef1, const point* const pRef2);
-	int newMeasure( const point& p2, const point& p1);
-	int oldMeasure( const point& p2, const point& p1);
-	static void newLine2vector( const point& p1, const point& p2,
-		int& vx, int& vy);
-	static void oldLine2vector( const point& p1, const point& p2,
-		int& vx, int& vy);
+	void interpolate(point&pp, const point &pRef1, const point &pRef2);
+	STATIC void doIUP0(point *const first, point *const last);
+	STATIC void doIUP1(point *const first, point *const last);
+	STATIC void iup0(point *const pp,
+			 const point* const pRef1, const point *const pRef2);
+	STATIC void iup1(point *const pp,
+			 const point *const pRef1, const point *const pRef2);
+	int newMeasure(const point &p2, const point &p1);
+	int oldMeasure(const point &p2, const point &p1);
+	static void newLine2vector(const point &p1, const point &p2,
+				   int &vx, int &vy);
+	static void oldLine2vector(const point &p1, const point &p2,
+				   int &vx, int &vy);
 
 	static void openDraw();
 	static void closeDraw();
-	void drawGlyph( U8* const startbmp, U8* const endbmp);
-	void drawBitmap( U8* const bmp, int height, int dX);
-	static void drawContour( point* const first, point* const last);
-	static const point* drawPoly( const point& p0, const point& p1,
-		const point& p2);
-	static void drawSegment( int x1,int y1, int x2,int y2);
-	static void bezier1( int x0,int y0, int x1,int y1, int x2,int y2);
-	void antiAliasing2( U8* bmp);
+	void drawGlyph(U8 *const startbmp, U8 *const endbmp);
+	void drawBitmap(U8 *const bmp, int height, int dX);
+	static void drawContour(point* const first, point *const last);
+	static const point* drawPoly(const point &p0, const point &p1,
+				     const point &p2);
+	static void drawSegment(int x1, int y1, int x2, int y2);
+	static void bezier1(int x0, int y0, int x1, int y1, int x2, int y2);
+	void antiAliasing2(U8 *bmp);
 };
 
 
 // hint opcodes
-
 enum {
 	// pushing values on the stack
 
 	NPUSHB		= 0x40,	// push n bytes
 	NPUSHW		= 0x41,	// push n words
 	PUSHB00		= 0xB0,	// push bytes
-	PUSHB01, PUSHB02, PUSHB03,
-	PUSHB04, PUSHB05, PUSHB06, PUSHB07,
+	PUSHB01,
+	PUSHB02,
+	PUSHB03,
+	PUSHB04,
+	PUSHB05,
+	PUSHB06,
+	PUSHB07,
 	PUSHW00		= 0xB8,	// push words
-	PUSHW01, PUSHW02, PUSHW03,
-	PUSHW04, PUSHW05, PUSHW06, PUSHW07,
+	PUSHW01,
+	PUSHW02,
+	PUSHW03,
+	PUSHW04,
+	PUSHW05,
+	PUSHW06,
+	PUSHW07,
 
 	// accessing the storage area
 
@@ -914,9 +1053,11 @@ enum {
 	GPV		= 0x0C,	// get projection vector
 	GFV		= 0x0D,	// get freedom vector
 	SRP0		= 0x10,	// set reference point rp0
-	SRP1, SRP2,
+	SRP1,
+	SRP2,
 	SZP0		= 0x13,	// set zone pointer zp0
-	SZP1, SZP2,
+	SZP1,
+	SZP2,
 	SZPS		= 0x16,	// set zp0, zp1, zp2
 	RTHG		= 0x19,	// round to half grid
 	RTG		= 0x18,	// round to grid
@@ -934,7 +1075,7 @@ enum {
 
 	SCANCTRL	= 0x85,	// scan conversion control
 	SCANTYPE	= 0x8D,	//
-	SCVTCI		= 0x1D, // set cvt cut_in
+	SCVTCI		= 0x1D,	// set cvt cut_in
 	SSWCI		= 0x1E,	// set single width cut_in
 	SSW		= 0x1F,	// set single width value
 	FLIPON		= 0x4D,	// sets auto_flip
@@ -946,9 +1087,9 @@ enum {
 	// measurements
 
 	GC0		= 0x46,	// get current coordinate projected
-	GC1		= 0x47, // get original coordinate projected
-	SCFS		= 0x48, // set coordinates from stack
-	MD0		= 0x49, // measure distance in current outline
+	GC1		= 0x47,	// get original coordinate projected
+	SCFS		= 0x48,	// set coordinates from stack
+	MD0		= 0x49,	// measure distance in current outline
 	MD1		= 0x4A,	// measure distance in original outline
 	MPPEM		= 0x4B,	// measure pixels per em in p_vector direction
 	MPS		= 0x4C,	// measure point size
@@ -971,24 +1112,70 @@ enum {
 	MDAP1		= 0x2F,	// move direct absolute point, rounding
 	MIAP0		= 0x3E,	// move indirect absolute point, no rounding
 	MIAP1		= 0x3F,	// move indirect absolute point, rounding
-	MDRP00		= 0xC0, // move direct relative point
-	MDRP01, MDRP02, MDRP03,
-	MDRP04, MDRP05, MDRP06, MDRP07,
-	MDRP08, MDRP09, MDRP0A, MDRP0B,
-	MDRP0C, MDRP0D, MDRP0E, MDRP0F,
-	MDRP10, MDRP11, MDRP12, MDRP13,
-	MDRP14, MDRP15, MDRP16, MDRP17,
-	MDRP18, MDRP19, MDRP1A, MDRP1B,
-	MDRP1C, MDRP1D, MDRP1E, MDRP1F,
-	MIRP00		= 0xE0, // move indirect relative point
-	MIRP01, MIRP02, MIRP03,
-	MIRP04, MIRP05, MIRP06, MIRP07,
-	MIRP08, MIRP09, MIRP0A, MIRP0B,
-	MIRP0C, MIRP0D, MIRP0E, MIRP0F,
-	MIRP10, MIRP11, MIRP12, MIRP13,
-	MIRP14, MIRP15, MIRP16, MIRP17,
-	MIRP18, MIRP19, MIRP1A, MIRP1B,
-	MIRP1C, MIRP1D, MIRP1E, MIRP1F,
+	MDRP00		= 0xC0,	// move direct relative point
+	MDRP01,
+	MDRP02,
+	MDRP03,
+	MDRP04,
+	MDRP05,
+	MDRP06,
+	MDRP07,
+	MDRP08,
+	MDRP09,
+	MDRP0A,
+	MDRP0B,
+	MDRP0C,
+	MDRP0D,
+	MDRP0E,
+	MDRP0F,
+	MDRP10,
+	MDRP11,
+	MDRP12,
+	MDRP13,
+	MDRP14,
+	MDRP15,
+	MDRP16,
+	MDRP17,
+	MDRP18,
+	MDRP19,
+	MDRP1A,
+	MDRP1B,
+	MDRP1C,
+	MDRP1D,
+	MDRP1E,
+	MDRP1F,
+	MIRP00		= 0xE0,	// move indirect relative point
+	MIRP01,
+	MIRP02,
+	MIRP03,
+	MIRP04,
+	MIRP05,
+	MIRP06,
+	MIRP07,
+	MIRP08,
+	MIRP09,
+	MIRP0A,
+	MIRP0B,
+	MIRP0C,
+	MIRP0D,
+	MIRP0E,
+	MIRP0F,
+	MIRP10,
+	MIRP11,
+	MIRP12,
+	MIRP13,
+	MIRP14,
+	MIRP15,
+	MIRP16,
+	MIRP17,
+	MIRP18,
+	MIRP19,
+	MIRP1A,
+	MIRP1B,
+	MIRP1C,
+	MIRP1D,
+	MIRP1E,
+	MIRP1F,
 	ALIGNRP		= 0x3C,	// align rp
 	ALIGNPTS	= 0x27,	// align points
 	ISECT		= 0x0F,	// move point to intersection of two lines
@@ -1027,16 +1214,16 @@ enum {
 	// arithmetic
 
 	LT		= 0x50,	// less than
-	LTEQ		= 0x51, // less than or equal
-	GT		= 0x52, // greater than
+	LTEQ		= 0x51,	// less than or equal
+	GT		= 0x52,	// greater than
 	GTEQ		= 0x53,	// greater than or equal
 	EQ		= 0x54,	// equal
 	NEQ		= 0x55,	// not equal
 	ODD		= 0x56,	// odd
-	EVEN		= 0x57, // even
+	EVEN		= 0x57,	// even
 	AND		= 0x5A,	// logical and
 	OR		= 0x5B,	// logical or
-	NOT		= 0x5C, // logical not
+	NOT		= 0x5C,	// logical not
 	ADD		= 0x60,	// add
 	SUB		= 0x61,	// subtract
 	DIV		= 0x62,	// divide
@@ -1048,9 +1235,13 @@ enum {
 	MAX		= 0x8B,	// maximum
 	MIN		= 0x8C,	// minimum
 	ROUND00		= 0x68,	// round engine independant
-	ROUND01, ROUND02, ROUND03,
+	ROUND01,
+	ROUND02,
+	ROUND03,
 	NROUND00	= 0x6C,	// round engine dependant
-	NROUND01, NROUND02, NROUND03,
+	NROUND01,
+	NROUND02,
+	NROUND03,
 
 	// subroutines
 
@@ -1067,13 +1258,13 @@ enum {
 };
 
 enum {	// round state, do the constants in the spec make any sense?
-	ROUND_OFF	,	//= 5,
-	ROUND_GRID	,	//= 1,
-	ROUND_DOWN	,	//= 3,
-	ROUND_UP	,	//= 4,
-	ROUND_HALF	,	//= 0,
-	ROUND_DOUBLE	,	//= 2,
-	ROUND_SUPER	,	//= 6,
+	ROUND_OFF,		//= 5,
+	ROUND_GRID,		//= 1,
+	ROUND_DOWN,		//= 3,
+	ROUND_UP,		//= 4,
+	ROUND_HALF,		//= 0,
+	ROUND_DOUBLE,		//= 2,
+	ROUND_SUPER,		//= 6,
 	ROUND_SUPER45		//= 7
 };
 
@@ -1091,4 +1282,6 @@ enum {	// getinfo parameters
 	IS_ROTATED	= 0x100,
 	IS_STRETCHED	= 0x200
 };
+
+#endif
 
