@@ -1,5 +1,5 @@
 
-	$Id: TODO,v 1.6 2003/01/05 10:24:56 guillem Exp $
+	$Id: TODO,v 1.7 2003/02/13 03:55:59 guillem Exp $
 
 TODO list:
 
@@ -8,7 +8,7 @@ TODO list:
    - hardcoded versions.
  - remove --gslist dependancy on order.
  - add option to bind to specific interfaces.
- - add signal handler to re-sync fonts dir.
+ - add signal handler (HUP?) to re-sync fonts dir.
  - error messages using syslog (depends on error()).
  - improve error message when cache dir doesn't exist.
  - add memory sharing support (multi-threading?).
@@ -17,10 +17,8 @@ TODO list:
    - make showttf endian agnostic.
  - add missing encodings.
  - fix xfstt crashing X Server when used with some fonts.
- - fix xfstt + gnome2 crashing X server .
  - fix X error when X_SetFontPath on fonts with white spaces (unreproducible).
  - fix xfs protocol compliance.
- - add syncing when HUP received.
 
 Documentation:
  - differences: xfstt vs xtt-fs.
