@@ -45,7 +45,7 @@ install :
 	mkdir -p /var/cache/xfstt;			\
 	ln -s /DOS/windows/fonts /usr/share/fonts/truetype/winfonts ;	\
 	cp xfstt /usr/X11R6/bin/ ;	\
-	cp xfstt.1x /usr/man/X11/man1/ ;	\
+	cp xfstt.1x /usr/X11R6/man/man1 ;\
 	xfstt --sync
 
 clean :

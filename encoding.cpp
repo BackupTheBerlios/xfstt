@@ -115,7 +115,6 @@ public:
 
 int iso8859_15::map2unicode( int code)
 {
-        if( code < 0xd0 || code >= 255) return code;
 	if( code <= 0x1f) return boxtable[ code ]; // for boxdrawings
         switch( code) {
         case 0xa4:      return 0x20AC;

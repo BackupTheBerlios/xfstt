@@ -24,19 +24,19 @@ cd slackware
 
 mkdir    slackroot/ 
 mkdir -p slackroot/etc/rc.d/
-mkdir -p slackroot/usr/doc/xfstt-1.1/
+mkdir -p slackroot/usr/share/doc/xfstt-1.1/
 mkdir -p slackroot/usr/X11R6/bin/ 
 mkdir -p slackroot/usr/X11R6/lib/fonts/ttf/ 
 mkdir -p slackroot/usr/X11R6/man/man1/
 mkdir -p slackroot/var/cache/xfstt/ 
 mkdir -p slackroot/install/
 
-cp ../FAQ       slackroot/usr/doc/xfstt-1.1/
-cp ../CHANGES   slackroot/usr/doc/xfstt-1.1/
-cp ../COPYING   slackroot/usr/doc/xfstt-1.1/
-cp ../README*   slackroot/usr/doc/xfstt-1.1/
-cp ../THANKS*   slackroot/usr/doc/xfstt-1.1/
-cp ../xfstt.lsm slackroot/usr/doc/xfstt-1.1/
+cp ../FAQ       slackroot/usr/share/doc/xfstt-1.1/
+cp ../CHANGES   slackroot/usr/share/doc/xfstt-1.1/
+cp ../COPYING   slackroot/usr/share/doc/xfstt-1.1/
+cp ../README*   slackroot/usr/share/doc/xfstt-1.1/
+cp ../THANKS*   slackroot/usr/share/doc/xfstt-1.1/
+cp ../xfstt.lsm slackroot/usr/share/doc/xfstt-1.1/
 cp ../xfstt     slackroot/usr/X11R6/bin/
 cp ../xfstt.1x  slackroot/usr/X11R6/man/man1/
 cp ./rc.xfstt   slackroot/etc/rc.d/

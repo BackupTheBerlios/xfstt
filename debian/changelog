@@ -1,3 +1,72 @@
+xfstt (1.2.1-1) unstable; urgency=low
+
+  * See if this closes it finally (Closes: #141452).
+
+ -- Amaya Rodrigo Sastre <amaya@debian.org>  Mon, 15 Apr 2002 09:03:46 +0200
+
+xfstt (1.2-1) unstable; urgency=low
+
+  * Fixed versioning issues (Closes: #141452).
+
+ -- Amaya Rodrigo Sastre <amaya@debian.org>  Mon,  8 Apr 2002 12:58:38 +0200
+
+xfstt (1.2-0.5) unstable; urgency=low
+
+  * The old bugs squashing upload.
+  * New Mantainer (Closes: #135949)
+  * Testing and closing really old bugs (Closes: #55382, #107193, #55382, #54624, #63550, #92872, #76347, #125599, #58716)
+  * No files in /usr/doc/ anymore (Closes: #91722)
+  * I find xfstt extremely useful and worth being in Debian. (Closes: #80876)
+  * Fixed spelling errors (Closes: #127133)
+  * /var/cache/xfstt/ now gets removed on purge and remove (Closes: #93756)
+  * Closing all the NMU bugs. (Closes: #138509, #138172, #122514, #107193)
+  
+ -- Amaya Rodrigo Sastre <amaya@debian.org>  Mon,  1 Apr 2002 02:38:35 +0200
+
+xfstt (1.2-0.4) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Add build dependancy on xlibs-dev (closes: #138509).
+  * Remove postrm - it contains only things debhelper would automatically
+    generate if there were an appropriate substitution point.
+
+ -- Mark Brown <broonie@debian.org>  Sat, 16 Mar 2002 12:29:49 +0000
+
+xfstt (1.2-0.3) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Say which friends are classes (closes: #138172).
+
+ -- Mark Brown <broonie@debian.org>  Wed, 13 Mar 2002 17:26:51 +0000
+
+xfstt (1.2-0.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Incorporate 1.2-0.1 with slight changes (Andre is not a developer yet).
+  * Apply patch from Andreas Degert <ad@papyrus-gmbh.de> fixing mapping
+    of characers to unicode (closes: #122514).
+
+ -- Mark Brown <broonie@debian.org>  Sun,  3 Mar 2002 19:12:28 +0000
+
+xfstt (1.2-0.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Installs /usr/doc/xfstt as a symlink to /usr/share/doc/xfstt, not
+    as a real directory. (Closes: #107193)
+  * Also added some defaults debhelper checks in order to make the above
+    change possible : installs debhelpers's default prerm.debhelper,
+    postrm.debhelper and postinst.debhelper as well as maintainer's
+    postinst differences from the default postinst.debhelper.
+  * Removed Emacs user settings from debian/changelog.
+  * Path to common-licenses in debian/copyright now points
+    /usr/share/doc/common-licenses.
+  * Now using Standards-Version 3.5.6.
+  * Added debhelper as a Build-Depend to make lintian happy.
+  * Don't use dh_suidregister.
+  * Package is now lintian-clean.
+
+ -- Andre Luis Lopes <andrelop@ig.com.br>  Sat, 23 Feb 2002 21:37:28 -0300
+
 xfstt (1.2) unstable; urgency=low
 
   * Fixes bug in Unix Domain Socket Handling (Bug #66943)
@@ -217,7 +286,3 @@ xfstt (0.9-1) unstable; urgency=low
 
  -- Christoph Lameter <clameter@waterf.org>  Mon, 27 Oct 1997 19:20:48 -0800
 
-Local variables:
-mode: debian-changelog
-add-log-mailing-address: "chris@waterf.org"
-End:
