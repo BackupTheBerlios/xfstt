@@ -1,7 +1,7 @@
 /*
  * Horizontal Device Metrics Table
  *
- * $Id: table_hdmx.cc,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ * $Id: table_hdmx.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -36,7 +36,7 @@ HdmxTable::HdmxTable(RandomAccessFile &f, int offset, int length):
 int
 HdmxTable::getMaxWidth(int mppemx)
 {
-	dprintf1("hdmx(mppemx = %d) ", mppemx);
+	debug("hdmx(mppemx = %d) ", mppemx);
 
 	seekAbsolute(8);
 	// XXX: is it possible to avoid the linear search?
@@ -46,14 +46,14 @@ HdmxTable::getMaxWidth(int mppemx)
 		if (ppem >= mppemx) {
 			int maxWidth = readUByte();
 			if (ppem > mppemx)
-				dprintf0("<");
-			dprintf1("= %d\n", maxWidth);
+				debug("<");
+			debug("= %d\n", maxWidth);
 
 			return maxWidth;
 		}
 	}
 
-	dprintf0("not found!\n");
+	debug("not found!\n");
 
 	return 0;
 }
@@ -61,7 +61,7 @@ HdmxTable::getMaxWidth(int mppemx)
 int
 HdmxTable::getGlyphWidth(int mppemx, int glyphNo)
 {
-	dprintf2("hdmx(mppemx = %d, glyphNo = %d)", mppemx, glyphNo);
+	debug("hdmx(mppemx = %d, glyphNo = %d)", mppemx, glyphNo);
 
 	seekAbsolute(8);
 	// XXX: is it possible to avoid the linear search?
@@ -72,13 +72,13 @@ HdmxTable::getGlyphWidth(int mppemx, int glyphNo)
 			break;
 	}
 	if (i < 0) {
-		dprintf0(" not found!\n");
+		debug(" not found!\n");
 		return 0;
 	}
 
 	seekRelative(glyphNo + 1);
 	int width = readUByte();
-	dprintf1(" = %d\n", width);
+	debug(" = %d\n", width);
 
 	return width;
 }

@@ -1,7 +1,7 @@
 /*
  * Horizontal Device Metrics Table
  *
- * $Id: table_hmtx.cc,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ * $Id: table_hmtx.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -41,6 +41,6 @@ HmtxTable::getHMetrics(int glyphNo, int *advWidth, int *lsdBear)
 		*advWidth = readUShort();
 	}
 	*lsdBear = readSShort();
-	dprintf3("hmtx(%d) = {%d, %d}\n", glyphNo, *advWidth, *lsdBear);
+	debug("hmtx(%d) = {%d, %d}\n", glyphNo, *advWidth, *lsdBear);
 }
 

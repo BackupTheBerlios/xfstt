@@ -1,7 +1,7 @@
 /*
  * Embedded Bitmap Data Table
  *
- * $Id: table_ebdt.cc,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ * $Id: table_ebdt.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -52,10 +52,10 @@ EbdtTable::readBitmap(int format, U8 *bitmap, GlyphMetrics *gm)
 	case 3:	// obsolete
 	case 4:	// unsupported
 	default:
-		dprintf1("EBDT table bitmap format = %d\n", format);
+		debug("EBDT table bitmap format = %d\n", format);
 		return -1;
 	case 5:	// metrics in EBLC instead
-		dprintf0("EBDT table bitmap format = 5\n");
+		debug("EBDT table bitmap format = 5\n");
 		break;
 	case 6:
 	case 7:
@@ -102,7 +102,7 @@ EbdtTable::readBitmap(int format, U8 *bitmap, GlyphMetrics *gm)
 		}
 	case 8:
 	case 9:	// composite bitmap
-		dprintf1("EBDT table bitmap format = %d\n", format);
+		debug("EBDT table bitmap format = %d\n", format);
 		break;
 	}
 

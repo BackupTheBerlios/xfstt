@@ -1,5 +1,5 @@
 
-	$Id: TODO,v 1.9 2003/03/21 18:51:17 guillem Exp $
+	$Id: TODO,v 1.10 2003/06/18 05:42:03 guillem Exp $
 
 TODO list:
 
@@ -27,7 +27,6 @@ Documentation:
 
 Code cleanup:
  - remove dprintfN and move it to its own module.
- - replace dprintN with a debug function.
  - add an error() function and normalize all > stderr.
  - search for XXX and correct.
  ? move all contrib references in src to THANKS file (code cleanup).

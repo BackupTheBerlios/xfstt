@@ -1,7 +1,7 @@
 /*
  * Header for the xfstt (X Font Server for TT Files) font engine
  *
- * $Id: ttf.h,v 1.1 2002/11/14 12:08:16 guillem Exp $
+ * $Id: ttf.h,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -48,16 +48,10 @@
 #endif
 
 #ifndef DEBUG
-#  define dprintf0(s)
-#  define dprintf1(s, x1)
-#  define dprintf2(s, x1, x2)
-#  define dprintf3(s, x1, x2, x3)
+#  define debug(format, ...)
 #  define STATIC static
 #else
-#  define dprintf0(s)			fprintf(outfile, (s))
-#  define dprintf1(s, x1)		fprintf(outfile, (s), (x1))
-#  define dprintf2(s, x1, x2)		fprintf(outfile, (s), (x1), (x2))
-#  define dprintf3(s, x1, x2, x3)	fprintf(outfile, (s), (x1), (x2), (x3))
+#  define debug(format, ...)	fprintf(outfile, format, ##__VA_ARGS__)
 #  define STATIC
 #endif
 

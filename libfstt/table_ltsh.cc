@@ -1,7 +1,7 @@
 /*
  * Linear Thresholds for advance width calculation Table
  *
- * $Id: table_ltsh.cc,v 1.1 2002/11/14 12:08:11 guillem Exp $
+ * $Id: table_ltsh.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -39,7 +39,7 @@ LtshTable::getLinearThreshold(int glyphNo)
 	seekAbsolute(4 + glyphNo);
 
 	int yPel = readUByte();
-	dprintf2("ltsh::getThreshold(glyphNo = %d) = %d\n", glyphNo, yPel);
+	debug("ltsh::getThreshold(glyphNo = %d) = %d\n", glyphNo, yPel);
 
 	return yPel;
 }

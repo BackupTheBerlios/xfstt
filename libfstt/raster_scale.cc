@@ -1,7 +1,7 @@
 /*
  * Font scaler
  *
- * $Id: raster_scale.cc,v 1.1 2002/11/14 12:08:15 guillem Exp $
+ * $Id: raster_scale.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -102,8 +102,8 @@ Rasterizer::useTTFont(TTFont* _ttFont, int _flags)
 void
 Rasterizer::setPointSize(int _xx, int _xy, int _yx, int _yy, int xres, int yres)
 {
-	dprintf2("_xx = %d,\t_xy = %d\n", _xx, _xy);
-	dprintf2("_yx = %d,\t_yy = %d\n", _xy, _yy);
+	debug("_xx = %d,\t_xy = %d\n", _xx, _xy);
+	debug("_yx = %d,\t_yy = %d\n", _xy, _yy);
 
 	if (!(_xx | _xy) || !(_yx | _yy))
 		_xx = _yy = 12;
@@ -135,9 +135,9 @@ Rasterizer::setPixelSize(int _xx, int _xy, int _yx, int _yy)
 		xx >>= 1; xy >>= 1;
 		yx >>= 1; yy >>= 1;
 	}
-	dprintf2("xx = %d, xy = %d\n", xx, xy);
-	dprintf2("yx = %d, yy = %d\n", yx, yy);
-	dprintf1("exp = %d\n", xxexp);
+	debug("xx = %d, xy = %d\n", xx, xy);
+	debug("yx = %d, yy = %d\n", yx, yy);
+	debug("exp = %d\n", xxexp);
 
 	if (ttFont)
 		applyTransformation();
@@ -153,7 +153,7 @@ void
 Rasterizer::applyTransformation()
 {
 	int emUnits = ttFont->getEmUnits();
-	dprintf1("emUnits = %d\n", emUnits);
+	debug("emUnits = %d\n", emUnits);
 
 	for (; emUnits > 2048 && xxexp > 0; --xxexp)
 		emUnits >>= 1;
@@ -168,11 +168,11 @@ Rasterizer::applyTransformation()
 
 	mppem = (mppemx + mppemy) >> 1;
 
-	dprintf2("xx = %d, xy = %d\n", xx, xy);
-	dprintf2("yx = %d, yy = %d\n", yx, yy);
-	dprintf1("exp = %d\n", xxexp);
+	debug("xx = %d, xy = %d\n", xx, xy);
+	debug("yx = %d, yy = %d\n", yx, yy);
+	debug("exp = %d\n", xxexp);
 
-	dprintf3("mppem = %d, mppemx = %d, mppemy = %d\n", mppem, mppemx, mppemy);
+	debug("mppem = %d, mppemx = %d, mppemy = %d\n", mppem, mppemx, mppemy);
 
 	if (grid_fitting)
 		calcCVT();
@@ -265,7 +265,7 @@ Rasterizer::getFontExtent(FontExtent *fe)
 int
 Rasterizer::putChar8Bitmap(char c, U8 *bmp, U8 *endbmp, GlyphMetrics *gm)
 {
-	dprintf1("charNo8 = %d", c);
+	debug("charNo8 = %d", c);
 	int glyphNo = ttFont->getGlyphNo8(c);
 	return putGlyphBitmap(glyphNo, bmp, endbmp, gm);
 }
@@ -275,7 +275,7 @@ int
 Rasterizer::putChar16Bitmap(int c, U8 *bmp, U8 *endbmp, GlyphMetrics *gm)
 {
 	int glyphNo = ttFont->getGlyphNo16(c);
-	dprintf1("charNo16 = %d", c);
+	debug("charNo16 = %d", c);
 	return putGlyphBitmap(glyphNo, bmp, endbmp, gm);
 }
 
@@ -283,7 +283,7 @@ Rasterizer::putChar16Bitmap(int c, U8 *bmp, U8 *endbmp, GlyphMetrics *gm)
 int
 Rasterizer::putGlyphBitmap(int glyphNo, U8 *bmp, U8 *endbmp, GlyphMetrics *gm)
 {
-	dprintf1("\n=============== glyphNo %d ==================\n", glyphNo);
+	debug("\n=============== glyphNo %d ==================\n", glyphNo);
 
 	GlyphTable *g = ttFont->glyphTable;
 	g->setupGlyph(ttFont->points, ttFont->endPoints);
@@ -374,8 +374,8 @@ Rasterizer::putGlyphBitmap(int glyphNo, U8 *bmp, U8 *endbmp, GlyphMetrics *gm)
 			gm->xAdvance = hdmx;
 	}
 
-	dprintf3("width = %d, dX = %d, height = %d\n", width, dX, height);
-	dprintf2("gn=%d, length= %d\n", glyphNo, length);
+	debug("width = %d, dX = %d, height = %d\n", width, dX, height);
+	debug("gn=%d, length= %d\n", glyphNo, length);
 
 	drawGlyph(bmp, endbmp);
 
@@ -400,7 +400,7 @@ Rasterizer::putGlyphData(int ne, int np, int *ep, point *pp, int glyphNo,
 	int val = xmin - lsb;
 	pp->xold = scaleX(val, 0);
 	pp->yold = scaleY(0, val);
-	dprintf3("xmin = %d, adv = %d, lsb = %d\n", xmin, advanceWidth, lsb);
+	debug("xmin = %d, adv = %d, lsb = %d\n", xmin, advanceWidth, lsb);
 	pp->xnow = (pp->xold + 32) & -64;
 	pp->ynow = (pp->yold + 32) & -64;
 #if 0
@@ -408,7 +408,7 @@ Rasterizer::putGlyphData(int ne, int np, int *ep, point *pp, int glyphNo,
 	val = pp->xnow = pp->ynow = 0;
 	pp->xold = pp->yold = 0;
 #endif
-	dprintf3("phantom[0] = %5d -> %5d -> %5d\n", val, pp->xold, pp->xnow);
+	debug("phantom[0] = %5d -> %5d -> %5d\n", val, pp->xold, pp->xnow);
 
 	// prepare phantom point 1
 	val += advanceWidth;
@@ -439,7 +439,7 @@ Rasterizer::scaleGlyph()
 	case INVALID_FONT:
 		return;
 	case FONT_DONE:
-		dprintf0("### We shouldn't waste time like this ###\n");
+		debug("### We shouldn't waste time like this ###\n");
 		return;
 	case NOT_READY:
 		applyTransformation();
@@ -453,29 +453,29 @@ Rasterizer::scaleGlyph()
 void
 Rasterizer::printOutline(void)
 {
-	dprintf0("\n=== grid fitted outline ===\n");
+	debug("\n=== grid fitted outline ===\n");
 	point *pp = p[1];
 	for (int i = 0, j = 0; i < nPoints[1] + 2; ++i, ++pp) {
-		dprintf3("p[%d]\t%6d %6d  ", i, pp->xold, pp->yold);
-		dprintf2("-> %6d %6d", pp->xnow, pp->ynow);
-		dprintf2("  %d%d", (pp->flags & X_TOUCHED) != 0,
+		debug("p[%d]\t%6d %6d  ", i, pp->xold, pp->yold);
+		debug("-> %6d %6d", pp->xnow, pp->ynow);
+		debug("  %d%d", (pp->flags & X_TOUCHED) != 0,
 			 (pp->flags & Y_TOUCHED) != 0);
 
-		dprintf1(" %c", (pp->flags & ON_CURVE) ? '*' : ' ');
+		debug(" %c", (pp->flags & ON_CURVE) ? '*' : ' ');
 
 #ifdef WIN32
-		dprintf2("  (%6d %6d)", pp->xgoal, pp->ygoal);
+		debug("  (%6d %6d)", pp->xgoal, pp->ygoal);
 
-		dprintf2("  %c%c", (pp->xnow == pp->xgoal) ? '+' : '@',
+		debug("  %c%c", (pp->xnow == pp->xgoal) ? '+' : '@',
 			 (pp->ynow == pp->ygoal) ? '+' : '@');
 
-		dprintf2("  %d %d", pp->xnow - pp->xgoal,
+		debug("  %d %d", pp->xnow - pp->xgoal,
 			 pp->ynow - pp->ygoal);
 #endif
-		dprintf0("\n");
+		debug("\n");
 		if (i == endPoints[j]) {
 			++j;
-			dprintf0("----\n");
+			debug("----\n");
 		}
 	 }
 }

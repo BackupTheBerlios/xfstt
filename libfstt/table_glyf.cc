@@ -1,7 +1,7 @@
 /*
  * Glyph Table
  *
- * $Id: table_glyf.cc,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ * $Id: table_glyf.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -219,7 +219,7 @@ GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 		codeLength = readUShort();
 		codeOffset = tell();
 		seekRelative(codeLength);
-		dprintf2("Composite Hints: ofs %05X, len %d\n",
+		debug("Composite Hints: ofs %05X, len %d\n",
 			 codeOffset, codeLength);
 	} else
 		codeLength = 0;
@@ -231,7 +231,7 @@ GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 			     xmin);
 
 	if (myMetricsAdv) {
-		dprintf0("composite hinting\n");
+		debug("Composite Hinting\n");
 		points[nPoints].xold = points[nPoints].xnow = myMetricsLsb;
 		points[nPoints + 1].xold = points[nPoints + 1].xnow
 					 = myMetricsAdv;

@@ -1,7 +1,7 @@
 /*
  * Grid-fitting And Scan-conversion Procedure Table
  *
- * $Id: table_gasp.cc,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ * $Id: table_gasp.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -44,7 +44,7 @@ GaspTable::getFlags(int mppem)
 			break;
 	}
 
-	dprintf2("gasp::getFlags(mppem = %d) = 0x%02X\n", mppem, flags);
+	debug("gasp::getFlags(mppem = %d) = 0x%02X\n", mppem, flags);
 
 	return flags;
 }

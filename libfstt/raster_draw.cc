@@ -1,7 +1,7 @@
 /*
  * Scan line converter
  *
- * $Id: raster_draw.cc,v 1.1 2002/11/14 12:08:16 guillem Exp $
+ * $Id: raster_draw.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -228,7 +228,7 @@ void
 Rasterizer::drawBitmap(U8 *const bmp, int height, int dX)
 {
 	// sort horizontal/vertical dots
-	dprintf1("dropoutControl = %d\n", gs.dropout_control);
+	debug("dropoutControl = %d\n", gs.dropout_control);
 	if (dots[0] + 1 < dots0) {
 		preSort(dots[0] + 1, dots0);
 		endSort(dots[0] + 1, dots0);
@@ -244,11 +244,11 @@ Rasterizer::drawBitmap(U8 *const bmp, int height, int dX)
 
 #if DEBUG
 	for (dot *i1 = dots[0] + 1; i1 <= dots0; ++i1)
-		printf("dh[%3d] = (%5d %5d)\n", i1 - dots[0], i1->y, i1->x);
-	dprintf0("\n");
+		debug("dh[%3d] = (%5d %5d)\n", i1 - dots[0], i1->y, i1->x);
+	debug("\n");
 	for (dot* i2 = dots[1] + 1; i2 <= dots1; ++i2)
-		printf("dv[%3d] = (%5d %5d)\n", i2 - dots[1], i2->x, i2->y);
-	dprintf0("\n");
+		debug("dv[%3d] = (%5d %5d)\n", i2 - dots[1], i2->x, i2->y);
+	debug("\n");
 #endif
 }
 

@@ -1,7 +1,7 @@
 /*
  * Utilities for efficient access to the TTFfile
  *
- * $Id: rafile.cc,v 1.1 2002/11/14 12:08:16 guillem Exp $
+ * $Id: rafile.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -85,13 +85,13 @@ static int memused = 0;
 void
 cleanupMem()
 {
-	dprintf0("Memory holes:\n");
+	debug("Memory holes:\n");
 	for (int i = 0; i < memidx; ++i)
 		if (memdbg[i].ptr)
-			dprintf2("MEM hole[%3d] = %p\n", i, memdbg[i].ptr);
+			debug("MEM hole[%3d] = %p\n", i, memdbg[i].ptr);
 
 	if (memcount != 0)
-		dprintf1("MEM hole: memcount = %d\n", memcount);
+		debug("MEM hole: memcount = %d\n", memcount);
 }
 
 void *
@@ -101,8 +101,8 @@ operator new[](size_t size)
 
 	memused += size;
 
-	dprintf2("MEM new[](%5d) = %p", size, ptr);
-	dprintf2(", memcount = %d, memidx = %d", ++memcount, memidx);
+	debug("MEM new[](%5d) = %p", size, ptr);
+	debug(", memcount = %d, memidx = %d", ++memcount, memidx);
 
 	int i = memidx;
 
@@ -110,7 +110,7 @@ operator new[](size_t size)
 	if (i <= 0)
 		i = memidx++;
 
-	dprintf2(", idx = %d, used %d\n", i, memused);
+	debug(", idx = %d, used %d\n", i, memused);
 
 	memdbg[i].ptr = ptr;
 	memdbg[i].len = size;
@@ -121,19 +121,19 @@ operator new[](size_t size)
 void
 operator delete[](void *ptr)
 {
-	dprintf1("MEM delete[](%p)", ptr);
-	dprintf2(", memcount = %d, memidx = %d\n", --memcount, memidx);
+	debug("MEM delete[](%p)", ptr);
+	debug(", memcount = %d, memidx = %d\n", --memcount, memidx);
 
 	int i = memidx;
 	while (--i >= 0 && memdbg[i].ptr != ptr);
 	if (i >= 0) {
 		memdbg[i].ptr = 0;
 		memused -= memdbg[i].len;
-		dprintf2(", idx = %d, used %d\n", i, memused);
+		debug(", idx = %d, used %d\n", i, memused);
 		if (++i == memidx)
 			--memidx;
 	} else
-		dprintf0("Cannot delete!\n");
+		debug("Cannot delete!\n");
 
 	free(ptr);
 }
@@ -144,15 +144,15 @@ operator new(size_t size)
 	void *ptr = malloc(size);
 	memused += size;
 
-	dprintf2("MEM new(%7d) = %p", size, ptr);
-	dprintf2(", memcount = %d, memidx = %d", ++memcount, memidx);
+	debug("MEM new(%7d) = %p", size, ptr);
+	debug(", memcount = %d, memidx = %d", ++memcount, memidx);
 
 	int i = memidx;
 	while (--i >= 0 && memdbg[i].ptr);
 	if (i <= 0)
 		i = memidx++;
 
-	dprintf2(", idx = %d, used %d\n", i, memused);
+	debug(", idx = %d, used %d\n", i, memused);
 
 	memdbg[i].ptr = ptr;
 	memdbg[i].len = size;
@@ -163,19 +163,19 @@ operator new(size_t size)
 void
 operator delete(void *ptr)
 {
-	dprintf1("MEM delete(%p)", ptr);
-	dprintf2(", memcount = %d, memidx = %d", --memcount, memidx);
+	debug("MEM delete(%p)", ptr);
+	debug(", memcount = %d, memidx = %d", --memcount, memidx);
 
 	int i = memidx;
 	while (--i >= 0 && memdbg[i].ptr != ptr);
 	if (i >= 0) {
 		memdbg[i].ptr = 0;
 		memused -= memdbg[i].len;
-		dprintf2(", idx = %d, used %d\n", i, memused);
+		debug(", idx = %d, used %d\n", i, memused);
 		if (++i == memidx)
 			--memidx;
 	} else
-		dprintf0("Cannot delete!\n");
+		debug("Cannot delete!\n");
 
 	free(ptr);
 }
@@ -237,7 +237,7 @@ RandomAccessFile::calcChecksum()
 		checksum += readUInt() & (-1 << ((-length & 3) << 3));
 	ptr = saveptr;
 
-	dprintf1("checksum is %08X\n", calcChecksum());
+	debug("Checksum is %08X\n", calcChecksum());
 
 	return checksum;
 }

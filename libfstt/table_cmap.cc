@@ -1,7 +1,7 @@
 /*
  * Character Map Table
  *
- * $Id: table_cmap.cc,v 1.1 2002/11/14 12:08:15 guillem Exp $
+ * $Id: table_cmap.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  * mac7 style ttf support by Ethan Fischer
@@ -50,7 +50,7 @@ CmapTable::CmapTable(RandomAccessFile &f, int offset, int length):
 		// version = readUShort();
 		break;
 	case HIGH_BYTE_MAPPING: // not supported
-		dprintf0("CMAP table format = HIGH_BYTE_MAPPING\n");
+		debug("CMAP table format = HIGH_BYTE_MAPPING\n");
 		break;
 	case SEGMENT_MAPPING: // normal Windows format
 		// format = readUShort();	// == 4
@@ -76,7 +76,7 @@ CmapTable::CmapTable(RandomAccessFile &f, int offset, int length):
 	case -1: // no encoding tables
 		break;
 	default: // unknown table format
-		dprintf1("CMAP table format = %d\n", format);
+		debug("CMAP table format = %d\n", format);
 		break;
 	}
 }
@@ -97,7 +97,7 @@ CmapTable::unicode2glyphNo(U16 unicode)
 			return 0;
 		seekAbsolute(subtableOffset + 6 + unicode);
 		int glyphNo = readUByte();
-		dprintf2("MAC.cmap[%d] = %d\n", unicode, glyphNo);
+		debug("MAC.cmap[%d] = %d\n", unicode, glyphNo);
 		return glyphNo;
 	} else if (format == TRIMMED_MAPPING) {
 		if ((unicode < f6FirstCode)
@@ -200,7 +200,7 @@ CmapTable::firstUnicode()
 
 	seekAbsolute(subtableOffset + 16 + (f4NSegments << 1));
 	U16 i = readUShort();
-	dprintf1("First Unicode = %d\n", i);
+	debug("First Unicode = %d\n", i);
 	return i;
 }
 
@@ -216,7 +216,7 @@ CmapTable::lastUnicode()
 
 	seekAbsolute(subtableOffset + 14 + ((f4NSegments - 2) << 1));
 	U16 i = readUShort();
-	dprintf1("Last Unicode = %d\n", i);
+	debug("Last Unicode = %d\n", i);
 	return i;
 }
 

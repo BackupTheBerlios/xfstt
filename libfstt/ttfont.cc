@@ -1,7 +1,7 @@
 /*
  * General handling of *ttf files
  *
- * $Id: ttfont.cc,v 1.1 2002/11/14 12:08:16 guillem Exp $
+ * $Id: ttfont.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -37,7 +37,7 @@ TTFont::TTFont(char *fileName, int infoOnly):
 	ebdtTable(0), eblcTable(0),
 	mortTable(0), vheaTable(0)
 {
-	dprintf1("TTFont(\"%s\");\n", fileName);
+	debug("TTFont(\"%s\");\n", fileName);
 
 	if (openError())
 		return;
@@ -154,7 +154,7 @@ TTFont::TTFont(char *fileName, int infoOnly):
 	}
 
 	if (headTable == 0) {
-		dprintf0("Incomplete TT file\n");
+		debug("Incomplete TrueType file\n");
 		return;
 	}
 
@@ -291,7 +291,7 @@ TTFont::getMaxWidth(int mppemx)
 		maxWidth = headTable->xmax - headTable->xmin;
 		maxWidth += headTable->emUnits >> 5;	// +3%
 		maxWidth = maxWidth * mppemx / headTable->emUnits;
-		dprintf1("using maxWidth %d instead\n", maxWidth);
+		debug("using maxWidth %d instead\n", maxWidth);
 	}
 
 	return maxWidth;
@@ -312,7 +312,7 @@ TTFont::getGlyphWidth(int mppemx, int glyphNo)
 		// XXX: 	width = getMaxWidth(mppemx):
 		width += headTable->emUnits >> 5;	// +3%
 		width = width * mppemx / headTable->emUnits;
-		dprintf1("using width %d instead\n", width);
+		debug("using width %d instead\n", width);
 	}
 
 	return width;
@@ -448,7 +448,7 @@ TTFont::getXLFDbase(char* result)
 	for (p = result; *p; ++p)
 		*p = tolower(*p);
 
-	dprintf1("xlfd = \"%s\"\n", result);
+	debug("xlfd = \"%s\"\n", result);
 	return strlen(result);
 }
 

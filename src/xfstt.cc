@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.6 2003/06/18 04:42:26 guillem Exp $
+ * $Id: xfstt.cc,v 1.7 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -258,7 +258,7 @@ static int
 ttSyncAll(int gslist = 0)
 {
 	if (!gslist)
-		dprintf0("TT synching\n");
+		debug("TrueType synching\n");
 
 	if (chdir(fontdir)) {
 		fprintf(stderr, _("xfstt: \"%s\" does not exist!\n"), fontdir);
@@ -381,7 +381,7 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 	} else
 		mapIndex = 0;
 
-	dprintf1("match\t\"%s\"\n", buf0 + 1);
+	debug("match\t\"%s\"\n", buf0 + 1);
 
 	*buf0 = buf - buf0;
 	return *buf0 + 1;
@@ -435,7 +435,7 @@ listTTFNFonts(char *pattern, int index, char *buf)
 	strncpy(buf, (char *)&fn, sizeof(fn));
 	strncpy(buf + sizeof(fn), fontName, ttfn->nameLen);
 	buf[fn.nameLen] = 0;
-	dprintf1("ListFont \"%s\"\n", buf);
+	debug("ListFont \"%s\"\n", buf);
 
 	return fn.nameLen + 1;
 }
@@ -448,7 +448,7 @@ findFont(Font fid, int sd, int seqno)
 		if (fid == xfs->fid)
 			return xfs;
 
-	dprintf1("fid = %ld not found!\n", fid);
+	debug("fid = %ld not found!\n", fid);
 
 	if (sd) {
 		fsError reply;
@@ -466,7 +466,7 @@ static XFSFont *
 openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 	 int fid, Encoding *encoding)
 {
-	dprintf3("point %d, pixel %d, res %d\n",
+	debug("point %d, pixel %d, res %d\n",
 		fp->point[0], fp->pixel[0], fp->resolution[0]);
 
 	if (!ttFont || ttFont->badFont())
@@ -474,7 +474,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 
 	XFSFont *xfs = findFont(0, 0, 0);
 	if (!xfs) {
-		dprintf0("Too many open fonts!\n");
+		debug("Too many open fonts!\n");
 		delete ttFont;
 		return 0;
 	}
@@ -520,7 +520,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 		fp->point[3] = (fp->pixel[3] * 72 + 36) / fp->resolution[1];
 	}
 
-	dprintf3("point %d, pixel %d, res %d\n", fp->point[0], fp->pixel[0],
+	debug("point %d, pixel %d, res %d\n", fp->point[0], fp->pixel[0],
 		 fp->resolution[0]);
 
 	// init rasterizer
@@ -560,7 +560,7 @@ openTTFN(Rasterizer *raster, char *ttfnName, FontParams *fp, int fid)
 		return 0;
 
 	// parse attributes
-	dprintf3("point %d, pixel %d, res %d\n",
+	debug("point %d, pixel %d, res %d\n",
 		fp->point[0], fp->pixel[0], fp->resolution[0]);
 
 	int m_index = 0, p_index = 0, r_index = 0;
@@ -685,8 +685,8 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 	if (!encoding)
 		encoding = encodings[0];
 
-	dprintf2("\nopenXLFD(\"%s\"), %s\n", xlfdName, encoding->strName);
-	dprintf3("size %d, resx %d, resy %d\n",
+	debug("\nopenXLFD(\"%s\"), %s\n", xlfdName, encoding->strName);
+	debug("size %d, resx %d, resy %d\n",
 		 fp->point[0], fp->resolution[0], fp->resolution[1]);
 
 	TTFNdata* ttfn = (TTFNdata *)(infoBase + sizeof(TTFNheader));
@@ -859,7 +859,7 @@ prepare2connect(int portno)
 		sd = accept(sd_unix, (struct sockaddr *)&s_unix, &saLength);
 	else if (!noTCP && FD_ISSET(sd_inet, &sdlist))
 		sd = accept(sd_inet, (struct sockaddr *)&s_inet, &saLength);
-	dprintf2("accept(saLength = %d) = %d\n", saLength, sd);
+	debug("accept(saLength = %d) = %d\n", saLength, sd);
 
 	return sd;
 }
@@ -876,10 +876,10 @@ connecting(int sd)
 	if (i < (int)sizeof(fsConnClientPrefix))
 		return 0;
 
-	dprintf0("Connecting\n");
-	dprintf1("%s endian connection\n",
+	debug("Connecting\n");
+	debug("%s endian connection\n",
 		 (req->byteOrder == 'l') ? "little" : "big");
-	dprintf2("version %d.%d\n", req->major_version, req->minor_version);
+	debug("version %d.%d\n", req->major_version, req->minor_version);
 
 	if ((req->byteOrder == 'l' && (*(U32 *)req & 0xff) != 'l')
 	    || (req->byteOrder == 'B' && ((*(U32 *)req >> 24) & 0xff) != 'B')) {
@@ -931,7 +931,7 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 
 	register U8 *p, *end = fe->bitmaps + fe->bmplen;
 	if ((fe->bmpFormat ^ hint) & BitmapFormatMaskByte) {
-		dprintf1("slpswap SLP=%d\n", LOGSLP);
+		debug("slpswap SLP=%d\n", LOGSLP);
 		p = fe->bitmaps;
 		switch (LOGSLP) {
 		case 3:
@@ -955,7 +955,7 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 	}
 
 	if ((fe->bmpFormat ^ hint) & BitmapFormatMaskBit) {
-		dprintf0("bitswap\n");
+		debug("bitswap\n");
 		U8 map[16] = {0, 8, 4, 12, 2, 10, 6, 14,
 			      1, 9, 5, 13, 3, 11, 7, 15};
 		for (p = fe->bitmaps; p < end; ++p)
@@ -963,7 +963,7 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 	}
 
 	if ((format != LOGSLP) && (hint & BitmapFormatByteOrderMask == 0)) {
-		dprintf2("fmtswap SLP=%d -> fmt=%d\n", LOGSLP, format);
+		debug("fmtswap SLP=%d -> fmt=%d\n", LOGSLP, format);
 		p = fe->bitmaps;
 		if (LOGSLP == 3 && format == 4) {
 			for (; p < end; p += 2)
@@ -1029,7 +1029,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 
 		int length = ((fsReq *)buf)->length << 2;
 		if (length > MAXREQSIZE) {
-			dprintf1("request too big: %d bytes\n", length);
+			debug("request too big: %d bytes\n", length);
 
 			fsError reply;
 			reply.type = FS_Error;
@@ -1061,11 +1061,11 @@ working(int sd, Rasterizer *raster, char *replybuf)
 
 		switch (buf[0]) {	// request type
 		case FS_Noop:
-			dprintf0("FS_Noop\n");
+			debug("FS_Noop\n");
 			break;
 
 		case FS_ListExtensions:
-			dprintf0("FS_ListExtensions\n");
+			debug("FS_ListExtensions\n");
 			{
 			fsListExtensionsReply reply;
 			reply.type = FS_Reply;
@@ -1078,7 +1078,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_QueryExtension:
-			dprintf0("FS_QueryExtension\n");
+			debug("FS_QueryExtension\n");
 			{
 			fsQueryExtensionReply reply;
 			reply.type = FS_Reply;
@@ -1098,7 +1098,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_ListCatalogues:
-			dprintf0("FS_ListCatalogues\n");
+			debug("FS_ListCatalogues\n");
 			{
 			fsListCataloguesReply reply;
 			reply.type = FS_Reply;
@@ -1112,7 +1112,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_SetCatalogues:	// resync font database
-			dprintf0("FS_SetCatalogues\n");
+			debug("FS_SetCatalogues\n");
 			{
 			closeTTFdb();
 			ttSyncAll();
@@ -1121,7 +1121,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_GetCatalogues:
-			dprintf0("FS_GetCatalogues\n");
+			debug("FS_GetCatalogues\n");
 			{
 			fsGetCataloguesReply reply;
 			reply.type = FS_Reply;
@@ -1137,12 +1137,12 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsSetEventMaskReq *req = (fsSetEventMaskReq *)buf;
 			event_mask = req->event_mask;
-			dprintf1("FS_SetEventMask %04X\n", event_mask);
+			debug("FS_SetEventMask %04X\n", event_mask);
 			}
 			break;
 
 		case FS_GetEventMask:
-			dprintf1("FS_GetEventMask = %04X\n", event_mask);
+			debug("FS_GetEventMask = %04X\n", event_mask);
 			{
 			fsGetEventMaskReply reply;
 			reply.type = FS_Reply;
@@ -1155,7 +1155,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_CreateAC:		// don't care
-			dprintf0("FS_CreateAC\n");
+			debug("FS_CreateAC\n");
 			{
 			fsCreateACReply reply;
 			reply.type = FS_Reply;
@@ -1169,7 +1169,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_FreeAC:			// don't care
-			dprintf0("FS_FreeAC\n");
+			debug("FS_FreeAC\n");
 			{
 			fsGenericReply reply;
 			reply.type = FS_Reply;
@@ -1181,7 +1181,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_SetAuthorization:	// don't care
-			dprintf0("FS_SetAuthorization\n");
+			debug("FS_SetAuthorization\n");
 			break;
 
 		case FS_SetResolution:
@@ -1190,7 +1190,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			int numres = req->num_resolutions;	// XXX 1
 			fsResolution *res = (fsResolution *)(req + 1);
 
-			dprintf1("FS_SetResolution * %d\n", numres);
+			debug("FS_SetResolution * %d\n", numres);
 			for (; --numres >= 0; ++res) {
 				if (!defaultres) {
 					fp0.resolution[0] = res->x_resolution;
@@ -1199,7 +1199,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				res->point_size /= 10;
 				fp0.point[0] = fp0.point[1] = res->point_size;
 				fp0.point[2] = fp0.point[3] = 0;
-				dprintf3("xres = %d, yres = %d, size = %d\n",
+				debug("xres = %d, yres = %d, size = %d\n",
 					 res->x_resolution, res->y_resolution,
 					 res->point_size / 10);
 			}
@@ -1207,7 +1207,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_GetResolution:
-			dprintf0("FS_GetResolution\n");
+			debug("FS_GetResolution\n");
 			{
 			struct {
 				fsGetResolutionReply s1;
@@ -1234,7 +1234,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			char *pattern = (char *)(req + 1);
 
 			pattern[req->nbytes] = 0;
-			dprintf2("FS_ListFonts \"%s\" * %ld\n",
+			debug("FS_ListFonts \"%s\" * %ld\n",
 				 pattern, req->maxNames);
 
 			fsListFontsReply reply;
@@ -1268,7 +1268,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				buf += len;
 				++reply.nFonts;
 			}
-			dprintf1("Found %ld fonts\n", reply.nFonts);
+			debug("Found %ld fonts\n", reply.nFonts);
 			reply.length = (sizeof(reply) + (buf - replybuf)
 				       + 3) >> 2;
 
@@ -1284,7 +1284,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			 * The high cost is multiplied by the need to go through
 			 * different sizes and resolutions.
 			 */
-			dprintf0("FS_ListFontsWithXInfo\n");
+			debug("FS_ListFontsWithXInfo\n");
 			{
 // XFSTT_X_COMPLIANT
 #if 0
@@ -1303,7 +1303,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			error.sequenceNumber = seqno;
 			error.length = sizeof(error) >> 2;
 
-			dprintf2(" fsError size = %u bytes, %u ints\n",
+			debug(" fsError size = %u bytes, %u ints\n",
 				 sizeof(error), error.length);
 			write(sd, (void *)&error, sizeof(error));
 #endif
@@ -1315,7 +1315,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			fsOpenBitmapFontReq *req = (fsOpenBitmapFontReq *)buf;
 			char *fontName = (char *)(req + 1) + 1;
 			fontName[*(U8 *)(req + 1)] = 0;
-			dprintf1("FS_OpenBitmapFont \"%s\"", fontName);
+			debug("FS_OpenBitmapFont \"%s\"", fontName);
 
 			raster->format = (req->format_hint >> 8) & 3;
 			if (req->format_hint & 0x0c)
@@ -1333,7 +1333,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				reply.cachable = fsTrue;
 
 				write(sd, (void *)&reply, sizeof(reply));
-				dprintf0(" opened\n");
+				debug(" opened\n");
 			} else {
 				fsError reply;
 				reply.type = FS_Error;
@@ -1342,9 +1342,9 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				reply.length = sizeof(reply) >> 2;
 
 				write(sd, (void *)&reply, sizeof(reply));
-				dprintf0(" not found\n");
+				debug(" not found\n");
 			}
-			dprintf3("fhint = %04lX, fmask = %04lX, fid = %ld\n",
+			debug("fhint = %04lX, fmask = %04lX, fid = %ld\n",
 				 req->format_hint, req->format_mask, req->fid);
 			}
 			break;
@@ -1352,7 +1352,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		case FS_QueryXInfo:
 			{
 			fsQueryXInfoReq *req = (fsQueryXInfoReq *)buf;
-			dprintf1("FS_QueryXInfo fid = %ld\n", req->id);
+			debug("FS_QueryXInfo fid = %ld\n", req->id);
 
 			struct {
 				fsQueryXInfoReply s1;
@@ -1384,10 +1384,10 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			reply.s1.font_hdr_char_range_max_char_low
 				= (U8)fi->lastChar;
 
-			dprintf2("minchar = 0x%02X%02X, ",
+			debug("minchar = 0x%02X%02X, ",
 				 reply.s1.font_hdr_char_range_min_char_high,
 				 reply.s1.font_hdr_char_range_min_char_low);
-			dprintf2("maxchar = 0x%02X%02X\n",
+			debug("maxchar = 0x%02X%02X\n",
 				 reply.s1.font_hdr_char_range_max_char_high,
 				 reply.s1.font_hdr_char_range_max_char_low);
 
@@ -1411,11 +1411,11 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			reply.s1.font_header_font_ascent = fe->yWinAscent;
 			reply.s1.font_header_font_descent = fe->yWinDescent;
 
-			dprintf2("FM= (asc= %d, dsc= %d, ",
+			debug("FM= (asc= %d, dsc= %d, ",
 				 fe->yAscentMax, fe->yDescentMax);
-			dprintf2("wasc= %d, wdsc= %d, ",
+			debug("wasc= %d, wdsc= %d, ",
 				 fe->yWinAscent, fe->yWinDescent);
-			dprintf2("wmin= %d, wmax= %d)\n",
+			debug("wmin= %d, wmax= %d)\n",
 				 fe->xAdvanceMin, fe->xAdvanceMax);
 
 			// we need to have some property data, otherwise
@@ -1447,10 +1447,10 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		case FS_QueryXExtents16:
 			{
 			fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)buf;
-			dprintf2("FS_QueryXExtents%s fid = %ld, ",
+			debug("FS_QueryXExtents%s fid = %ld, ",
 				(buf[0] == FS_QueryXExtents16 ? "16" : "8"),
 				req->fid);
-			dprintf2("range=%d, nranges=%ld\n",
+			debug("range=%d, nranges=%ld\n",
 				req->range, req->num_ranges);
 
 			XFSFont *xfs = findFont(req->fid, sd, seqno);
@@ -1470,7 +1470,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				for (; nranges > 0; nranges -= 2, ptr += 2) {
 					ptr[0] = ntohs(ptr[0]);
 					ptr[1] = ntohs(ptr[1]);
-					dprintf2("rg %d..%d\n",ptr[0],ptr[1]);
+					debug("rg %d..%d\n",ptr[0],ptr[1]);
 					for (U16 j = ptr[0]; j <= ptr[1]; ++j)
 						(ext++)->left = j;
 				}
@@ -1509,10 +1509,10 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				}
 
 #if DEBUG & 2
-				dprintf2("GM[%3d = %3d] = ", ch, glyphNo);
-				dprintf2("(l= %d, r= %d, ",
+				debug("GM[%3d = %3d] = ", ch, glyphNo);
+				debug("(l= %d, r= %d, ",
 					 ext->left, ext->right);
-				dprintf3("w= %d, a= %d, d= %d);\n",
+				debug("w= %d, a= %d, d= %d);\n",
 					 ext->width, ext->ascent, ext->descent);
 #endif
 			}
@@ -1534,9 +1534,9 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		case FS_QueryXBitmaps16:
 			{
 			fsQueryXBitmaps16Req *req = (fsQueryXBitmaps16Req *)buf;
-			dprintf2("FS_QueryXBitmaps16 fid = %ld, fmt = %04lX\n",
+			debug("FS_QueryXBitmaps16 fid = %ld, fmt = %04lX\n",
 				 req->fid, req->format);
-			dprintf2("range=%d, nranges=%ld\n",
+			debug("range=%d, nranges=%ld\n",
 				 req->range, req->num_ranges);
 
 			XFSFont *xfs = findFont(req->fid, sd, seqno);
@@ -1558,7 +1558,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				for (; nranges > 0; nranges -= 2, ptr += 2) {
 					ptr[0] = ntohs(ptr[0]);
 					ptr[1] = ntohs(ptr[1]);
-					dprintf2("rg %d..%d\n",ptr[0],ptr[1]);
+					debug("rg %d..%d\n",ptr[0],ptr[1]);
 					for (U16 j = ptr[0]; j <= ptr[1]; ++j)
 						(ofs++)->position = j;
 				}
@@ -1603,7 +1603,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				ofs->position = ci->tmpofs;
 
 #if DEBUG & 2
-				dprintf3("OFS[%3d = %3d] = %ld\n",
+				debug("OFS[%3d = %3d] = %ld\n",
 					 ch, glyphNo, ofs->position);
 #endif
 			}
@@ -1638,7 +1638,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		case FS_CloseFont:
 			{
 			fsCloseReq *req = (fsCloseReq *)buf;
-			dprintf1("FS_CloseFont fid = %ld\n", req->id);
+			debug("FS_CloseFont fid = %ld\n", req->id);
 
 			XFSFont *xfs = findFont(req->id, sd, seqno);
 			if (xfs) {
@@ -1650,7 +1650,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		default:
-			dprintf1("Unknown FS request 0x%02X !\n", buf[0]);
+			debug("Unknown FS request 0x%02X !\n", buf[0]);
 			{
 			fsRequestError reply;
 			reply.type = FS_Error;
@@ -1665,7 +1665,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			}
 			break;
 		}
-	dprintf0("done.\n");
+	debug("done.\n");
 	}
 
 	return 0;
@@ -1861,7 +1861,7 @@ main(int argc, char **argv)
 					shutdown(sd, 2);
 				close(sd);
 
-				dprintf0("xfstt: closing a connection\n");
+				debug("xfstt: closing a connection\n");
 				cleanupMem();
 
 				return 0;
@@ -1881,7 +1881,7 @@ main(int argc, char **argv)
 		rmdir(sockdir);
 	}
 
-	dprintf0("xfstt: server down\n");
+	debug("xfstt: server down\n");
 	cleanupMem();
 
 	return 0;

@@ -1,7 +1,7 @@
 /*
  * Name Table
  *
- * $Id: table_name.cc,v 1.1 2002/11/14 12:08:11 guillem Exp $
+ * $Id: table_name.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -68,8 +68,8 @@ NameTable::getString(int pfId, int strId, int *pLen, char *convbuf)
 			char *p = (char *)base + strBase + strOffset;
 #if 0
 			for (int j = 0; j < strLength; ++j)
-				dprintf1("%c", *(p++));
-			dprintf0("\n");
+				debug("%c", *(p++));
+			debug("\n");
 #endif
 			*pLen = strLength;
 			p = (char *)base + strBase + strOffset;

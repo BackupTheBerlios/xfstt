@@ -3,6 +3,7 @@ pre-1.5
 	Moved hardcoded dir locations to configure space
 	Mkdir the fontdir and cachedir in the make install target
 	Remove --gslist dependency on order of arguments
+	Replaced dprintfN with a debug function and cleaned its output
 
 1.4
 	Autoconfiscated
