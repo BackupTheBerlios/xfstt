@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.11 2003/07/28 22:21:54 guillem Exp $
+ * $Id: xfstt.cc,v 1.12 2003/07/28 22:27:25 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -1453,7 +1453,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)buf;
 			debug("FS_QueryXExtents%s fid = %ld, ",
-			      (fsreq->reqType == FS_QueryXExtents8 ? "8" : "16"),
+			      (req->reqType == FS_QueryXExtents8 ? "8" : "16"),
 			      req->fid);
 			debug("range=%d, nranges=%ld\n",
 			      req->range, req->num_ranges);
