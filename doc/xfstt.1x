@@ -1,9 +1,9 @@
 .\"
-.\"	$Id: xfstt.1x,v 1.2 2003/03/22 13:56:49 guillem Exp $
+.\"	$Id: xfstt.1x,v 1.3 2003/03/22 14:01:31 guillem Exp $
 .\"
-.TH xfstt 1x 2002-11-14 1.4 "Xfstt User's Manual" \" -*- nroff -*-
+.TH xfstt 1x 2003-03-22 1.4 "Xfstt User's Manual" \" -*- nroff -*-
 .SH NAME
-xfstt \- X11 font server for *ttf fonts
+xfstt \- X11 Font Server for TrueType fonts
 .SH SYNOPSIS
 .B xfstt
 [--port n] [--notcp] [--dir dirname] [--cache cachedir]
@@ -13,7 +13,7 @@ xfstt \- X11 font server for *ttf fonts
 [--help]
 .br
 .SH DESCRIPTION
-Xfstt serves *ttf fonts to X11 servers.  Start xfstt then tell X11 about the 
+Xfstt serves *ttf fonts to X11 servers.  Start xfstt then tell X11 about the
 font server with
 .B "xset fp+ unix/:7101"
 or (assuming the X11 server runs on host 127.0.0.1)
@@ -29,13 +29,13 @@ Print font list in a format usable for ghostscript during
 .BR \-\-sync .
 .TP
 .I "\-\-user username
-This is a security feature which is designed to lessen the impact of 
+This is a security feature which is designed to lessen the impact of
 any future security holes which are found in xfstt. This will cause
-xfstt to set its UID and GID to that of the specified user 
+xfstt to set its UID and GID to that of the specified user
 (if that user doesn't exist then it will use your current UID and GID)
 .TP
 .I "\-\-encoding"
-Remap to different encodings. Default is iso8859-1. Usage example: 
+Remap to different encodings. Default is iso8859-1. Usage example:
 .br
 .B xfstt --encoding iso8859-2,koi8-r,windows-1251
 .br
