@@ -60,7 +60,7 @@ GlyphTable::getGlyphData(int glyphNo, LocaTable *locaTable, Rasterizer *raster)
 	codeOffset = tell();
 	seekRelative(codeLength);
 
-	point *pp = points;
+	Point *pp = points;
 	for (int iFlags = nPoints; --iFlags >= 0; ++pp) {
 		u8_t flag = readUByte();
 		if (flag & F_SAME)
@@ -157,8 +157,8 @@ GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 			}
 		} else {
 			// match points
-			point *p1 = &(points - sumPoints)[xarg];
-			point *p2 = &points[yarg];
+			Point *p1 = &(points - sumPoints)[xarg];
+			Point *p2 = &points[yarg];
 			xarg = p1->xnow - p2->xnow;
 			yarg = p1->ynow - p2->ynow;
 		}

@@ -1,7 +1,7 @@
 /*
  * Hint Interpreter
  *
- * $Id: raster_hints.cc,v 1.3 2003/06/18 05:52:12 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -41,10 +41,10 @@ Rasterizer::initInterpreter()
 	if (sizePoints[0] < nPoints[0]) {
 		if (sizePoints[0]) delete[] p[0];
 		sizePoints[0] = MEMSLACK * nPoints[0];
-		p[0] = new point[sizePoints[0]];
+		p[0] = new Point[sizePoints[0]];
 	}
 
-	point nullpoint = {0, 0, 0, 0, 0};
+	Point nullpoint = {0, 0, 0, 0, 0};
 	for (int i = 0; i < nPoints[0]; ++i)
 		p[0][i] = nullpoint;
 
@@ -140,7 +140,7 @@ Rasterizer::calcCVT()
 }
 
 void
-GraphicsState::init(point** p)
+GraphicsState::init(Point **p)
 {
 	flags		= X_TOUCHED;
 	move_x		= UNITY2D14;
@@ -234,7 +234,7 @@ GraphicsState::absOldMeasure(int dx11D6, int dy11D6)
 }
 
 inline int
-Rasterizer::newMeasure(const point& p2, const point& p1)
+Rasterizer::newMeasure(const Point &p2, const Point &p1)
 {
 	int dist = gs.absNewMeasure(p2.xnow - p1.xnow, p2.ynow - p1.ynow);
 	debug("\nnewMeasure p[%d]-p[%d] = %f",
@@ -244,7 +244,7 @@ Rasterizer::newMeasure(const point& p2, const point& p1)
 }
 
 inline int
-Rasterizer::oldMeasure(const point& p2, const point& p1)
+Rasterizer::oldMeasure(const Point &p2, const Point &p1)
 {
 	int dist = gs.absOldMeasure(p2.xold - p1.xold, p2.yold - p1.yold);
 	debug("\noldMeasure p[%d]-p[%d] = %f",
@@ -253,7 +253,7 @@ Rasterizer::oldMeasure(const point& p2, const point& p1)
 }
 
 void
-Rasterizer::newLine2vector(const point& p2, const point& p1, int& vx, int &vy)
+Rasterizer::newLine2vector(const Point &p2, const Point &p1, int &vx, int &vy)
 {
 	// XXX: how can it be that df1 or df2 are bigger than 16 bits ?
 	float f1 = p2.xnow - p1.xnow;
@@ -277,7 +277,7 @@ Rasterizer::newLine2vector(const point& p2, const point& p1, int& vx, int &vy)
 }
 
 void
-Rasterizer::oldLine2vector(const point& p2, const point& p1, int& vx, int &vy)
+Rasterizer::oldLine2vector(const Point &p2, const Point &p1, int &vx, int &vy)
 {
 	// XXX: how can it be that df1 or df2 are bigger than 16 bits ?
 	float f1 = p2.xold - p1.xold;
@@ -301,7 +301,7 @@ Rasterizer::oldLine2vector(const point& p2, const point& p1, int& vx, int &vy)
 }
 
 inline void
-GraphicsState::movePoint(point& pp, int len11D6)
+GraphicsState::movePoint(Point &pp, int len11D6)
 {
 	debug("\nmovePoint by %f", len11D6 / FSHIFT);
 	debug("\t(%d %d)", pp.xnow, pp.ynow);
@@ -344,7 +344,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 	// needs? MS VC++ code only grabs 40 bytes!
 
 	register int m;
-	register point* pp;
+	register Point *pp;
 	int n;
 
 	assert(stack >= stackbase);
@@ -846,7 +846,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		pp = (opc & 1) ? &gs.zp0[gs.rp1] : &gs.zp1[gs.rp2];
 		n = gs.absNewMeasure(pp->xnow - pp->xold, pp->ynow - pp->yold);
 		assert(m >= 0 && m <= 1);
-		for (point *pp1 = p[m], *pp2 = pp1 + nPoints[m]; pp1 < pp2; ++pp1) {
+		for (Point *pp1 = p[m], *pp2 = pp1 + nPoints[m]; pp1 < pp2; ++pp1) {
 			if (pp1 == pp) continue;
 			debug("\nSHZ p[%d] by %f", pp1 - p[m], n / FSHIFT);
 			debug("\t(%d %d) -> ", pp1->xnow, pp1->ynow);
@@ -1059,10 +1059,10 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		break;
 	case ISECT:
 		{
-		point* pp1 = &gs.zp1[*(stack--)];
-		point* pp2 = &gs.zp1[*(stack--)];
-		point* pp3 = &gs.zp0[*(stack--)];
-		point* pp4 = &gs.zp0[*(stack--)];
+		Point *pp1 = &gs.zp1[*(stack--)];
+		Point *pp2 = &gs.zp1[*(stack--)];
+		Point *pp3 = &gs.zp0[*(stack--)];
+		Point *pp4 = &gs.zp0[*(stack--)];
 		m = *(stack--);
 
 		debug("ISECT p[%d] ", m);
@@ -1113,7 +1113,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 	case IUP0:
 		pp = p[1];
 		for (m = 0; m < nEndPoints; ++m) {
-			point* last = p[1] + endPoints[m];
+			Point *last = p[1] + endPoints[m];
 			debug("IUP0 p[%d .. %d]", pp - p[1], last - p[1]);
 			doIUP0(pp, last);
 			pp = last + 1;
@@ -1122,7 +1122,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 	case IUP1:
 		pp = p[1];
 		for (m = 0; m < nEndPoints; ++m) {
-			point* last = p[1] + endPoints[m];
+			Point *last = p[1] + endPoints[m];
 			debug("IUP1 p[%d .. %d]", pp - p[1], last - p[1]);
 			doIUP1(pp, last);
 			pp = last + 1;
@@ -1618,7 +1618,7 @@ Rasterizer::skipHints(RandomAccessFile* const f)
 
 
 void
-Rasterizer::interpolate(point& pp, const point& p2, const point& p1)
+Rasterizer::interpolate(Point &pp, const Point &p2, const Point &p1)
 {
 	// interpolate pp to satisfy
 	//
@@ -1648,7 +1648,7 @@ Rasterizer::interpolate(point& pp, const point& p2, const point& p1)
 
 
 void
-Rasterizer::iup0(point* const pp, const point* const p1, const point* const p2)
+Rasterizer::iup0(Point *const pp, const Point *const p1, const Point *const p2)
 {
 	int dold21 = p2->yold - p1->yold;
 	int doldp1 = pp->yold - p1->yold;
@@ -1675,7 +1675,7 @@ Rasterizer::iup0(point* const pp, const point* const p1, const point* const p2)
 
 
 void
-Rasterizer::iup1(point* const pp, const point* const p1, const point* const p2)
+Rasterizer::iup1(Point *const pp, const Point *const p1, const Point *const p2)
 {
 	int dold21 = p2->xold - p1->xold;
 	int doldp1 = pp->xold - p1->xold;
@@ -1702,20 +1702,20 @@ Rasterizer::iup1(point* const pp, const point* const p1, const point* const p2)
 
 
 void
-Rasterizer::doIUP0(point* const first, point* const last)
+Rasterizer::doIUP0(Point *const first, Point *const last)
 {
-	point* p0;
+	Point *p0;
 	for (p0 = first; p0 <= last; ++p0)
 		if (p0->flags & Y_TOUCHED)
 			break;
-	point *i, *j;
+	Point *i, *j;
 	for (i = j = p0; i <= last; i = j) {
 		while (++j <= last)
 			if (j->flags & Y_TOUCHED)
 				break;
 		if (j > last)
 			break;
-		for (point* k = i; ++k < j;)
+		for (Point *k = i; ++k < j;)
 			iup0(k, i, j);
 	}
 	if (i > last)
@@ -1728,20 +1728,20 @@ Rasterizer::doIUP0(point* const first, point* const last)
 
 
 void
-Rasterizer::doIUP1(point* const first, point* const last)
+Rasterizer::doIUP1(Point *const first, Point *const last)
 {
-	point* p0;
+	Point *p0;
 	for (p0 = first; p0 <= last; ++p0)
 		if (p0->flags & X_TOUCHED)
 			break;
-	point *i, *j;
+	Point *i, *j;
 	for (i = j = p0; i <= last; i = j) {
 		while (++j <= last)
 			if (j->flags & X_TOUCHED)
 				break;
 		if (j > last)
 			break;
-		for (point* k = i; ++k < j;)
+		for (Point *k = i; ++k < j;)
 			iup1(k, i, j);
 	}
 	if (i > last)

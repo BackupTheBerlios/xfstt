@@ -81,7 +81,7 @@ Rasterizer::useTTFont(TTFont* _ttFont, int _flags)
 		if (sizePoints[1])
 			delete[] p[1];
 		sizePoints[1] = MEMSLACK * i;
-		p[1] = new point[sizePoints[1]];
+		p[1] = new Point[sizePoints[1]];
 	}
 
 	i = ttFont->maxpTable->maxContours + ttFont->maxpTable->maxCompContours;
@@ -298,7 +298,7 @@ Rasterizer::putGlyphBitmap(int glyphNo, u8_t *bmp, u8_t *endbmp, GlyphMetrics *g
 	int xmin = INT_MAX, ymin = xmin;
 	int xmax = INT_MIN, ymax = xmax;
 
-	register point *pp = p[1];
+	register Point *pp = p[1];
 	for (int i = nPoints[1]; --i >= 0; ++pp) {
 		if (MAGNIFY > 1) {
 			pp->xnow *= MAGNIFY;
@@ -385,7 +385,7 @@ Rasterizer::putGlyphBitmap(int glyphNo, u8_t *bmp, u8_t *endbmp, GlyphMetrics *g
 }
 
 void
-Rasterizer::putGlyphData(int ne, int np, int *ep, point *pp, int glyphNo,
+Rasterizer::putGlyphData(int ne, int np, int *ep, Point *pp, int glyphNo,
 		         int xmin)
 {
 	nEndPoints = ne;
@@ -424,7 +424,7 @@ void
 Rasterizer::scaleGlyph()
 {
 	// scale outline
-	register point *pp = p[1];
+	register Point *pp = p[1];
 	for (int i = nPoints[1]; --i >= 0; ++pp) {
 		pp->xold = scaleX(pp->xnow, pp->ynow);
 		pp->yold = scaleY(pp->ynow, pp->xnow);
@@ -451,7 +451,7 @@ void
 Rasterizer::printOutline(void)
 {
 	debug("\n=== grid fitted outline ===\n");
-	point *pp = p[1];
+	Point *pp = p[1];
 	for (int i = 0, j = 0; i < nPoints[1] + 2; ++i, ++pp) {
 		debug("p[%d]\t%6d %6d  ", i, pp->xold, pp->yold);
 		debug("-> %6d %6d", pp->xnow, pp->ynow);

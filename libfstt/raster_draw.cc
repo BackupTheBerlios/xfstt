@@ -25,17 +25,17 @@
 #include <limits.h>
 #include <string.h>
 
-typedef struct {
+struct Dot {
 	int y, x;
-} dot;
+};
 
-static dot *dots[2], *dots0, *dots1;
+static Dot *dots[2], *dots0, *dots1;
 #define DOTBUFSIZE 32768
 
 void
 Rasterizer::openDraw()
 {
-	dots[0] = (dot *)allocMem(2 * DOTBUFSIZE * sizeof(dot));
+	dots[0] = (Dot *)allocMem(2 * DOTBUFSIZE * sizeof(Dot));
 	dots[1] = &dots[0][DOTBUFSIZE];
 	dots[0]->y = dots[1]->y = INT_MIN;	// sort markers
 }
@@ -43,7 +43,7 @@ Rasterizer::openDraw()
 void
 Rasterizer::closeDraw()
 {
-	deallocMem(dots[0], 2 * DOTBUFSIZE * sizeof(dot));
+	deallocMem(dots[0], 2 * DOTBUFSIZE * sizeof(Dot));
 }
 
 static void
@@ -53,8 +53,8 @@ dropoutInit()
 	dots1 = dots[1];
 }
 
-static inline dot *
-drawDots(dot *p, int x1, int y1, int x2, int y2)
+static inline Dot *
+drawDots(Dot *p, int x1, int y1, int x2, int y2)
 {
 	if (y2 < y1) {
 		int t = y1; y1 = y2; y2 = t;
@@ -81,14 +81,14 @@ Rasterizer::drawSegment(int x1, int y1, int x2, int y2)
 }
 
 static void
-preSort(dot* l, dot* r)
+preSort(Dot *l, Dot *r)
 {
 	// quicksort algorithm
 	// (it's pretty hard to find a good partitioning element here)
 	int t;
-	dot *i = l - 1;
+	Dot *i = l - 1;
 manual_tail_recursion:
-	dot *j = r;
+	Dot *j = r;
 
 	for (;;) {
 		t = r->y;
@@ -127,10 +127,10 @@ manual_tail_recursion:
 }
 
 static void
-endSort(dot *l, dot *r)
+endSort(Dot *l, Dot *r)
 {
 	for (; l < r; ++l) {
-		dot *j = l;
+		Dot *j = l;
 		int ty = j[1].y;
 		int tx = j[1].x;
 		for (; ty < j->y || (ty == j->y && tx < j->x); --j)
@@ -144,7 +144,7 @@ endSort(dot *l, dot *r)
 static void
 drawHorizontal(u8_t *const bmp, int height, int dX)
 {
-	for (dot *p = dots[0] + 1; p < dots0; p += 2) {
+	for (Dot *p = dots[0] + 1; p < dots0; p += 2) {
 		if (p[1].x - p[0].x < 96)
 			continue;
 
@@ -182,7 +182,7 @@ drawHorizontal(u8_t *const bmp, int height, int dX)
 static void
 drawHDropouts(u8_t *const bmp, int height, int dX)
 {
-	for (dot *p = dots[0] + 1; p < dots0; p += 2) {
+	for (Dot *p = dots[0] + 1; p < dots0; p += 2) {
 		if (p[1].x - p[0].x >= 96 )
 			continue;
 
@@ -205,7 +205,7 @@ drawHDropouts(u8_t *const bmp, int height, int dX)
 static void
 drawVDropouts(u8_t *const bmp, int height, int dX)
 {
-	for (dot *p = dots[1] + 1; p < dots1; p += 2) {
+	for (Dot *p = dots[1] + 1; p < dots1; p += 2) {
 		if (p[1].x - p[0].x >= 63)
 			continue;
 
@@ -243,10 +243,10 @@ Rasterizer::drawBitmap(u8_t *const bmp, int height, int dX)
 	}
 
 #if DEBUG
-	for (dot *i1 = dots[0] + 1; i1 <= dots0; ++i1)
+	for (Dot *i1 = dots[0] + 1; i1 <= dots0; ++i1)
 		debug("dh[%3d] = (%5d %5d)\n", i1 - dots[0], i1->y, i1->x);
 	debug("\n");
-	for (dot* i2 = dots[1] + 1; i2 <= dots1; ++i2)
+	for (Dot* i2 = dots[1] + 1; i2 <= dots1; ++i2)
 		debug("dv[%3d] = (%5d %5d)\n", i2 - dots[1], i2->x, i2->y);
 	debug("\n");
 #endif
@@ -263,13 +263,13 @@ Rasterizer::drawGlyph(u8_t *const bmp, u8_t *const endbmp)
 	memset(bmp, 0, length);
 	dropoutInit();
 
-	point *startPoint = p[1];
+	Point *startPoint = p[1];
 	for (int i1 = nPoints[1]; --i1 >= 0; ++startPoint)
 		startPoint->flags &= ON_CURVE | END_SUBGLYPH;
 
 	startPoint = p[1];
 	for (int i2 = 0; i2 < nEndPoints; ++i2) {
-		point *endPoint = p[1] + endPoints[i2];
+		Point *endPoint = p[1] + endPoints[i2];
 		int flag = endPoint->flags & END_SUBGLYPH;
 		endPoint->flags &= ON_CURVE;
 		drawContour(startPoint, endPoint);
@@ -281,8 +281,8 @@ Rasterizer::drawGlyph(u8_t *const bmp, u8_t *const endbmp)
 	}
 }
 
-inline const point *
-Rasterizer::drawPoly(const point &p0, const point &p1, const point &p2)
+inline const Point *
+Rasterizer::drawPoly(const Point &p0, const Point &p1, const Point &p2)
 {
 	if (p1.flags) { // x1x
 		if (p0.flags) // 11x
@@ -313,12 +313,12 @@ Rasterizer::drawPoly(const point &p0, const point &p1, const point &p2)
 }
 
 void
-Rasterizer::drawContour(point *const first, point *const last)
+Rasterizer::drawContour(Point *const first, Point *const last)
 {
-	const point *p0 = first;
+	const Point *p0 = first;
 	do {
-		const point *p1 = p0 + 1;
-		const point *p2 = p0 + 2;
+		const Point *p1 = p0 + 1;
+		const Point *p2 = p0 + 2;
 		if (p1 == last) {
 			p2 = first;
 		} else if (p1 > last) {

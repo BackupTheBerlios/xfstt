@@ -197,11 +197,11 @@ enum {
 	END_SUBGLYPH = 0x100
 };
 
-typedef struct {
+struct Point {
 	int	xnow, ynow;
 	int	xold, yold;
 	int	flags;
-} point;
+};
 
 struct FontInfo {
 	u16_t	firstChar, lastChar;
@@ -270,7 +270,7 @@ public:	// XXX: perftest needs maxpTable
 	};
 
 	int	*endPoints;
-	point	*points;
+	Point	*points;
 
 public:
 	TTFont(char *fileName, int infoOnly = 0);
@@ -454,12 +454,12 @@ public: // XXX: needed by verify.cpp
 	int	nEndPoints;
 	int	*endPoints;
 	int	nPoints;
-	point	*points;
+	Point	*points;
 
 public:
 	GlyphTable(RandomAccessFile &f, int offset, int length);
 
-	void setupGlyph(point *_points, int *_endPoints) {
+	void setupGlyph(Point *_points, int *_endPoints) {
 		endPoints = _endPoints;
 		points = _points;
 	}
@@ -791,10 +791,10 @@ class GraphicsState {
 
 	GraphicsState() {}
 
-	void init(point** p);
+	void init(Point** p);
 	int absNewMeasure(int dx, int dy);
 	int absOldMeasure(int dx, int dy);
-	void movePoint(point &pp, int len10D6);
+	void movePoint(Point &pp, int len10D6);
 	void recalc();
 
 	int	f_vec_x;	// freedom vector
@@ -809,7 +809,7 @@ class GraphicsState {
 	int	move_x;
 	int	move_y;
 
-	point	*zp0, *zp1, *zp2;
+	Point	*zp0, *zp1, *zp2;
 	int	rp0, rp1, rp2;	// reference points
 	int	loop;		// loop counter
 	int	auto_flip;
@@ -853,7 +853,7 @@ private:
 	// often accessed members should be here (low offsets)
 
 	int	*stack, *stackbase;	// stack grows upward
-	point	*p[2];			// points (twilight + action zone)
+	Point	*p[2];			// points (twilight + action zone)
 	int	*endPoints;
 	int	nPoints[2];		// number of points in zone 0 and 1
 	int	nEndPoints;
@@ -952,7 +952,7 @@ private:
 		return (((yx * x + yy * y) + 16) >> 5) << xxexp;
 	}
 	void hintGlyph(GlyphTable *g, int offset, int length);
-	void putGlyphData(int ne, int np, int *ep, point *pp, int gn, int xm);
+	void putGlyphData(int ne, int np, int *ep, Point *pp, int gn, int xm);
 
 	void initInterpreter();
 	void endInterpreter();
@@ -964,27 +964,27 @@ private:
 
 	int round(int x) const;
 
-	void interpolate(point&pp, const point &pRef1, const point &pRef2);
-	STATIC void doIUP0(point *const first, point *const last);
-	STATIC void doIUP1(point *const first, point *const last);
-	STATIC void iup0(point *const pp,
-			 const point* const pRef1, const point *const pRef2);
-	STATIC void iup1(point *const pp,
-			 const point *const pRef1, const point *const pRef2);
-	int newMeasure(const point &p2, const point &p1);
-	int oldMeasure(const point &p2, const point &p1);
-	static void newLine2vector(const point &p1, const point &p2,
+	void interpolate(Point &pp, const Point &pRef1, const Point &pRef2);
+	STATIC void doIUP0(Point *const first, Point *const last);
+	STATIC void doIUP1(Point *const first, Point *const last);
+	STATIC void iup0(Point *const pp,
+			 const Point* const pRef1, const Point *const pRef2);
+	STATIC void iup1(Point *const pp,
+			 const Point *const pRef1, const Point *const pRef2);
+	int newMeasure(const Point &p2, const Point &p1);
+	int oldMeasure(const Point &p2, const Point &p1);
+	static void newLine2vector(const Point &p1, const Point &p2,
 				   int &vx, int &vy);
-	static void oldLine2vector(const point &p1, const point &p2,
+	static void oldLine2vector(const Point &p1, const Point &p2,
 				   int &vx, int &vy);
 
 	static void openDraw();
 	static void closeDraw();
 	void drawGlyph(u8_t *const startbmp, u8_t *const endbmp);
 	void drawBitmap(u8_t *const bmp, int height, int dX);
-	static void drawContour(point* const first, point *const last);
-	static const point* drawPoly(const point &p0, const point &p1,
-				     const point &p2);
+	static void drawContour(Point *const first, Point *const last);
+	static const Point *drawPoly(const Point &p0, const Point &p1,
+				     const Point &p2);
 	static void drawSegment(int x1, int y1, int x2, int y2);
 	static void bezier1(int x0, int y0, int x1, int y1, int x2, int y2);
 	void antiAliasing2(u8_t *bmp);
