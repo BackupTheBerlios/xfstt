@@ -4,6 +4,7 @@ pre-1.5
 	Mkdir the fontdir and cachedir in the make install target
 	Remove --gslist dependency on order of arguments
 	Replaced dprintfN with a debug function and cleaned its output
+	Added a System V init file example
 
 1.4
 	Autoconfiscated
