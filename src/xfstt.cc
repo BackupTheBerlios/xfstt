@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.7 2003/06/18 05:42:03 guillem Exp $
+ * $Id: xfstt.cc,v 1.8 2003/06/18 06:03:06 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -121,18 +121,17 @@ usage(int verbose)
 	if (!verbose)
 		return;
 
-	printf(_("\t--sync     put ttf-fonts in \"%s\" to database\n"),
-	       fontdir);
+	printf(_("\t--sync     sync database with font directory content\n"));
 	printf(_("\t--gslist   print ghostscript style ttf fontlist\n"));
 	printf(_("\t--port     change port number (default %i)\n"),
 	       default_port);
 	printf(_("\t--notcp    don't open TCP socket, use unix domain only\n"));
-	printf(_("\t--dir      change font directory (default %s)\n"),
-	       FONTDIR);
-	printf(_("\t--cache    change font cache directory (default %s)\n"),
-	       CACHEDIR);
-	printf(_("\t--pidfile  change pid file location (default %s)\n"),
-	       PIDFILE);
+	printf(_("\t--dir      change font directory\n"));
+	printf(_("\t           (default %s)\n"), FONTDIR);
+	printf(_("\t--cache    change font cache directory\n"));
+	printf(_("\t           (default %s)\n"), CACHEDIR);
+	printf(_("\t--pidfile  change pid file location\n"));
+	printf(_("\t           (default %s)\n"), PIDFILE);
 	printf(_("\t--res      force default resolution to this value\n"));
 	printf(_("\t--encoding change encoding (default %s)\n"),
 	       encodings[0]->strName);
@@ -242,7 +241,7 @@ cachefile(const char *leafname)
 {
 	long len = strlen(cachedir) + strlen(leafname) + 2;
 	long maxlen = pathconf(cachedir, _PC_PATH_MAX);
-	
+
 	if (maxlen != -1 && len > maxlen) {
 		fputs(_("xfstt: Cache directory name is too long\n"), stderr);
 		return 0;
