@@ -1,7 +1,7 @@
 /*
  * Hint Interpreter
  *
- * $Id: raster_hints.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id: raster_hints.cc,v 1.3 2003/06/18 05:52:12 guillem Exp $
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -268,7 +268,7 @@ Rasterizer::newLine2vector(const point& p2, const point& p1, int& vx, int &vy)
 		vx = (int)(f1 * f3);
 		vy = (int)(f2 * f3);
 	} else {
-	    	vx = 0;
+		vx = 0;
 		vy = 0;
 	}
 	debug("\t(%d %d) - ", p2.xnow, p2.ynow);
@@ -284,7 +284,6 @@ Rasterizer::oldLine2vector(const point& p2, const point& p1, int& vx, int &vy)
 	float f2 = p2.yold - p1.yold;
 
 	if (f1 != 0.0f || f2 != 0.0f) {
-	
 #if 1
 		float f3 = sqrt(UNITY2D14 * UNITY2D14 / (f1 * f1 + f2 * f2));
 #else
@@ -293,7 +292,7 @@ Rasterizer::oldLine2vector(const point& p2, const point& p1, int& vx, int &vy)
 		vx = (int)(f1 * f3);
 		vy = (int)(f2 * f3);
 	} else {
-	    	vx = 0;
+		vx = 0;
 		vy = 0;
 	}
 	debug("\t(%d %d) - ", p2.xold, p2.yold);
@@ -305,13 +304,13 @@ inline void
 GraphicsState::movePoint(point& pp, int len11D6)
 {
 	debug("\nmovePoint by %f", len11D6 / FSHIFT);
-	debug("\t(%d %d)", pp.xnow, pp.ynow); 
+	debug("\t(%d %d)", pp.xnow, pp.ynow);
 
 	pp.xnow += (len11D6 * move_x) >> 14;
 	pp.ynow += (len11D6 * move_y) >> 14;
 	pp.flags |= flags;
 
-	debug("\t-> (%d %d)\n", pp.xnow, pp.ynow); 
+	debug("\t-> (%d %d)\n", pp.xnow, pp.ynow);
 }
 
 void
@@ -544,8 +543,8 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		break;
 	case SFVTPV:
 		debug("SFVTPV");
-		gs.f_vec_x = gs.p_vec_x; 
-		gs.f_vec_y = gs.p_vec_y; 
+		gs.f_vec_x = gs.p_vec_x;
+		gs.f_vec_y = gs.p_vec_y;
 		gs.recalc();
 		break;
 	case SPVFS:
@@ -608,27 +607,27 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		break;
 	case RTHG:
 		debug("RTHG");
-		gs.round_state	= ROUND_HALF;
+		gs.round_state = ROUND_HALF;
 		break;
 	case RTG:
 		debug("RTG");
-		gs.round_state	= ROUND_GRID;
+		gs.round_state = ROUND_GRID;
 		break;
 	case RTDG:
 		debug("RTDG");
-		gs.round_state	= ROUND_DOUBLE;
+		gs.round_state = ROUND_DOUBLE;
 		break;
 	case RDTG:
 		debug("RDTG");
-		gs.round_state	= ROUND_DOWN;
+		gs.round_state = ROUND_DOWN;
 		break;
 	case RUTG:
 		debug("RUTG");
-		gs.round_state	= ROUND_UP;
+		gs.round_state = ROUND_UP;
 		break;
 	case ROFF:
 		debug("ROFF");
-		gs.round_state	= ROUND_OFF;
+		gs.round_state = ROUND_OFF;
 		break;
 	case SROUND:
 		m = *(stack--);
@@ -645,7 +644,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		else
 			gs.round_thold = gs.round_period - 1;
 		debug("-> period 0x%02X, thold 0x%02X, phase 0x%02X",
-			gs.round_period, gs.round_thold, gs.round_phase);
+		      gs.round_period, gs.round_thold, gs.round_phase);
 		break;
 	case S45ROUND:
 		m = *(stack--);
@@ -659,7 +658,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		else
 			gs.round_thold = gs.round_period - 1;
 		debug("-> period 0x%02X, thold 0x%02X, phase 0x%02X",
-			gs.round_period, gs.round_thold, gs.round_phase);
+		      gs.round_period, gs.round_thold, gs.round_phase);
 		break;
 	case SLOOP:
 		gs.loop = *(stack--);
@@ -674,7 +673,8 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		m = *(stack--);
 		debug("###INSTCTRL %d %d", gs.instr_control, m);
 		if (gs.instr_control == 1)
-			if (m && grid_fitting >= 0) grid_fitting = -grid_fitting;
+			if (m && grid_fitting >= 0)
+				grid_fitting = -grid_fitting;
 		break;
 	case SCANCTRL:
 		m = *(stack--);
@@ -842,7 +842,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 	case SHZ1:
 		m = *(stack--);
 		debug("SHZ%d rp = p[%d]\n ", opc & 1,
-			 (opc & 1) ? gs.rp1 : gs.rp2);
+		      (opc & 1) ? gs.rp1 : gs.rp2);
 		pp = (opc & 1) ? &gs.zp0[gs.rp1] : &gs.zp1[gs.rp2];
 		n = gs.absNewMeasure(pp->xnow - pp->xold, pp->ynow - pp->yold);
 		assert(m >= 0 && m <= 1);
@@ -878,7 +878,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		gs.rp1 = gs.rp0;
 		debug("MSIRP%d p[%d][%d] ", opc & 1, gs.zp1 == p[1], n);
 		debug("to %f, rp = p[%d][%d]", m / FSHIFT,
-			 gs.zp0 == p[1], gs.rp0);
+		      gs.zp0 == p[1], gs.rp0);
 		if (gs.zp1 == p[1]) {
 			int i = newMeasure(p[1][n], gs.zp0[gs.rp0]);
 			gs.movePoint(p[1][n], m - i);
@@ -959,12 +959,10 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 	case MDRP1E: case MDRP1F:
 		gs.rp2 = *(stack--);
 		gs.rp1 = gs.rp0;
-		debug("#MDRP%02X p[%d], rp = p[%d]",
-			 opc & 15, gs.rp2, gs.rp0);
+		debug("#MDRP%02X p[%d], rp = p[%d]", opc & 15, gs.rp2, gs.rp0);
 		n = oldMeasure(gs.zp1[gs.rp2], gs.zp0[gs.rp0]);
 		m = newMeasure(gs.zp1[gs.rp2], gs.zp0[gs.rp0]);
-		debug("\nwgoaldist = %f, nowdist = %f",
-			 n / FSHIFT, m / FSHIFT);
+		debug("\nwgoaldist = %f, nowdist = %f", n / FSHIFT, m / FSHIFT);
 		debug("\n(%d %d)-", gs.zp1[gs.rp2].xnow, gs.zp1[gs.rp2].ynow);
 		debug("rp0(%d %d)", gs.zp0[gs.rp0].xnow, gs.zp0[gs.rp0].ynow);
 
@@ -1029,7 +1027,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 			if (n >= 0) {
 				if (m < +gs.min_distance)
 					m = +gs.min_distance;
- 			} else {
+			} else {
 				if (m > -gs.min_distance)
 					m = -gs.min_distance;
 			}
@@ -1158,11 +1156,12 @@ deltap_label:
 				break;
 			if (n == (arg & 0xf0)) {
 				arg = (arg & 15) - 8;
-				if (arg >= 0) ++arg;
+				if (arg >= 0)
+					++arg;
 				arg <<= (SHIFT - gs.delta_shift);
 				debug("\tmoving by %f from (%d %d) ",
-					 arg / FSHIFT,
-					 gs.zp0[pno].xnow, gs.zp0[pno].ynow);
+				      arg / FSHIFT,
+				      gs.zp0[pno].xnow, gs.zp0[pno].ynow);
 #if 0
 				gs.movePoint(gs.zp0[pno], arg);
 #else
@@ -1171,7 +1170,7 @@ deltap_label:
 				gs.zp0[pno].flags |= gs.flags;
 #endif
 				debug("to (%d %d)\n",
-					 gs.zp0[pno].xnow, gs.zp0[pno].ynow);
+				      gs.zp0[pno].xnow, gs.zp0[pno].ynow);
 			}
 		}
 
@@ -1211,7 +1210,7 @@ deltac_label:
 			int cno = *(stack--);
 			int arg = *(stack--);
 			debug("\ncvt[%d] arg = %04X, n = %d",
-				 cno, arg, n >> 4);
+			      cno, arg, n >> 4);
 			if (n > (arg & 0xf0))
 				break;
 			if (n == (arg & 0xf0)) {
@@ -1219,7 +1218,7 @@ deltac_label:
 				if (arg >= 0) ++arg;
 				arg <<= SHIFT - gs.delta_shift;
 				debug("\tmoved by %f,\t%d ",
-					 arg / FSHIFT, cvt[cno]);
+				      arg / FSHIFT, cvt[cno]);
 				cvt[cno] += arg;
 				debug("-> %d", cvt[cno]);
 			}
@@ -1402,8 +1401,10 @@ jump_relative:
 	case DIV:
 		m = *(stack--);
 		n = *stack;
-		if (m)	*stack = (n << SHIFT) / m;
-		else	*stack = (n >= 0) ? 0x7ffffff : -0x7ffffff;
+		if (m)
+			*stack = (n << SHIFT) / m;
+		else
+			*stack = (n >= 0) ? 0x7ffffff : -0x7ffffff;
 		debug("DIV %d %d = %d", m, n, *stack);
 		break;
 	case MUL:
@@ -1434,13 +1435,15 @@ jump_relative:
 	case MAX:
 		m = *(stack--);
 		n = *stack;
-		if (m > n) *stack = m;
+		if (m > n)
+			*stack = m;
 		debug("MAX %d %d = %d", m, n, *stack);
 		break;
 	case MIN:
 		m = *(stack--);
 		n = *stack;
-		if (m < n) *stack = m;
+		if (m < n)
+			*stack = m;
 		debug("MIN %d %d = %d", m, n, *stack);
 		break;
 	case ROUND00: case ROUND01:
@@ -1478,7 +1481,7 @@ jump_relative:
 		idefs[m].f = f;
 		idefs[m].offset = f->tell();
 		skipHints(f);
-		idefs[m].length	= f->tell() - idefs[m].offset;
+		idefs[m].length = f->tell() - idefs[m].offset;
 		break;
 	case CALL:
 		{
@@ -1528,8 +1531,8 @@ jump_relative:
 			int ofs = f->tell();
 			IDefs* idef = &idefs[opc];
 			debug("IDEF_CALL 0x%02X, ofs = %05X, len = %d\n",
-				 opc, idef->offset, idef->length);
-			
+			      opc, idef->offset, idef->length);
+
 			if (idef->length) // Thanks Colin McCormack
 				execHints(idef->f, idef->offset, idef->length);
 			else
@@ -1650,7 +1653,8 @@ Rasterizer::iup0(point* const pp, const point* const p1, const point* const p2)
 	int dold21 = p2->yold - p1->yold;
 	int doldp1 = pp->yold - p1->yold;
 
-	debug("\np[%d] between p[%d] and p[%d]", pp - p[1], p1 - p[1], p2 - p[1]);
+	debug("\np[%d] between p[%d] and p[%d]", pp - p[1], p1 - p[1],
+	      p2 - p[1]);
 	debug("\nd21o dp1o %f %f", dold21 / FSHIFT, doldp1 / FSHIFT);
 
 	debug("\tchanging y: %d %d", pp->xnow, pp->ynow);
@@ -1675,9 +1679,9 @@ Rasterizer::iup1(point* const pp, const point* const p1, const point* const p2)
 {
 	int dold21 = p2->xold - p1->xold;
 	int doldp1 = pp->xold - p1->xold;
-	
-	debug("\np[%d] between p[%d] and p[%d]",
-		pp - p[1], p1 - p[1], p2 - p[1]);
+
+	debug("\np[%d] between p[%d] and p[%d]", pp - p[1], p1 - p[1],
+	      p2 - p[1]);
 	debug("\nd21o dp1o %f %f", dold21 / FSHIFT, doldp1 / FSHIFT);
 
 	debug("\nchanging x: %d %d", pp->xnow, pp->ynow);
