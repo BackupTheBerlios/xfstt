@@ -2,7 +2,7 @@
 #
 # autogen.sh
 #
-#	$Id: autogen.sh,v 1.4 2003/02/26 07:05:58 guillem Exp $
+#	$Id: autogen.sh,v 1.5 2003/06/04 04:36:40 guillem Exp $
 #
 # Authors:	Guillem Jover <guillem.jover@menta.net>
 #		Midnight Commander Authors
@@ -68,7 +68,7 @@ if test $gettext_ver -ge 01100; then
 		exit 1
 	fi
 	echo "+++ $AUTOPOINT"
-	$AUTOPOINT || exit 1
+	$AUTOPOINT --force || exit 1
 else
 	echo "+++ $GETTEXTIZE"
 	echo "autogen.sh: Warning -- gettextize is not designed to be used automatically," 2>&1
