@@ -1,13 +1,11 @@
 
-	$Id: TODO,v 1.5 2003/01/05 10:21:34 guillem Exp $
+	$Id: TODO,v 1.6 2003/01/05 10:24:56 guillem Exp $
 
 TODO list:
 
  - move all constants to configure space.
    - default ports.
    - hardcoded versions.
- - create an install hook to mkdir the fontdir and cachedir (depends on
-   configure space dehardcoding)
  - remove --gslist dependancy on order.
  - add option to bind to specific interfaces.
  - add signal handler to re-sync fonts dir.
