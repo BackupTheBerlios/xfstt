@@ -1,7 +1,7 @@
 /*
  * Name Table
  *
- * $Id: table_name.cc,v 1.3 2003/08/07 06:20:44 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -43,13 +43,13 @@ NameTable::getString(int pfId, int strId, int *pLen)
 		// 1: Macintosh
 		// 2: ISO
 		// 3: MS encoding
-		U16 platformId = readUShort();
+		u16_t platformId = readUShort();
 
 		// 3.0 undefined charset
 		// 3.1 UGL charset with unicode indexing
-		/* U16 encodingId = */ readUShort();
+		/* u16_t encodingId = */ readUShort();
 
-		/* U16 languageId = */ readUShort();
+		/* u16_t languageId = */ readUShort();
 
 		// 0: copyright notice
 		// 1: font family
@@ -59,10 +59,10 @@ NameTable::getString(int pfId, int strId, int *pLen)
 		// 5: version
 		// 6: postscript name
 		// 7: trademark notice
-		U16 nameId = readUShort();
+		u16_t nameId = readUShort();
 
-		U16 strLength = readUShort();
-		U16 strOffset = readUShort();
+		u16_t strLength = readUShort();
+		u16_t strOffset = readUShort();
 
 		if (platformId == pfId && nameId == strId) {
 			char *p = (char *)base + strBase + strOffset;

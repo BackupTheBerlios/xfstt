@@ -1,7 +1,7 @@
 /*
  * General handling of *ttf files
  *
- * $Id: ttfont.cc,v 1.4 2003/08/07 06:20:44 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -42,17 +42,17 @@ TTFont::TTFont(char *fileName, int infoOnly):
 	if (openError())
 		return;
 
-	/* U32 version = */ readUInt();
+	/* u32_t version = */ readUInt();
 	short nTables = readSShort();
-	/* U16 searchRange = */ readUShort();
-	/* U16 entrySelector = */ readUShort();
-	/* U16 rangeShift = */ readUShort();
+	/* u16_t searchRange = */ readUShort();
+	/* u16_t entrySelector = */ readUShort();
+	/* u16_t rangeShift = */ readUShort();
 
 	for (int i = nTables; --i >= 0;) {
 		int name = readUInt();
 		/* int checksum = */ readUInt();
-		U32 offset = readUInt();
-		U32 length = readUInt();
+		u32_t offset = readUInt();
+		u32_t length = readUInt();
 		if (length == 0)
 			continue;
 		if (offset >= getLength() || offset + length > getLength()) {
@@ -332,12 +332,12 @@ TTFont::patchGlyphCode(GlyphTable *g, int glyphNo)
 }
 
 int
-TTFont::checksum(U8 *buf, int len)
+TTFont::checksum(u8_t *buf, int len)
 {
 	len = (len + 3) >> 2;
 	int sum = 0;
 
-	for (U8 *p = buf; --len >= 0; p += 4) {
+	for (u8_t *p = buf; --len >= 0; p += 4) {
 		int val = (p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3];
 		sum += val;
 	}
@@ -348,14 +348,14 @@ TTFont::checksum(U8 *buf, int len)
 void
 TTFont::updateChecksums()
 {
-	U8 *buf = base;
-	U8 *headTable = 0;
+	u8_t *buf = base;
+	u8_t *headTable = 0;
 	int nTables = (buf[4] << 8) + buf[5];
 
 	debug("nTables = %d\n", nTables);
 
 	for (int i = 0; i < nTables; ++i) {
-		U8 *b = &buf[12 + i * 16];
+		u8_t *b = &buf[12 + i * 16];
 		int name = (b[0] << 24) + (b[1] << 16) + (b[2] << 8) + b[3];
 		int offset = (b[8] << 24) + (b[9] << 16) + (b[10] << 8) + b[11];
 		int length = (b[12] << 24) + (b[13] << 16) + (b[14] << 8) + b[15];
@@ -363,10 +363,10 @@ TTFont::updateChecksums()
 
 		debug("offset = %08X, length = %08X\n", offset, length);
 
-		b[4] = (U8)(check >> 24);
-		b[5] = (U8)(check >> 16);
-		b[6] = (U8)(check >> 8);
-		b[7] = (U8)check;
+		b[4] = (u8_t)(check >> 24);
+		b[5] = (u8_t)(check >> 16);
+		b[6] = (u8_t)(check >> 8);
+		b[7] = (u8_t)check;
 
 		debug("checksum[%d] = %08X\n", i, check);
 
@@ -380,10 +380,10 @@ TTFont::updateChecksums()
 
 	debug("csAdjust = %08X\n", check);
 
-	headTable[8] = (U8)(check >> 24);
-	headTable[9] = (U8)(check >> 16);
-	headTable[10] = (U8)(check >> 8);
-	headTable[11] = (U8)check;
+	headTable[8] = (u8_t)(check >> 24);
+	headTable[9] = (u8_t)(check >> 16);
+	headTable[10] = (u8_t)(check >> 8);
+	headTable[11] = (u8_t)check;
 }
 
 int

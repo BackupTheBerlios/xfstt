@@ -1,7 +1,7 @@
 /*
  * Vertical Device Metrics
  *
- * $Id: table_vdmx.cc,v 1.1 2002/11/14 12:08:11 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998  Herbert Duerr
  *
@@ -34,14 +34,14 @@ VdmxTable::VdmxTable(RandomAccessFile &f, int offset, int length):
 int
 VdmxTable::getYmax(int pelHeight, int xres, int yres, int *ymax, int *ymin)
 {
-	U16 offset = 0;
+	u16_t offset = 0;
 
 	for (int i = nRatios; --i >= 0;) {
-		/*U8 charSet =*/ readUByte();
-		U8 xRatio = readUByte();
-		U8 yStartRatio= readUByte();
-		U8 yEndRatio = readUByte();
-		U16 tmp = readUShort();
+		/* u8_t charSet = */ readUByte();
+		u8_t xRatio = readUByte();
+		u8_t yStartRatio= readUByte();
+		u8_t yEndRatio = readUByte();
+		u16_t tmp = readUShort();
 
 		if ((yres * xRatio >= xres * yStartRatio) &&
 		    (yres * xRatio <= xres * yEndRatio)) {
@@ -56,17 +56,17 @@ VdmxTable::getYmax(int pelHeight, int xres, int yres, int *ymax, int *ymin)
 	seekAbsolute(offset);
 
 	int nrecs = readUShort();
-	U8 startSize = readUByte();
-	U8 endSize = readUByte();
+	u8_t startSize = readUByte();
+	u8_t endSize = readUByte();
 
 	if (pelHeight < startSize || pelHeight > endSize)
 		return 0;
 
 	// XXX: should be a binary search
 	while (--nrecs >= 0) {
-		U16 ph = readUShort();
-		S16 y1 = readSShort();
-		S16 y2 = readSShort();
+		u16_t ph = readUShort();
+		s16_t y1 = readSShort();
+		s16_t y2 = readSShort();
 
 		if (pelHeight == ph) {
 			*ymax = y1;

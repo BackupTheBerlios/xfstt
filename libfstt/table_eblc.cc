@@ -1,7 +1,7 @@
 /*
  * Embedded Bitmap Location Table
  *
- * $Id: table_eblc.cc,v 1.2 2003/06/25 04:23:54 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -39,7 +39,7 @@ EblcTable::readStrike(int glyphNo, int _ppemx, int _ppemy)
 	int strikeOfs = readUInt();
 	/* strikeSize = */ readUInt();
 	int strikeNum = readUInt();
-	/* U32 colorRef = */ readUInt();	// should be 0
+	/* u32_t colorRef = */ readUInt();	// should be 0
 
 	// horizontal sbit metrics
 	/* ascend = */ readSByte();

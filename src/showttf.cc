@@ -1,7 +1,7 @@
 /*
  * Show glyphs
  *
- * $Id: showttf.cc,v 1.1 2002/11/14 12:08:08 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -50,10 +50,10 @@ static int black;
 static int white;
 
 static Rasterizer *raster;
-static U8 *pixmap;
+static u8_t *pixmap;
 
 #define BMPSIZE 1048*2048
-U8 *bitmap = 0;
+u8_t *bitmap = 0;
 
 #define DEFAULT_WIDTH	200
 #define DEFAULT_HEIGHT	220
@@ -69,7 +69,7 @@ glyph2image(int glyphNo, int size, int angle, XImage *img)
 	static int old_size = 0, old_angle = 0;
 
 	if (!bitmap)
-		bitmap = (U8 *)allocMem(BMPSIZE);
+		bitmap = (u8_t *)allocMem(BMPSIZE);
 	if (!bitmap)
 		return;
 
@@ -95,21 +95,21 @@ glyph2image(int glyphNo, int size, int angle, XImage *img)
 		case 8:
 			break;
 		case 16: {
-			U16 *p = (U16 *)bitmap;
+			u16_t *p = (u16_t *)bitmap;
 			for (int i = length; --i >= 0; ++p)
 				*p = bswaps(*p);
 			}
 			break;
 		case 32: {
-			U32 *p = (U32 *)bitmap;
+			u32_t *p = (u32_t *)bitmap;
 			for (int i = length; --i >= 0; ++p)
 				*p = bswapl(*p);
 			}
 			break;
 		case 64: {
-			U32 *p = (U32 *)bitmap;
+			u32_t *p = (u32_t *)bitmap;
 			for (int i = length; --i >= 0; p += 2) {
-					U32 tmp = p[0];
+					u32_t tmp = p[0];
 					p[0] = bswapl(p[1]);
 					p[1] = bswapl(tmp);
 				}
@@ -122,12 +122,12 @@ glyph2image(int glyphNo, int size, int angle, XImage *img)
 			pixmap[i] = color[bitmap[i]];
 #ifndef MAGNIFY
 	else if (MAGNIFY) {
-		S8 *p1 = (S8 *)bitmap;
-		U8 *p2 = pixmap;
+		s8_t *p1 = (s8_t *)bitmap;
+		u8_t *p2 = pixmap;
 		raster->dX *= 8;	// 1 bpp -> 8 bpp
 		for (int h = 0; h < raster->height; ++h) {
 			int cy = h / MAGNIFY;
-			S8 m;
+			s8_t m;
 			for (int w = 0; w < raster->dX; ++w) {
 				if ((w & 7) == 0)
 					m = *(p1++);
@@ -182,7 +182,7 @@ main(int argc, char** argv)
 
 	char *ttFileName = (argc == 2) ? argv[1] : (char *)DEFAULT_FONT;
 
-	pixmap = new U8[1024 * 1024];
+	pixmap = new u8_t[1024 * 1024];
 
 	int done = 0;
 

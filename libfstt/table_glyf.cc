@@ -1,7 +1,7 @@
 /*
  * Glyph Table
  *
- * $Id: table_glyf.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -62,14 +62,14 @@ GlyphTable::getGlyphData(int glyphNo, LocaTable *locaTable, Rasterizer *raster)
 
 	point *pp = points;
 	for (int iFlags = nPoints; --iFlags >= 0; ++pp) {
-		U8 flag = readUByte();
+		u8_t flag = readUByte();
 		if (flag & F_SAME)
 			for (int j = readUByte(); --j >= 0; --iFlags, ++pp)
 				pp->flags = flag;
 		pp->flags = flag;
 	}
 
-	S16 oldval = 0;
+	s16_t oldval = 0;
 	pp = points;
 	for (int iXpos = nPoints; --iXpos >= 0; ++pp) {
 		switch (pp->flags & (X_SHORT | X_EXT)) {
@@ -120,7 +120,7 @@ int
 GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 				  Rasterizer *raster)
 {
-	U16 flag;
+	u16_t flag;
 
 	int sumEndpoints = 0;
 	int sumPoints = 0;

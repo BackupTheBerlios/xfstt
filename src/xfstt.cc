@@ -88,7 +88,7 @@ XFSFont xfsFont[MAXOPENFONTS];
 int MAGNIFY = 0;
 #endif /* MAGNIFY */
 
-U16 maxLastChar = 255;
+u16_t maxLastChar = 255;
 
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
@@ -426,7 +426,7 @@ listTTFNFonts(char *pattern, int index, char *buf)
 		char *name = alias;
 		while (--len > 0 && *(alias++) != '\"');
 		*buf = alias - name - 1;
-		strncpy(buf + 1, name, *(U8 *)buf);
+		strncpy(buf + 1, name, *(u8_t *)buf);
 		return *buf + 1;
 	}
 #endif
@@ -545,7 +545,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 		fp->pixel[0], fp->pixel[2], fp->pixel[3], fp->pixel[1]);
 
 	xfs->fe.buflen = MAXFONTBUFSIZE;
-	while (!(xfs->fe.buffer = (U8 *)allocMem(xfs->fe.buflen)))
+	while (!(xfs->fe.buffer = (u8_t *)allocMem(xfs->fe.buflen)))
 		if ((xfs->fe.buflen >>= 1) < MINFONTBUFSIZE) {
 			error(_("entering memory starved mode.\n"));
 			xfs->fid = 0;
@@ -556,7 +556,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 
 	int used = (xfs->fe.bitmaps + xfs->fe.bmplen) - xfs->fe.buffer;
 	int bmpoff = xfs->fe.bitmaps - xfs->fe.buffer;
-	xfs->fe.buffer = (U8 *)shrinkMem(xfs->fe.buffer, used);
+	xfs->fe.buffer = (u8_t *)shrinkMem(xfs->fe.buffer, used);
 	if (xfs->fe.buffer) {
 		xfs->fe.buflen = used;
 		xfs->fe.bitmaps = xfs->fe.buffer + bmpoff;
@@ -881,7 +881,7 @@ prepare2connect(int portno)
 }
 
 #define MAXREQSIZE 4096
-U8 buf[MAXREQSIZE + 256];
+u8_t buf[MAXREQSIZE + 256];
 
 static int
 connecting(int sd)
@@ -904,8 +904,9 @@ connecting(int sd)
 	      (req->byteOrder == 'l') ? "little" : "big");
 	debug("version %d.%d\n", req->major_version, req->minor_version);
 
-	if ((req->byteOrder == 'l' && (*(U32 *)req & 0xff) != 'l')
-	    || (req->byteOrder == 'B' && ((*(U32 *)req >> 24) & 0xff) != 'B')) {
+	if ((req->byteOrder == 'l' && (*(u32_t *)req & 0xff) != 'l')
+	    || (req->byteOrder == 'B' && ((*(u32_t *)req >> 24) & 0xff) != 'B'))
+	{
 		error(_("byteorder mismatch, giving up.\n"));
 		return 0;
 	}
@@ -939,7 +940,7 @@ connecting(int sd)
 }
 
 static void
-fixup_bitmap(FontExtent *fe, U32 hint)
+fixup_bitmap(FontExtent *fe, u32_t hint)
 {
 	int format = ((hint >> 8) & 3) + 3;
 	if (format < LOGSLP) {
@@ -950,7 +951,7 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 	if ((hint ^ fe->bmpFormat) == 0)
 		return;
 
-	register U8 *p, *end = fe->bitmaps + fe->bmplen;
+	register u8_t *p, *end = fe->bitmaps + fe->bmplen;
 	if ((fe->bmpFormat ^ hint) & BitmapFormatMaskByte) {
 		debug("slpswap SLP=%d\n", LOGSLP);
 		p = fe->bitmaps;
@@ -959,17 +960,17 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 			break;
 		case 4:
 			for (; p < end; p += 2)
-				*(U16 *)p = bswaps(*(U16 *)p);
+				*(u16_t *)p = bswaps(*(u16_t *)p);
 			break;
 		case 5:
 			for (; p < end; p += 4)
-				*(U32 *)p = bswapl(*(U32 *)p);
+				*(u32_t *)p = bswapl(*(u32_t *)p);
 			break;
 		case 6:
 			for (; p < end; p += 8) {
-				U32 tmp = *(U32 *)p;
-				*(U32 *)(p + 0) = bswapl(*(U32 *)(p + 4));
-				*(U32 *)(p + 4) = bswapl(tmp);
+				u32_t tmp = *(u32_t *)p;
+				*(u32_t *)(p + 0) = bswapl(*(u32_t *)(p + 4));
+				*(u32_t *)(p + 4) = bswapl(tmp);
 			}
 			break;
 		}
@@ -977,7 +978,7 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 
 	if ((fe->bmpFormat ^ hint) & BitmapFormatMaskBit) {
 		debug("bitswap\n");
-		U8 map[16] = {0, 8, 4, 12, 2, 10, 6, 14,
+		u8_t map[16] = {0, 8, 4, 12, 2, 10, 6, 14,
 			      1, 9, 5, 13, 3, 11, 7, 15};
 		for (p = fe->bitmaps; p < end; ++p)
 			*p = (map[*p & 15] << 4) | map[(*p >> 4) & 15];
@@ -988,36 +989,36 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 		p = fe->bitmaps;
 		if (LOGSLP == 3 && format == 4) {
 			for (; p < end; p += 2)
-				*(U16 *)p = bswaps(*(U16 *)p);
+				*(u16_t *)p = bswaps(*(u16_t *)p);
 		} else if (LOGSLP == 3 && format == 5) {
 			for (; p < end; p += 4)
-				*(U32 *)p = bswapl(*(U32 *)p);
+				*(u32_t *)p = bswapl(*(u32_t *)p);
 		} else if (LOGSLP == 3 && format == 6) {
 			for (; p < end; p += 8) {
-				U32 tmp = *(U32 *)p;
-				*(U32 *)(p + 0) = bswapl(*(U32 *)(p + 4));
-				*(U32 *)(p + 4) = bswapl(tmp);
+				u32_t tmp = *(u32_t *)p;
+				*(u32_t *)(p + 0) = bswapl(*(u32_t *)(p + 4));
+				*(u32_t *)(p + 4) = bswapl(tmp);
 			}
 		} else if (LOGSLP == 4 && format == 5) {
 			for (; p < end; p += 4) {
-				U16 tmp = *(U16 *)p;
-				*(U16 *)(p + 0) = *(U16 *)(p + 2);
-				*(U16 *)(p + 2) = tmp;
+				u16_t tmp = *(u16_t *)p;
+				*(u16_t *)(p + 0) = *(u16_t *)(p + 2);
+				*(u16_t *)(p + 2) = tmp;
 			}
 		} else if (LOGSLP == 5 && format == 6) {
 			for (; p < end; p += 8) {
-				U32 tmp = *(U32 *)p;
-				*(U32 *)(p + 0) = *(U32 *)(p + 4);
-				*(U32 *)(p + 4) = tmp;
+				u32_t tmp = *(u32_t *)p;
+				*(u32_t *)(p + 0) = *(u32_t *)(p + 4);
+				*(u32_t *)(p + 4) = tmp;
 			}
 		} else { // (LOGSLP == 4 && format == 6)
 			for (; p < end; p += 8) {
-				U16 tmp = *(U16 *)p;
-				*(U16 *)(p + 0) = *(U16 *)(p + 6);
-				*(U16 *)(p + 6) = tmp;
-				tmp = *(U16 *)(p + 2);
-				*(U16 *)(p + 2) = *(U16 *)(p + 4);
-				*(U16 *)(p + 4) = tmp;
+				u16_t tmp = *(u16_t *)p;
+				*(u16_t *)(p + 0) = *(u16_t *)(p + 6);
+				*(u16_t *)(p + 6) = tmp;
+				tmp = *(u16_t *)(p + 2);
+				*(u16_t *)(p + 2) = *(u16_t *)(p + 4);
+				*(u16_t *)(p + 4) = tmp;
 			}
 		}
 	}
@@ -1366,7 +1367,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsOpenBitmapFontReq *req = (fsOpenBitmapFontReq *)buf;
 			char *fontName = (char *)(req + 1) + 1;
-			fontName[*(U8 *)(req + 1)] = 0;
+			fontName[*(u8_t *)(req + 1)] = 0;
 			debug("FS_OpenBitmapFont \"%s\"", fontName);
 
 			raster->format = (req->format_hint >> 8) & 3;
@@ -1410,7 +1411,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				fsQueryXInfoReply s1;
 				fsPropInfo s2;
 				fsPropOffset s3;
-				U32 dummyName, dummyValue;
+				u32_t dummyName, dummyValue;
 			} reply;
 
 			reply.s1.type = FS_Reply;
@@ -1427,14 +1428,14 @@ working(int sd, Rasterizer *raster, char *replybuf)
 
 			reply.s1.font_hdr_char_range_min_char_high
 				= reply.s1.font_header_default_char_high
-				= (U8)(fi->firstChar >> 8);
+				= (u8_t)(fi->firstChar >> 8);
 			reply.s1.font_hdr_char_range_min_char_low
 				= reply.s1.font_header_default_char_low
-				= (U8)fi->firstChar;
+				= (u8_t)fi->firstChar;
 			reply.s1.font_hdr_char_range_max_char_high
-				= (U8)(fi->lastChar >> 8);
+				= (u8_t)(fi->lastChar >> 8);
 			reply.s1.font_hdr_char_range_max_char_low
-				= (U8)fi->lastChar;
+				= (u8_t)fi->lastChar;
 
 			debug("minchar = 0x%02X%02X, ",
 			      reply.s1.font_hdr_char_range_min_char_high,
@@ -1509,8 +1510,8 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				/*
 				 * Convert to QueryXExtents16 request
 				 */
-				U8 *p8 = (U8 *)(req + 1);
-				U16 *p16 = (U16 *)p8;
+				u8_t *p8 = (u8_t *)(req + 1);
+				u16_t *p16 = (u16_t *)p8;
 				for (i = req->num_ranges; --i >= 0;)
 					p16[i] = htons(p8[i]);
 			}
@@ -1520,7 +1521,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				break;
 
 			fsXCharInfo *ext0 = (fsXCharInfo *)replybuf, *ext = ext0;
-			U16 *ptr = (U16 *)(req + 1);
+			u16_t *ptr = (u16_t *)(req + 1);
 			int nranges = req->num_ranges;
 			if (req->range) {
 				ptr[nranges] = htons(xfs->fi.lastChar);
@@ -1533,7 +1534,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 					ptr[0] = ntohs(ptr[0]);
 					ptr[1] = ntohs(ptr[1]);
 					debug("rg %d..%d\n",ptr[0],ptr[1]);
-					for (U16 j = ptr[0]; j <= ptr[1]; ++j)
+					for (u16_t j = ptr[0]; j <= ptr[1]; ++j)
 						(ext++)->left = j;
 				}
 			} else
@@ -1545,7 +1546,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			reply.sequenceNumber = seqno;
 			reply.num_extents = ext - ext0;
 			reply.length = (sizeof(reply) + 3
-				       + ((U8 *)ext - (U8 *)ext0)) >> 2;
+				       + ((u8_t *)ext - (u8_t *)ext0)) >> 2;
 
 			CharInfo *ci = (CharInfo *)xfs->fe.buffer;
 
@@ -1579,7 +1580,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 #endif
 			}
 			write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)ext0, (U8 *)ext - (U8 *)ext0);
+			write(sd, (void *)ext0, (u8_t *)ext - (u8_t *)ext0);
 			}
 			break;
 
@@ -1605,8 +1606,8 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				/*
 				 * Convert to QueryXBitmaps16 request
 				 */
-				U8 *p8 = (U8 *)(req + 1);
-				U16 *p16 = (U16 *)p8;
+				u8_t *p8 = (u8_t *)(req + 1);
+				u16_t *p16 = (u16_t *)p8;
 				for (i = req->num_ranges; --i >= 0;)
 					p16[i] = ntohs(p8[i]);
 			}
@@ -1618,7 +1619,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			fixup_bitmap(&xfs->fe, req->format);
 
 			fsOffset32 *ofs0 = (fsOffset32 *)replybuf, *ofs = ofs0;
-			U16 *ptr = (U16 *)(req + 1);
+			u16_t *ptr = (u16_t *)(req + 1);
 			int nranges = req->num_ranges;
 			if (req->range) {
 				ptr[nranges] = htons(xfs->fi.lastChar);
@@ -1631,7 +1632,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 					ptr[0] = ntohs(ptr[0]);
 					ptr[1] = ntohs(ptr[1]);
 					debug("rg %d..%d\n",ptr[0],ptr[1]);
-					for (U16 j = ptr[0]; j <= ptr[1]; ++j)
+					for (u16_t j = ptr[0]; j <= ptr[1]; ++j)
 						(ofs++)->position = j;
 				}
 			} else
@@ -1662,7 +1663,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 				ofs->length = ci->length;
 				if (ci->tmpofs < 0) {
 					if (bmp + ci->length < replylimit) {
-						U8 *src = xfs->fe.bitmaps;
+						u8_t *src = xfs->fe.bitmaps;
 						src += ci->offset;
 						memcpy(bmp, src, ci->length);
 						ci->tmpofs = bmp - bmp0;
@@ -1682,9 +1683,9 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			reply.nbytes = bmp - bmp0;
 #if 1
 			reply.length = (sizeof(reply) + reply.nbytes + 3
-				       + ((U8 *)ofs - (U8 *)ofs0)) >> 2;
+				       + ((u8_t *)ofs - (u8_t *)ofs0)) >> 2;
 			write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)ofs0, (U8 *)ofs - (U8 *)ofs0);
+			write(sd, (void *)ofs0, (u8_t *)ofs - (u8_t *)ofs0);
 			write(sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
 #else
 {
@@ -1692,9 +1693,9 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			reply.nbytes = 0;
 			reply.replies_hint = 1;
 			reply.length = (sizeof(reply)
-				       + ((U8 *)ofs - (U8 *)ofs0)) >> 2;
+				       + ((u8_t *)ofs - (u8_t *)ofs0)) >> 2;
 			write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)ofs0, (U8 *)ofs - (U8 *)ofs0);
+			write(sd, (void *)ofs0, (u8_t *)ofs - (u8_t *)ofs0);
 
 			reply.nbytes = nbytes;
 			reply.replies_hint = 0;

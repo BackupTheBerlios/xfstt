@@ -1,7 +1,7 @@
 /*
  * Embedded Bitmap Data Table
  *
- * $Id: table_ebdt.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -31,7 +31,7 @@ EbdtTable::EbdtTable(RandomAccessFile &f, int offset, int length):
 }
 
 int
-EbdtTable::readBitmap(int format, U8 *bitmap, GlyphMetrics *gm)
+EbdtTable::readBitmap(int format, u8_t *bitmap, GlyphMetrics *gm)
 {
 	int height, width;
 	int hBearX, hBearY;
@@ -78,7 +78,7 @@ EbdtTable::readBitmap(int format, U8 *bitmap, GlyphMetrics *gm)
 		//memcpy(bitmap, tellAbs(), height * ((width + 7) >> 3));
 		{
 			int len = height * ((width + 7) >> 3);
-			for (U8 *p = bitmap; --len >= 0; ++p)
+			for (u8_t *p = bitmap; --len >= 0; ++p)
 				*p = readUByte();
 		}
 		break;

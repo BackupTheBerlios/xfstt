@@ -1,7 +1,7 @@
 /*
  * Character Location Table
  *
- * $Id: table_loca.cc,v 1.1 2002/11/14 12:08:11 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -41,7 +41,7 @@ LocaTable::getGlyphOffset(int glyphNo)
 			ofs = -1;
 	} else {
 		seekAbsolute(glyphNo << 1);
-		U16 ofs16 = readUShort();
+		u16_t ofs16 = readUShort();
 		if (ofs16 != readUShort())
 			ofs = ofs16 << 1;
 		else

@@ -1,7 +1,7 @@
 /*
  * TTFN is an alternative to XLFD suited for arbitrarily scalable fonts
  *
- * $Id: ttfn.h,v 1.1 2002/11/14 12:08:09 guillem Exp $
+ * $Id$
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -53,7 +53,7 @@
 // panose[9]	= bXHeight
 
 typedef struct {
-	U8	nameLen;
+	u8_t	nameLen;
 	char	magic[2];		// magic == "TT"
 	char	charset;		// U=unicode, A=ascii, S=symbol
 	char	panoseMagic;		// 'P'

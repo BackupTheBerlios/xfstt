@@ -45,7 +45,7 @@
 #include <string>
 
 #ifndef MULDIV
-#  define MULDIV(a,b,c) (int)(((S64)(a) * (b) + (c >> 1)) / (c))
+#  define MULDIV(a,b,c) (int)(((s64_t)(a) * (b) + (c >> 1)) / (c))
 #endif
 
 #ifndef DEBUG
@@ -68,10 +68,10 @@ extern int MAGNIFY;
 
 class RandomAccessFile {
 protected:
-	U8	*ptr, *base;	// low offset for frequently used members
+	u8_t	*ptr, *base;	// low offset for frequently used members
 
 private:
-	U8	*absbase;	// XXX: hack for fileOffset();
+	u8_t	*absbase;	// XXX: hack for fileOffset();
 	int	length;
 
 public:
@@ -91,45 +91,45 @@ public:
 	void seekRelative(int rel)	{ ptr += rel; }
 	int tell()			{ return (ptr - base); }
 	int fileOffset()		{ return (ptr - absbase); }
-	U32 getLength()			{ return length; }
+	u32_t getLength()		{ return length; }
 
-	U32 calcChecksum();
+	u32_t calcChecksum();
 
 	// these inlined functions are generic and should be optimized
 	// for specific processors (alignment, endianess, ...)
 
-	S8 readSByte() {
-		S8 i = ptr[0];
+	s8_t readSByte() {
+		s8_t i = ptr[0];
 		ptr += 1;
 		return i;
 	}
-	U8 readUByte() {
-		U8 i = ptr[0];
+	u8_t readUByte() {
+		u8_t i = ptr[0];
 		ptr += 1;
 		return i;
 	}
-	S16 readSShort() {
-		S16 i = ptr[0];
+	s16_t readSShort() {
+		s16_t i = ptr[0];
 		i = (i << 8) | ptr[1];
 		ptr += 2;
 		return i;
 	}
-	U16 readUShort() {
-		U16 i = ptr[0];
+	u16_t readUShort() {
+		u16_t i = ptr[0];
 		i = (i << 8) | ptr[1];
 		ptr += 2;
 		return i;
 	}
-	S32 readSInt() {
-		S32 i = ptr[0];
+	s32_t readSInt() {
+		s32_t i = ptr[0];
 		i = (i << 8) | ptr[1];
 		i = (i << 8) | ptr[2];
 		i = (i << 8) | ptr[3];
 		ptr += 4;
 		return i;
 	}
-	U32 readUInt() {
-		U32 i = ptr[0];
+	u32_t readUInt() {
+		u32_t i = ptr[0];
 		i = (i << 8) | ptr[1];
 		i = (i << 8) | ptr[2];
 		i = (i << 8) | ptr[3];
@@ -138,17 +138,17 @@ public:
 	}
 
 #ifdef HAS64BIT_TYPES
-	S64 readSLong() {
-		S64 i = (S64)readSInt() << 32;
+	s64_t readSLong() {
+		s64_t i = (s64_t)readSInt() << 32;
 		return i | readUInt();
 	}
-	U64 readULong() {
-		U64 i = (U64)readUInt() << 32;
+	u64_t readULong() {
+		u64_t i = (u64_t)readUInt() << 32;
 		return i | readUInt();
 	}
 #endif /* HAS64BIT_TYPES */
 
-	void writeByte(U8 byte) {
+	void writeByte(u8_t byte) {
 		*(ptr++) = byte;
 	}
 };
@@ -204,8 +204,8 @@ typedef struct {
 } point;
 
 struct FontInfo {
-	U16	firstChar, lastChar;
-	U8	panose[10];
+	u16_t	firstChar, lastChar;
+	u8_t	panose[10];
 	int	faceLength;
 	char	faceName[32];
 };
@@ -291,10 +291,10 @@ public:
 
 	// for comparing with reference implementation
 	int patchGlyphCode(GlyphTable *glyph, int instruction);
-	int checksum(U8 *buf, int len);
+	int checksum(u8_t *buf, int len);
 	void updateChecksums();
 	int write2File(char *filename);
-	void patchName(U8 *patchData, int patchLength);
+	void patchName(u8_t *patchData, int patchLength);
 };
 
 class NameTable: public RandomAccessFile {
@@ -320,17 +320,17 @@ public:
 
 // Font specific flags
 class HeadTable: public RandomAccessFile {
-	U32	headMagic;
+	u32_t	headMagic;
 
 public:	// XXX
-	U32	checksumAdj;
-	U16	flags;
-	U16	emUnits;
-	S16	xmin, ymin;
-	S16	xmax, ymax;
-	U16	macStyle;
-	U16	lowestPP;
-	U16	locaMode;
+	u32_t	checksumAdj;
+	u16_t	flags;
+	u16_t	emUnits;
+	s16_t	xmin, ymin;
+	s16_t	xmax, ymax;
+	u16_t	macStyle;
+	u16_t	lowestPP;
+	u16_t	locaMode;
 
 	enum {
 		FONTCRC_MAGIC = 0xB1B0AFBA,
@@ -363,26 +363,26 @@ class MaxpTable: public RandomAccessFile {
 	friend class TTFont;
 	friend class Rasterizer;
 
-	U16	numGlyphs;
-	U16	maxPoints;
-	U16	maxContours;
+	u16_t	numGlyphs;
+	u16_t	maxPoints;
+	u16_t	maxContours;
 
-	U16	maxCompPoints;
-	U16	maxCompContours;
-	U16	maxZones;
-	U16	maxTwilightPoints;
-	U16	maxStorage;
-	U16	maxFunctionDefs;
-	U16	maxInstructionDefs;
-	U16	maxStackSize;
-	U16	maxCodeSize;
-	U16	maxComponentElements;
-	U16	maxComponentDepth;
+	u16_t	maxCompPoints;
+	u16_t	maxCompContours;
+	u16_t	maxZones;
+	u16_t	maxTwilightPoints;
+	u16_t	maxStorage;
+	u16_t	maxFunctionDefs;
+	u16_t	maxInstructionDefs;
+	u16_t	maxStackSize;
+	u16_t	maxCodeSize;
+	u16_t	maxComponentElements;
+	u16_t	maxComponentDepth;
 
 public:
 	MaxpTable(RandomAccessFile &f, int offset, int length);
 
-	U16 getNumGlyphs()	{ return numGlyphs;}
+	u16_t getNumGlyphs()	{ return numGlyphs;}
 };
 
 
@@ -405,11 +405,11 @@ public:
 	CmapTable(RandomAccessFile &f, int offset, int length);
 
 	int char2glyphNo(char char8);
-	int unicode2glyphNo(U16 unicode);
+	int unicode2glyphNo(u16_t unicode);
 
-	U16 nextUnicode(U16 unicode);
-	U16 firstUnicode();
-	U16 lastUnicode();
+	u16_t nextUnicode(u16_t unicode);
+	u16_t firstUnicode();
+	u16_t lastUnicode();
 };
 
 
@@ -434,9 +434,9 @@ public:
 class GlyphTable: /*public*/ RandomAccessFile {
 	friend class Rasterizer;
 
-	S16	xmin;
-	//S16	xmin, ymin;
-	//S16	xmax, ymax;
+	s16_t	xmin;
+	//s16_t	xmin, ymin;
+	//s16_t	xmax, ymax;
 
 	int	codeOffset;
 	int	codeLength;
@@ -519,18 +519,18 @@ public:
 // OS/2
 class OS2Table: public RandomAccessFile {
 public:
-	S16	weightClass;
-	U16	avg_width;
-	U8	panose[10];
-	U32	unicodeRange[4];
-	U16	firstCharNo;
-	U16	lastCharNo;
-	U16	selection;
-	U16	typoAscent;
-	U16	typoDescent;
-	U16	typoGap;
-	U16	winAscent;
-	U16	winDescent;
+	s16_t	weightClass;
+	u16_t	avg_width;
+	u8_t	panose[10];
+	u32_t	unicodeRange[4];
+	u16_t	firstCharNo;
+	u16_t	lastCharNo;
+	u16_t	selection;
+	u16_t	typoAscent;
+	u16_t	typoDescent;
+	u16_t	typoGap;
+	u16_t	winAscent;
+	u16_t	winDescent;
 
 	enum UnicodeRangeFlags {
 		LATIN_0 = 0,
@@ -701,9 +701,9 @@ public:
 // Kern kerning table
 class KernTable: public RandomAccessFile {
 	int	kernOffset;
-	U16	nPairs;
-	U16	kernLength;
-	U16	coverage;
+	u16_t	nPairs;
+	u16_t	kernLength;
+	u16_t	coverage;
 
 public:
 	KernTable(RandomAccessFile &f, int offset, int length);
@@ -731,8 +731,8 @@ struct FontExtent {
 	int	yAdvanceMin, yAdvanceMax;
 	int	yWinAscent, yWinDescent;
 
-	U8	*buffer;	// hack
-	U8	*bitmaps;	// hack
+	u8_t	*buffer;	// hack
+	u8_t	*bitmaps;	// hack
 	int	buflen;		// hack
 	int	bmplen;		// hack
 	int	numGlyphs;	// hack
@@ -776,7 +776,7 @@ class EbdtTable: public RandomAccessFile {
 public:
 	EbdtTable(RandomAccessFile &f, int offset, int length);
 
-	int readBitmap(int format, U8 *bitmap, GlyphMetrics *gm);
+	int readBitmap(int format, u8_t *bitmap, GlyphMetrics *gm);
 };
 
 // EBSC embedded bitmap scaling info
@@ -901,13 +901,13 @@ private:
 #define SLPMASK		(SCANLINEPAD - 1)
 
 #if (LOGSLP == 3)
-#define TYPESLP		U8
+#define TYPESLP		u8_t
 #elif (LOGSLP == 4)
-#define TYPESLP		U16
+#define TYPESLP		u16_t
 #elif (LOGSLP == 5)
-#define TYPESLP		U32
+#define TYPESLP		u32_t
 #elif (LOGSLP == 6)
-#define TYPESLP		U64
+#define TYPESLP		u64_t
 #else
 #error "illegal value for LOGSLP"
 #endif
@@ -934,9 +934,9 @@ public:
 	void setPointSize(int xx, int xy, int yx, int yy, int xres, int yres);
 	void getFontExtent(FontExtent *fe);
 
-	int putChar8Bitmap(char c8, U8 *bmp, U8 *bmpend, GlyphMetrics *gm);
-	int putChar16Bitmap(int c16, U8 *bmp, U8 *bmpend, GlyphMetrics *gm);
-	int putGlyphBitmap(int glyph, U8 *bmp, U8 *bmpend, GlyphMetrics *gm);
+	int putChar8Bitmap(char c8, u8_t *bmp, u8_t *bmpend, GlyphMetrics *gm);
+	int putChar16Bitmap(int c16, u8_t *bmp, u8_t *bmpend, GlyphMetrics *gm);
+	int putGlyphBitmap(int glyph, u8_t *bmp, u8_t *bmpend, GlyphMetrics *gm);
 
 	void printOutline(void);
 
@@ -980,14 +980,14 @@ private:
 
 	static void openDraw();
 	static void closeDraw();
-	void drawGlyph(U8 *const startbmp, U8 *const endbmp);
-	void drawBitmap(U8 *const bmp, int height, int dX);
+	void drawGlyph(u8_t *const startbmp, u8_t *const endbmp);
+	void drawBitmap(u8_t *const bmp, int height, int dX);
 	static void drawContour(point* const first, point *const last);
 	static const point* drawPoly(const point &p0, const point &p1,
 				     const point &p2);
 	static void drawSegment(int x1, int y1, int x2, int y2);
 	static void bezier1(int x0, int y0, int x1, int y1, int x2, int y2);
-	void antiAliasing2(U8 *bmp);
+	void antiAliasing2(u8_t *bmp);
 };
 
 

@@ -1,7 +1,7 @@
 /*
  * Kerning Table
  *
- * $Id: table_kern.cc,v 1.1 2002/11/14 12:08:10 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -28,7 +28,7 @@ KernTable::KernTable(RandomAccessFile &f, int offset, int length):
 	kernOffset(0)
 {
 	/* version = */ readUShort();
-	S16 nTables = readSShort();
+	s16_t nTables = readSShort();
 
 	for(; --nTables >= 0; seekRelative(kernLength - 14)) {
 		/* subVersion = */ readUShort();

@@ -1,7 +1,7 @@
 /*
  * Character Map Table
  *
- * $Id: table_cmap.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  * mac7 style ttf support by Ethan Fischer
@@ -29,7 +29,7 @@ CmapTable::CmapTable(RandomAccessFile &f, int offset, int length):
 	format(-1), subtableOffset(0)
 {
 	/* version = */ readUShort();
-	S16 nSubTables = readSShort();
+	s16_t nSubTables = readSShort();
 
 	for (int i = nSubTables; --i >= 0;) {
 		/* platformID = */ readUShort();
@@ -88,7 +88,7 @@ CmapTable::char2glyphNo(char char8)
 }
 
 int
-CmapTable::unicode2glyphNo(U16 unicode)
+CmapTable::unicode2glyphNo(u16_t unicode)
 {
 	if (format == -1)
 		return 0;
@@ -125,7 +125,7 @@ CmapTable::unicode2glyphNo(U16 unicode)
 	// check corresponding startCount
 	int ofs = subtableOffset + 16 + (f4NSegments << 1) + (lower << 1);
 	seekAbsolute(ofs);
-	U16 startCount = readUShort();
+	u16_t startCount = readUShort();
 	if (unicode < startCount)
 		return 0;
 
@@ -135,7 +135,7 @@ CmapTable::unicode2glyphNo(U16 unicode)
 
 	// get idRangeOffset
 	seekAbsolute(ofs += (f4NSegments << 1));
-	U16 idRangeOffset = readUShort();
+	u16_t idRangeOffset = readUShort();
 
 	// calculate GlyphIndex
 	if (idRangeOffset == 0)
@@ -145,8 +145,8 @@ CmapTable::unicode2glyphNo(U16 unicode)
 	return readUShort();
 }
 
-U16
-CmapTable::nextUnicode(U16 unicode)
+u16_t
+CmapTable::nextUnicode(u16_t unicode)
 {
 	++unicode;
 
@@ -188,7 +188,7 @@ CmapTable::nextUnicode(U16 unicode)
 	return unicode;
 }
 
-U16
+u16_t
 CmapTable::firstUnicode()
 {
 	if (format == -1)
@@ -199,12 +199,12 @@ CmapTable::firstUnicode()
 		return f6FirstCode;
 
 	seekAbsolute(subtableOffset + 16 + (f4NSegments << 1));
-	U16 i = readUShort();
+	u16_t i = readUShort();
 	debug("First Unicode = %d\n", i);
 	return i;
 }
 
-U16
+u16_t
 CmapTable::lastUnicode()
 {
 	if (format == -1)
@@ -215,7 +215,7 @@ CmapTable::lastUnicode()
 		return f6FirstCode + f6EntryCount - 1;
 
 	seekAbsolute(subtableOffset + 14 + ((f4NSegments - 2) << 1));
-	U16 i = readUShort();
+	u16_t i = readUShort();
 	debug("Last Unicode = %d\n", i);
 	return i;
 }

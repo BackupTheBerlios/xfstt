@@ -1,7 +1,7 @@
 /*
  * Header for the X Font Server for TT Fonts
  *
- * $Id: xfstt.h,v 1.1 2002/11/14 12:08:08 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -28,33 +28,33 @@
 
 typedef struct {
 	int	nameOfs;
-	U8	nameLen;
-	U8	pathLen;
-	U8	xlfdLen;
-	U8	pad;
+	u8_t	nameLen;
+	u8_t	pathLen;
+	u8_t	xlfdLen;
+	u8_t	pad;
 
-	U8	charSet;
-	U8	slant;
+	u8_t	charSet;
+	u8_t	slant;
 
 	// panose attributes
-	U8	bFamilyType;
-	U8	bSerifStyle;
-	U8	bWeight;
-	U8	bProportion;
-	U8	bContrast;
-	U8	bStrokeVariation;
-	U8	bArmStyle;
-	U8	bLetterForm;
-	U8	bMidLine;
-	U8	bXHeight;
+	u8_t	bFamilyType;
+	u8_t	bSerifStyle;
+	u8_t	bWeight;
+	u8_t	bProportion;
+	u8_t	bContrast;
+	u8_t	bStrokeVariation;
+	u8_t	bArmStyle;
+	u8_t	bLetterForm;
+	u8_t	bMidLine;
+	u8_t	bXHeight;
 } TTFNdata;
 
 typedef struct {
 	char	magic[4];		// == TTFN
 	char	type[4];		// == INFO or NAME
-	U16	version;
-	U16	key;
-	U32	crc;
+	u16_t	version;
+	u16_t	key;
+	u32_t	crc;
 	//TTFNdata ttfn[];
 } TTFNheader;
 

@@ -1,7 +1,7 @@
 /*
  * Horizontal Device Metrics Table
  *
- * $Id: table_hdmx.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -42,7 +42,7 @@ HdmxTable::getMaxWidth(int mppemx)
 	// XXX: is it possible to avoid the linear search?
 	int i;
 	for (i = nRecords; --i >= 0; seekRelative(recordLen)) {
-		U8 ppem = readUByte();
+		u8_t ppem = readUByte();
 		if (ppem >= mppemx) {
 			int maxWidth = readUByte();
 			if (ppem > mppemx)

@@ -1,7 +1,7 @@
 /*
  * Test ttf engine performance
  *
- * $Id: perftest.cc,v 1.2 2003/01/05 10:16:28 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -127,7 +127,7 @@ main(int argc, char **argv)
 
 	FontExtent fe;
 	fe.buflen = MAXFONTBUFSIZE;
-	fe.buffer = (U8 *)allocMem(fe.buflen);
+	fe.buffer = (u8_t *)allocMem(fe.buflen);
 
 	Rasterizer raster;
 

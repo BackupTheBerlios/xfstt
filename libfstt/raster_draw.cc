@@ -1,7 +1,7 @@
 /*
  * Scan line converter
  *
- * $Id: raster_draw.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -142,7 +142,7 @@ endSort(dot *l, dot *r)
 
 // draw ignoring dropout candidates
 static void
-drawHorizontal(U8 *const bmp, int height, int dX)
+drawHorizontal(u8_t *const bmp, int height, int dX)
 {
 	for (dot *p = dots[0] + 1; p < dots0; p += 2) {
 		if (p[1].x - p[0].x < 96)
@@ -180,7 +180,7 @@ drawHorizontal(U8 *const bmp, int height, int dX)
 
 // draw horizontal dropout candidates
 static void
-drawHDropouts(U8 *const bmp, int height, int dX)
+drawHDropouts(u8_t *const bmp, int height, int dX)
 {
 	for (dot *p = dots[0] + 1; p < dots0; p += 2) {
 		if (p[1].x - p[0].x >= 96 )
@@ -203,7 +203,7 @@ drawHDropouts(U8 *const bmp, int height, int dX)
 
 // draw vertical dropout candidates
 static void
-drawVDropouts(U8 *const bmp, int height, int dX)
+drawVDropouts(u8_t *const bmp, int height, int dX)
 {
 	for (dot *p = dots[1] + 1; p < dots1; p += 2) {
 		if (p[1].x - p[0].x >= 63)
@@ -218,14 +218,14 @@ drawVDropouts(U8 *const bmp, int height, int dX)
 		int y = height - ((p[1].x + p[0].x) >> (SHIFT+1));
 		TYPESLP *ptr = (TYPESLP *)&bmp[y * dX];
 		ptr += x >> LOGSLP;
-		hscan &= ~*(TYPESLP *)((U8 *)ptr - dX);
-		hscan &= ~*(TYPESLP *)((U8 *)ptr + dX);
+		hscan &= ~*(TYPESLP *)((u8_t *)ptr - dX);
+		hscan &= ~*(TYPESLP *)((u8_t *)ptr + dX);
 		*ptr |= hscan;
 	}
 }
 
 void
-Rasterizer::drawBitmap(U8 *const bmp, int height, int dX)
+Rasterizer::drawBitmap(u8_t *const bmp, int height, int dX)
 {
 	// sort horizontal/vertical dots
 	debug("dropoutControl = %d\n", gs.dropout_control);
@@ -253,7 +253,7 @@ Rasterizer::drawBitmap(U8 *const bmp, int height, int dX)
 }
 
 void
-Rasterizer::drawGlyph(U8 *const bmp, U8 *const endbmp)
+Rasterizer::drawGlyph(u8_t *const bmp, u8_t *const endbmp)
 {
 	if (bmp + length >= endbmp) {
 		length = 0;
@@ -368,20 +368,20 @@ manual_tail_recursion:
 
 // the secrets of "grayscaling technology" ...
 void
-Rasterizer::antiAliasing2(U8* bmp)
+Rasterizer::antiAliasing2(u8_t* bmp)
 {
 	void *buf0 = allocMem(length);
 	memcpy(buf0, bmp, length);
 
-	U8 *p1 = (U8 *)buf0;
+	u8_t *p1 = (u8_t *)buf0;
 	for (int y = height>>1; --y >= 0; p1 += dX) {
 		for (int x = dX >> (LOGSLP - 3); --x >= 0;) {
 			TYPESLP c1 = *(TYPESLP *)p1;
 			TYPESLP c2 = *(TYPESLP *)(p1 + dX);
 			p1 += 1U << (LOGSLP - 3);
 			for (int i = SCANLINEPAD >> 1; --i >= 0;) {
-				U8 c3 = (c1 & 1) + (c2 & 1)
-					+ (((c1 & 2) + (c2 & 2)) >> 1);
+				u8_t c3 = (c1 & 1) + (c2 & 1)
+					  + (((c1 & 2) + (c2 & 2)) >> 1);
 #if MSB_BIT_FIRST
 				bmp[i] = c3;
 #else

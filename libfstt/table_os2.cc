@@ -1,7 +1,7 @@
 /*
  * OS2 Info Table
  *
- * $Id: table_os2.cc,v 1.1 2002/11/14 12:08:11 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -26,22 +26,22 @@
 OS2Table::OS2Table(RandomAccessFile &f, int offset, int length):
 	RandomAccessFile(f, offset, length)
 {
-	/* S16 version =*/ readUShort();
+	/* s16_t version =*/ readUShort();
 	avg_width = readUShort();
 	weightClass = readUShort();
-	/* S16 usWidthClass = */ readUShort();
-	/* S16 fsType = */ readUShort();
-	/* S16 ySubXSize = */ readSShort();
-	/* S16 ySubYSize = */ readSShort();
-	/* S16 ySubXOffset = */ readSShort();
-	/* S16 ySubYOffset = */ readSShort();
-	/* S16 ySuperXSize = */ readSShort();
-	/* S16 ySuperYSize = */ readSShort();
-	/* S16 ySuperXOffset = */ readSShort();
-	/* S16 ySuperYOffset = */ readSShort();
-	/* S16 yStrikeoutSize = */ readSShort();
-	/* S16 yStrikeoutPos = */ readSShort();
-	/* S16 familyClass = */ readUShort();
+	/* s16_t usWidthClass = */ readUShort();
+	/* s16_t fsType = */ readUShort();
+	/* s16_t ySubXSize = */ readSShort();
+	/* s16_t ySubYSize = */ readSShort();
+	/* s16_t ySubXOffset = */ readSShort();
+	/* s16_t ySubYOffset = */ readSShort();
+	/* s16_t ySuperXSize = */ readSShort();
+	/* s16_t ySuperYSize = */ readSShort();
+	/* s16_t ySuperXOffset = */ readSShort();
+	/* s16_t ySuperYOffset = */ readSShort();
+	/* s16_t yStrikeoutSize = */ readSShort();
+	/* s16_t yStrikeoutPos = */ readSShort();
+	/* s16_t familyClass = */ readUShort();
 	panose[0] = readUByte();
 	panose[1] = readUByte();
 	panose[2] = readUByte();

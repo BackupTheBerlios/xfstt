@@ -41,13 +41,13 @@
 
 // architecture specific
 
-typedef unsigned char	U8;
-typedef unsigned short	U16;
-typedef unsigned int	U32;
+typedef unsigned char u8_t;
+typedef unsigned short u16_t;
+typedef unsigned int u32_t;
 
-typedef signed char	S8;
-typedef signed short	S16;
-typedef signed int	S32;
+typedef signed char s8_t;
+typedef signed short s16_t;
+typedef signed int s32_t;
 
 #include <netinet/in.h>
 
@@ -73,11 +73,11 @@ inline int muldiv(int a, int b, int c)
 #ifndef MULDIV
 // 64bit types are only needed for temporary MULDIV results
 #    ifdef __alpha
-typedef long			S64;
-typedef unsigned long		U64;
+typedef long s64_t;
+typedef unsigned long u64_t;
 #    else
-typedef long long		S64;
-typedef unsigned long long	U64;
+typedef long long s64_t;
+typedef unsigned long long u64_t;
 #    endif
 #endif
 
