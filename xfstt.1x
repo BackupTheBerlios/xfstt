@@ -1,9 +1,9 @@
-.TH XFSTT 1x "XFSTT" \" -*- nroff -*-
+.TH xfstt 1x 2002-07-31 1.3 "Xfstt User's Manual" \" -*- nroff -*-
 .SH NAME
 xfstt \- X11 font server for *ttf fonts
 .SH SYNOPSIS
 .B xfstt
-[--port n] [--dir dirname] [--unstrap]
+[--port n] [--notcp] [--dir dirname] [--unstrap]
 [--multi] [--once] [--user username]
 [[--gslist] --sync]
 [--res resolution] [--encoding list]
@@ -22,8 +22,13 @@ Synchronize the font database with installed fonts and exit when done.
 Don't do this while xfstt is running.
 .TP
 .I "\-\-gslist"
-Print font list in a format usable for ghostscript during --sync.
-Currently the --gslist option has to be before the --sync option:
+Print font list in a format usable for ghostscript during
+.BR \-\-sync .
+Currently the
+.B \-\-gslist
+option has to be before the
+.B \-\-sync
+option:
 xfstt --gslist --sync
 .TP
 .I "\-\-user username
@@ -35,17 +40,22 @@ xfstt to set its UID and GID to that of the specified user
 .I "\-\-encoding"
 Remap to different encodings. Default is iso8859-1. Usage example: 
 .br
-xfstt --encoding iso8859-2,koi8-r,windows-1251
+.B xfstt --encoding iso8859-2,koi8-r,windows-1251
 .br
-!!! NOTE: one comma but no blanks between the encodings !!!
+.B !!! NOTE: one comma but no blanks between the encodings !!!
 .TP
 .I "\-\-port number"
 Change the port number for xfstt's font services.
-This version of Xfstt defaults to --port 7101.
+This version of Xfstt defaults to port
+.IR 7101 .
+.TP
+.I "\-\-notcp"
+Don't open TCP socket, use unix domain only.
 .TP
 .I "\-\-dir name"
 Change xfstt's font directory.
-The default is --dir /usr/share/fonts/truetype.
+The default directory is
+.IR /usr/share/fonts/truetype .
 .TP
 .I "\-\-res value"
 Force the resolution for underspecified fonts to value (typically 96 or 120).
@@ -63,7 +73,9 @@ unicode range.
 Exit after the font client disconnects.
 .TP
 .I "\-\-multi"
-Opposite of --once option. This has become the default behaviour,
+Opposite of
+.B --once
+option. This has become the default behaviour,
 so it is obsolete now and is ignored for backwards compatibility.
 It will be removed in a future release.
 .TP
@@ -76,4 +88,13 @@ Behave like a daemon.
 .I "\-\-help"
 Print brief usage information on standard output and exit.
 .SH "SEE ALSO"
-xfs(1), xset(1), X(1), inetd(8).
+.BR xfs (1),
+.BR xset (1),
+.BR X (1),
+.BR inetd (8).
+.SH AUTHORS
+Originally written by Herbert Duerr <duerr@de.ibm.com>.
+.br
+Has been maintained by Steven Carpenter <sjc@debian.org>.
+.br
+Current maintainer is Guillem Jover <guillem.jover@menta.net>.

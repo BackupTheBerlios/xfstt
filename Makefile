@@ -1,17 +1,18 @@
-#MAXOPT = -O6 -fomit-frame-pointer -ffast-math
-MISCOPT =
-OPT = $(MISCOPT) $(MAXOPT)
+#
+# xfstt Makefile
+#
 
-CFLAGS = $(OPT) -DMAGNIFY=0 -DNDEBUG
-#CFLAGS = -fprofile-arcs -ftest-coverage -DMAGNIFY=0
-CFLAGS = -g -Wall -pedantic $(MISCOPT) -DMAGNIFY=0
-#CFLAGS = -O -Wall -pedantic -DDEBUG $(MISCOPT)
+VERSION=$(shell head -1 CHANGES)
 
-LFLAGS = -L/usr/X11R6/lib -L/usr/openwin/lib/X11
-LFLAGS = -g -L/usr/X11R6/lib
+OPTIMIZE_FLAGS = -O2 -fomit-frame-pointer -ffast-math
+PROFILE_FLAGS = -fprofile-arcs -ftest-coverage
+DEBUG_FLAGS = -g -DDEBUG
 
-CC = c++
-LD = c++
+CXXFLAGS = -Wall $(OPTIMIZE_FLAGS) 
+ALL_CXXFLAGS = -DMAGNIFY=0 $(CXXFLAGS)
+
+DIST_FILES = Makefile *.h *cpp *.sh *lsm *1x \
+ font.properties README FAQ INSTALL CHANGES THANKS COPYING
 
 OBJS =	RAFile.o	\
 	TTFont.o	\
@@ -38,56 +39,55 @@ OBJS =	RAFile.o	\
 	RasterScale.o	\
 	RasterDraw.o
 
-all : xfstt
+.PHONY: all install clean dist
 
-install :
-	mkdir -p /usr/share/fonts/truetype ;	\
-	mkdir -p /var/cache/xfstt;			\
-	ln -s /DOS/windows/fonts /usr/share/fonts/truetype/winfonts ;	\
-	cp xfstt /usr/X11R6/bin/ ;	\
-	cp xfstt.1x /usr/X11R6/man/man1 ;\
-	xfstt --sync
+all: xfstt
 
-clean :
-	rm *.o;							\
-	rm xfstt showttf perftest patchttf
+install:  xfstt
+	install -d $(DESTDIR)/usr/X11R6/bin
+	install xfstt $(DESTDIR)/usr/X11R6/bin
+	install -d $(DESTDIR)/usr/X11R6/man/man1
+	install xfstt.1x $(DESTDIR)/usr/X11R6/man/man1
+	install -d $(DESTDIR)/usr/share/fonts/truetype
+	install -d $(DESTDIR)/var/cache/xfstt
 
-xfstt : $(OBJS) xfstt.o encoding.o
-	$(LD) -o $@ $(OBJS) xfstt.o encoding.o $(LFLAGS) -lm
+clean:
+	rm -f *.o
+	rm -f version.h
+	rm -f xfstt showttf perftest patchttf
 
-xfstt.o : xfstt.cpp xfstt.h ttf.h arch.h Makefile
-	$(CC) $(CFLAGS) -c $< -I/usr/X11R6/include/X11/fonts	\
-		-I/usr/X11R6/include/
+xfstt: $(OBJS) xfstt.o encoding.o
+	$(CXX) -o $@ $^ -lm $(LDFLAGS)
 
-encoding.o : encoding.cpp encoding.h Makefile
-	$(CC) $(CFLAGS) -c $<
+xfstt.o: xfstt.cpp xfstt.h ttf.h arch.h version.h Makefile
+	$(CXX) -c $< -I/usr/X11R6/include/X11/fonts	\
+		-I/usr/X11R6/include/ $(ALL_CXXFLAGS)
 
-showttf : $(OBJS) showttf.o ttf.h arch.h Makefile
-	$(LD) -o $@ $(OBJS) showttf.o $(LFLAGS) -lX11 -lm
+encoding.o: encoding.cpp encoding.h Makefile
+	$(CXX) -c $< $(ALL_CXXFLAGS)
 
-perftest : $(OBJS) perftest.o ttf.h arch.h Makefile
-	$(LD) -o $@ $(OBJS) perftest.o $(LFLAGS) -lm
+showttf: $(OBJS) showttf.o ttf.h arch.h Makefile
+	$(CXX) -o $@ $(OBJS) showttf.o -L/usr/X11R6/lib -lX11 -lm $(LDFLAGS)
 
-patchttf : patchttf.cpp
-	$(CC) $(CFLAGS) -o $@ $<
+perftest: $(OBJS) perftest.o ttf.h arch.h Makefile
+	$(CXX) -o $@ $(OBJS) perftest.o -lm $(LDFLAGS)
 
-tgz:
-	cp xfstt.tgz xfstt.tgz.bak	;			\
-	tar cvf xfstt.tar Makefile *.h *cpp *.txt *.sh *lsm *1x &&\
-	tar rvf xfstt.tar font.properties FAQ INSTALL CHANGES COPYING &&\
-	gzip -9 xfstt.tar		&&			\
-	cp xfstt.tar.gz /dosd/source/xfstt.tgz &&		\
-	mv xfstt.tar.gz xfstt.tgz	;			\
-	sync;							\
-	ls -l /dosd/source/xfstt.tgz xfstt.tgz
+patchttf: patchttf.cpp
+	$(CXX) -o $@ $< $(ALL_CXXFLAGS)
 
-%.o : %.cpp ttf.h arch.h Makefile
-	$(CC) $(CFLAGS) -c $<
+version.h: CHANGES
+	@ ( \
+	echo "#ifndef xfstt_version"; \
+	echo "#define xfstt_version \"$(VERSION)\""; \
+	echo "#endif"; \
+	) > $@
 
-%.s : %.cpp ttf.h arch.h Makefile
-	$(CC) -S $(CFLAGS) -c $<
+dist:
+	GZIP="-9" tar cvzf xfstt-$(VERSION).tar.gz $(DIST_FILES)
 
-.SUFFIXES: .cpp
-.cpp.o : ttf.h arch.h Makefile
-	$(CC) $(CFLAGS) -c $<
+%.o: %.cpp ttf.h arch.h Makefile
+	$(CXX) -c $< $(ALL_CXXFLAGS)
+
+%.s: %.cpp ttf.h arch.h Makefile
+	$(CXX) -S -c $< $(ALL_CXXFLAGS)
 

@@ -5,22 +5,22 @@ xfstt, the X11 TrueType Font Server. You will want to read this file to
 see if it answers your questions before you go asking the maintainer or
 in any public forums of course.
 
-This FAQ is current as of version 1.0 of xfstt. 
+This FAQ is current as of version 1.3 of xfstt. 
 
-1.0  What is xfstt?
-1.1  How do I test it?
-1.2  How do I use it?
+1.0 What is xfstt?
+1.1 How do I test it?
+1.2 How do I use it?
 
-2.0  It doesn't work! I get something like "fontpath not found"!
-2.1  The X11 server doesn't start when xfstt isn't running!
-2.2  Xfstt locks up my machine! It makes some applications unstable!
-2.3  Why are no fonts included? Where do I get some?
-2.4  How does one add fonts?
-2.5  What are these weird fontnames displayed by xlsfonts when using xfstt?
-2.6  Why shouldn't I serve fonts via tcpip to my friends overseas?
-2.7  Why does program xxx look awful with most *.ttf fonts?
-2.8  Big font sizes don't work, some glyphs look like garbage!
-2.9  I cannot see all of my gazillion installed fonts!
+2.0 It doesn't work! I get something like "fontpath not found"!
+2.1 The X11 server doesn't start when xfstt isn't running!
+2.2 Xfstt locks up my machine! It makes some applications unstable!
+2.3 Why are no fonts included? Where do I get some?
+2.4 How does one add fonts?
+2.5 What are these weird fontnames displayed by xlsfonts when using xfstt?
+2.6 Why shouldn't I serve fonts via TCP/IP to my friends overseas?
+2.7 Why does program xxx look awful with most *.ttf fonts?
+2.8 Big font sizes don't work, some glyphs look like garbage!
+2.9 I cannot see all of my gazillion installed fonts!
 2.10 Why can't I use all 16bit characters?
 2.11 Rotated glyphs have wrong spacing!
 2.12 The TrueType fonts are bigger/smaller than other fonts!
@@ -29,23 +29,23 @@ This FAQ is current as of version 1.0 of xfstt.
 2.13 How does one request an encoding different from iso8859-1?
 2.14 Why are multiple instances of xfstt running?
 2.15 Help! I just upgraded and the new version doesn't work!
-2.16 XFSTT is broken with Linux Kernel 2.4.0!
+2.16 Xfstt is broken with Linux Kernel 2.4.0!
 2.17 Xfstt wont compile on Solaris x86!
 
-3.0  How do I put fonts in categories?
-3.1  use with Java (tm)
-3.2  use with netscape/communicator (tm)
-3.3  use with staroffice (tm)
-3.4  How do I print documents which use *.ttf fonts?
-3.5  Does xfstt have anti-aliasing/grayscaling technology?
+3.0 How do I put fonts in categories?
+3.1 use with Java (tm)
+3.2 use with netscape/communicator (tm)
+3.3 use with staroffice (tm)
+3.4 How do I print documents which use *.ttf fonts?
+3.5 Does xfstt have anti-aliasing/grayscaling technology?
 
-4.0  I am having problems compiling xfstt!
-4.1  I found a bug in xfstt! What do I do?
-4.2  Will it be merged with the X server?
-4.3  Why another free ttf font server?
-4.4  How are embedded *ttf fonts used?
-4.5  How can I help?
-4.6  Why the LGPL license though xfstt is not a library?
+4.0 I am having problems compiling xfstt!
+4.1 I found a bug in xfstt! What do I do?
+4.2 Will it be merged with the X server?
+4.3 Why another free ttf font server?
+4.4 How are embedded *ttf fonts used?
+4.5 How can I help?
+4.6 Why the LGPL license though xfstt is not a library?
 
 -----------------------------------------------------------------------------
 
@@ -189,7 +189,7 @@ This FAQ is current as of version 1.0 of xfstt.
 	panose specification have a look at
 	http://www.w3.org/pub/WWW/Fonts/Panose/pan2.html
 
-2.6 Why shouldn't I serve fonts to my friends overseas via tcpip?
+2.6 Why shouldn't I serve fonts via TCP/IP to my friends overseas?
 
 	Make sure you conform to the font license when serving to
 	multiple clients. The clients must use the same byte order
@@ -321,14 +321,14 @@ This FAQ is current as of version 1.0 of xfstt.
 
 	Just move all of your fonts there and it should work.
 
-2.16 XFSTT is broken with Linux Kernel 2.4.0! 
+2.16 Xfstt is broken with Linux Kernel 2.4.0! 
 
 	This was a known bug for a while. Actually, its fixed as of
 	xfstt 1.2 Whats funny is, I see no reason why it shouldn't have
 	been broken under the older kernels. It was some bad code that
 	I added to fix someone elses problem. 
 
-	Oops. SHould work now. If your stiuck with an old version of Xfstt
+	Oops. Should work now. If you are stuck with an old version of Xfstt
 	(can't imagine why that might be) just switch to inet instead of
 	unix domain sockets.
 

@@ -1,3 +1,15 @@
+1.3
+	New Maintainer Guillem Jover <guillem.jover@menta.net>
+	Fixed unix socket and its dir permissions
+	Added full path to unix socket address and use sockaddr_un instead
+	Added support for --notcp
+	Removed hard coded limits on path length (needed by the Hurd)
+	Updated man page and FAQ
+	Stripped .txt from THANKS and README file names
+	Renamed tst.sh to test.sh
+	Cleaned Makefile
+	Version is taken from first line of this file
+
 1.2
 	Fixes bug that broke xfstt when using unix 
 	domain sockets under linux 2.4 (THANK YOU Oliver Suárez)
