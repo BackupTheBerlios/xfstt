@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.12 2003/07/28 22:27:25 guillem Exp $
+ * $Id: xfstt.cc,v 1.13 2003/07/29 04:04:45 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -1009,6 +1009,32 @@ fixup_bitmap(FontExtent *fe, U32 hint)
 }
 
 static int
+send_fserror(int sd, int seqno)
+{
+	fsError reply;
+
+	reply.type = FS_Error;
+	reply.request = FSBadLength;
+	reply.sequenceNumber = seqno;
+	reply.length = sizeof(reply) >> 2;
+
+	return write(sd, (void *)&reply, sizeof(reply));
+}
+
+static int
+check_length(int sd, int seqno, fsReq *req, int expected_size)
+{
+	if (req->length < (expected_size >> 2)) {
+		debug("packet size mismatch: %d received bytes, "
+		      "%d expected bytes\n", req->length << 2, expected_size);
+		send_fserror(sd, seqno);
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+static int
 working(int sd, Rasterizer *raster, char *replybuf)
 {
 	FontParams fp0 = {{0, 0, 0, 0}, {0, 0, 0, 0}, {VGARES, VGARES}, 0}, fp;
@@ -1034,15 +1060,9 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		fsReq *fsreq = (fsReq *)buf;
 		int length = fsreq->length << 2;
 		if (length > MAXREQSIZE) {
-			debug("request too big: %d bytes\n", length);
-
-			fsError reply;
-			reply.type = FS_Error;
-			reply.request = FSBadLength;
-			reply.sequenceNumber = seqno;
-			reply.length = sizeof(reply) >> 2;
-
-			write(sd, (void *)&reply, sizeof(reply));
+			debug("too much data: %d bytes (max=%d)\n",
+			      length, MAXREQSIZE);
+			send_fserror(sd, seqno);
 			break;
 		}
 
@@ -1192,7 +1212,13 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		case FS_SetResolution:
 			{
 			fsSetResolutionReq *req = (fsSetResolutionReq *)buf;
-			int numres = req->num_resolutions;	// XXX 1
+			int numres = req->num_resolutions;
+			int expected_size = numres * sz_fsResolution
+					    + sz_fsSetResolutionReq;
+
+			if (!check_length(sd, seqno, fsreq, expected_size))
+				break;
+
 			fsResolution *res = (fsResolution *)(req + 1);
 
 			debug("FS_SetResolution * %d\n", numres);
@@ -1237,6 +1263,10 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsListFontsReq* req = (fsListFontsReq *)buf;
 			char *pattern = (char *)(req + 1);
+			int expected_size = sz_fsListFontsReq + req->nbytes;
+
+			if (!check_length(sd, seqno, fsreq, expected_size))
+				break;
 
 			pattern[req->nbytes] = 0;
 			debug("FS_ListFonts \"%s\" * %ld\n",
@@ -1440,23 +1470,33 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_QueryXExtents8:
-			// convert to QueryXExtents16 request
-			{
-			fsQueryXExtents8Req *req = (fsQueryXExtents8Req *)buf;
-			U8 *p8 = (U8 *)(req + 1);
-			U16 *p16 = (U16 *)p8;
-			for (i = req->num_ranges; --i >= 0;)
-				p16[i] = htons(p8[i]);
-			}
-			// fall through
 		case FS_QueryXExtents16:
 			{
 			fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)buf;
+
 			debug("FS_QueryXExtents%s fid = %ld, ",
 			      (req->reqType == FS_QueryXExtents8 ? "8" : "16"),
 			      req->fid);
 			debug("range=%d, nranges=%ld\n",
 			      req->range, req->num_ranges);
+
+			int item_size = (req->reqType == FS_QueryXExtents8)
+				        ? 1 : 2;
+			int expected_size = sz_fsQueryXExtents8Req
+				            + req->num_ranges * item_size;
+
+			if (!check_length(sd, seqno, fsreq, expected_size))
+				break;
+
+			if (req->reqType == FS_QueryXExtents8) {
+				/*
+				 * Convert to QueryXExtents16 request
+				 */
+				U8 *p8 = (U8 *)(req + 1);
+				U16 *p16 = (U16 *)p8;
+				for (i = req->num_ranges; --i >= 0;)
+					p16[i] = htons(p8[i]);
+			}
 
 			XFSFont *xfs = findFont(req->fid, sd, seqno);
 			if (!xfs)
@@ -1527,22 +1567,32 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			break;
 
 		case FS_QueryXBitmaps8:
-			// convert to QueryXBitmaps16 request
-			{
-			fsQueryXBitmaps8Req *req = (fsQueryXBitmaps8Req *)buf;
-			U8 *p8 = (U8 *)(req + 1);
-			U16 *p16 = (U16 *)p8;
-			for (i = req->num_ranges; --i >= 0;)
-				p16[i] = ntohs(p8[i]);
-			}
-			// fall through
 		case FS_QueryXBitmaps16:
 			{
 			fsQueryXBitmaps16Req *req = (fsQueryXBitmaps16Req *)buf;
+
 			debug("FS_QueryXBitmaps16 fid = %ld, fmt = %04lX\n",
 			      req->fid, req->format);
 			debug("range=%d, nranges=%ld\n",
 			      req->range, req->num_ranges);
+
+			int item_size = (req->reqType == FS_QueryXExtents8)
+				        ? 1: 2;
+			int expected_size = sz_fsQueryXBitmaps8Req
+					    + req->num_ranges * item_size;
+
+			if (!check_length(sd, seqno, fsreq, expected_size))
+				break;
+
+			if (req->reqType == FS_QueryXBitmaps8) {
+				/*
+				 * Convert to QueryXBitmaps16 request
+				 */
+				U8 *p8 = (U8 *)(req + 1);
+				U16 *p16 = (U16 *)p8;
+				for (i = req->num_ranges; --i >= 0;)
+					p16[i] = ntohs(p8[i]);
+			}
 
 			XFSFont *xfs = findFont(req->fid, sd, seqno);
 			if (!xfs)

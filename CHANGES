@@ -1,4 +1,6 @@
 pre-1.5
+	Fixed multiple buffer overflows in the protocol handling: CAN-2003-0581
+
 	New encoding: iso8859-14
 	Moved hardcoded dir locations to configure space
 	Mkdir the fontdir and cachedir in the make install target
