@@ -1,7 +1,7 @@
 /*
  * Remap from unicode to other encodings
  *
- * $Id: encoding.cc,v 1.4 2003/01/05 10:36:36 guillem Exp $
+ * $Id: encoding.cc,v 1.5 2003/01/15 04:53:32 guillem Exp $
  *
  * Copyright (C) 1998 Herbert Duerr
  *
@@ -317,7 +317,7 @@ iso8859_9::map2unicode(int code)
 }
 
 
-// Thanks to Atsawin Chowanakritsanakul
+// Thanks Atsawin Chowanakritsanakul
 // Latin/Thai aka TIS-620
 class iso8859_11: public Encoding
 {
@@ -382,7 +382,7 @@ iso8859_14::map2unicode(int code)
 }
 
 
-// Thanks to David Woodhouse
+// Thanks David Woodhouse
 class iso8859_15: public Encoding
 {
 public:
@@ -444,7 +444,7 @@ koi8_r::map2unicode(int code)
 }
 
 
-// Thanks to Vitaly V. Bursov
+// Thanks Vitaly V. Bursov
 class koi8_u: public Encoding
 {
 public:
@@ -1589,7 +1589,7 @@ windows_1257::map2unicode(int code)
 }
 
 
-// Thanks to Ove Kaaven  **added 4/14/1999 for v0.9.99 **
+// Thanks Ove Kaaven  **added 4/14/1999 for v0.9.99 **
 class windows_sami2: public Encoding
 {
 public:
