@@ -1,34 +1,36 @@
 Thank you to all who made xfstt better!
 
 Patches:
-	Ove Kaaven
+	Ove Kaaven (window-sami2 encoding support)
 	Bernhard Michel
 	David Lowe
 	Mike Markowski
 	Albertas ?
-	David Woodhouse
+	David Woodhouse (iso8859-15 encoding support)
 	Francesco Chemolli
 	Tasos Chronis
 	David Crowley
 	Anthony David
-	Vladimir Eltsov
+	Vladimir Eltsov (koi8-r encoding support)
 	Feanor ?
-	Ethan Fischer
+	Ethan Fischer (mac7 ttf style support)
 	Noah Friedman
-	Gilbert ?
-	Nikolay Grygoryev
+	Gilbert ? (iso10646-1 encoding support)
+	Nikolay Grygoryev (koi8-r encoding support)
+	Vitaly V. Bursov (koi8-u encoding support)
 	Hymie ?
 	Christoph Lameter
 	Stanislav Malyshev
 	Colin McCormack
-	Mindaugas Riauga
+	Mindaugas Riauga (windows-1257 encoding support)
 	Pablo Saratxaga
 	Constantinos Sourelis
 	Luc Stepniewski
-	Petr Tomasek
-	Andrew Turner
+	Petr Tomasek (iso8859-10 encoding support)
+	Andrew Turner (listXLFDFonts Mozilla hack)
 	Jason Froebe
 	Andrew Wheatley (iso8859-14 encoding support)
+	Atsawin Chowanakritsanakul (iso8859-11 encoding support)
 
 Ideas:
 	Jan Anderson
