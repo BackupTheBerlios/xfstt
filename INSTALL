@@ -1,5 +1,5 @@
 
-	$Id: INSTALL,v 1.2 2002/11/19 04:47:49 guillem Exp $
+	$Id: INSTALL,v 1.3 2003/01/23 06:58:14 guillem Exp $
 
 Installation Notes
 ------------------
@@ -12,42 +12,56 @@ CVS Sources
 
 0) Maintainer setup
 
- You will need this software:
+   You will need this software:
 
 	autoconf >= 2.53
 	automake >= 1.5
 	gettext  == 0.11.5
 
- $ ./autogen.sh
+   And running the following command on the source dir:
 
- At this stage the source should be equivalent to the distributed tar source.
+	$ ./autogen.sh
+
+   At this stage the source should be equivalent to the distributed tar
+   source.
 
 Distributed tar Sources
 -----------------------
 
-1) Compiling
+1) Configuring
 
- $ ./configure [options]
+	$ ./configure [options]
 
- $ make && make install
+   For all available options see "configure --help". If you want later to
+   install in a different directory you may be interested in --prefix
+   and --localestatedir options.
+
+2) Compiling. You will need the X header files.
+
+	$ make && make install
+
    (use gmake instead of the standard make on FreeBSD)
 
-2) Create a writeable directory /usr/share/fonts/truetype, copy some
-   truetype *.ttf files or create soflinks to truetype directories
-   in there, then run
+3) Copy some truetype (.ttf) files or create symlinks to truetype directories
+   in the default installation directory /usr/local/share/fonts/truetype
+   (note that this directory may be changed in the configure step). Then to
+   generate the font databases:
 
-	xfstt --sync
+	$ xfstt --sync
 
-3) Start xfstt in the background
+4) Start xfstt in the background. You may put this on the boot init sequence.
+   If your distribution has a System V init then take a look at the example
+   initrc file provided in the docs/examples dirs. Else if your distro uses
+   a BSD init you can add the following line to the /etc/rc.local file.
 
-	xfstt &
+	$ xfstt &
 
-4) Tell your X11 server about the new font service
+5) Tell your X11 server about the new font service:
 
-	xset fp+ unix/:7101
+	$ xset fp+ unix/:7101
 
    or add the new fontpath to the X11 config file, Section "Files", on
-   XFree86 4.0 the file can be found on /etc/X11/XF86Config-4
+   XFree86 4.0 and above, the file can be found on /etc/X11/XF86Config-4
 
 	FontPath "unix/:7101"
 
