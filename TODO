@@ -1,10 +1,9 @@
 
-	$Id: TODO,v 1.4 2002/12/29 06:34:03 guillem Exp $
+	$Id: TODO,v 1.5 2003/01/05 10:21:34 guillem Exp $
 
 TODO list:
 
  - move all constants to configure space.
-   - hardcoded dirs.
    - default ports.
    - hardcoded versions.
  - create an install hook to mkdir the fontdir and cachedir (depends on
