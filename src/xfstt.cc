@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.15 2003/08/06 20:11:14 guillem Exp $
+ * $Id: xfstt.cc,v 1.16 2003/08/07 06:26:24 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -239,8 +239,15 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, char *ttdir, int gslist)
 static char *
 cachefile(const char *leafname)
 {
-	if (chdir(cachedir)) {
+	struct stat statbuf;
+
+	if (stat(cachedir, &statbuf)) {
 		fprintf(stderr, _("xfstt: \"%s\" does not exist!\n"), cachedir);
+		return 0;
+	}
+	if (!S_ISDIR(statbuf.st_mode)) {
+		fprintf(stderr, _("xfstt: \"%s\" is not a directory!\n"),
+			cachedir);
 		return 0;
 	}
 
