@@ -16,6 +16,7 @@ TODO list:
    - make showttf endian agnostic.
  - add missing encodings.
  - add TTF apple encoding.
+ - make LOGSLP a runtime parameter.
  - fix xfstt crashing X Server when used with some fonts.
  - fix X error when X_SetFontPath on fonts with white spaces (unreproducible).
  - fix xfs protocol compliance.
