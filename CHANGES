@@ -2,6 +2,7 @@ pre-1.5
 	New encoding: iso8859-14
 	Moved hardcoded dir locations to configure space
 	Mkdir the fontdir and cachedir in the make install target
+	Remove --gslist dependency on order of arguments
 
 1.4
 	Autoconfiscated
