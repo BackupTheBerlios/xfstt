@@ -2,7 +2,7 @@
 #
 # autogen.sh
 #
-#	$Id: autogen.sh,v 1.2 2002/11/19 05:02:35 guillem Exp $
+#	$Id: autogen.sh,v 1.3 2003/02/13 03:28:06 guillem Exp $
 #
 # Authors:	Guillem Jover <guillem.jover@menta.net>
 #		Midnight Commander Authors
@@ -20,6 +20,9 @@
 # Requires:	gettext, automake, autoconf
 #
 
+PROJECT=xfstt
+srcfile=src/xfstt.cc
+
 set -e
 
 # Make it possible to specify path in the environment
@@ -31,11 +34,11 @@ set -e
 : ${AUTOPOINT=autopoint}
 
 srcdir=`dirname $0`
-if test -e $srcdir/src/xfstt.cc
+if test -e $srcdir/$srcfile
 then
 	:
 else
-	echo "autogen.sh: No xfstt source dir" 2>&1
+	echo "autogen.sh: No $PROJECT source dir" 2>&1
 	exit 1
 fi
 
@@ -46,8 +49,8 @@ gettext_ver=`$GETTEXTIZE --version | \
   sed '2,$d;			# remove all but the first line
        s/.* //;			# take text after the last space
        s/-.*//;			# strip "-pre" or "-rc" at the end
-       s/\([^.]\+\)/0\1/g;	# prepend 0 to every token
-       s/0\([^.][^.]\)/\1/g;	# trim 0 from long lokens
+       s/\([^.][^.]*\)/0\1/g;	# prepend 0 to every token
+       s/0\([^.][^.]\)/\1/g;	# trim 0 from long tokens
        s/\.//g;			# remove dots
        '`
 
