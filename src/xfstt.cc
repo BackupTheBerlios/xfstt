@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.17 2003/08/07 06:29:52 guillem Exp $
+ * $Id: xfstt.cc,v 1.18 2003/08/07 06:31:47 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -52,6 +52,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <string.h>
+#include <string>
 #include <ctype.h>
 
 #include <stdlib.h>
@@ -152,6 +153,7 @@ static int
 ttSyncDir(FILE *infoFile, FILE *nameFile, char *ttdir, int gslist)
 {
 	int nfonts = 0;
+	int ttdir_len = strlen(ttdir);
 
 	if (!gslist)
 		printf(_("xfstt: sync in directory \"%s/%s\"\n"), fontdir, ttdir);
@@ -178,10 +180,8 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, char *ttdir, int gslist)
 		if (!S_ISREG(statbuf.st_mode))
 			continue;
 
-		char pathName[256];	// XXX: remove constant path size
-		strcpy(pathName, ttdir);
-		strcat(pathName, "/");
-		strcat(pathName, de->d_name);
+		char pathName[ttdir_len + namelen + 2];
+		sprintf(pathName, "%s/%s", ttdir, de->d_name);
 
 		TTFont *ttFont = new TTFont(de->d_name, 1);
 		if (ttFont->badFont() || !ttFont) {
@@ -206,13 +206,15 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, char *ttdir, int gslist)
 			printf("(%s)\t(%s/%s)\t;\n",
 			       fi.faceName, fontdir, pathName);
 
-		pathName[0] = '-';
+		std::string xlfd_templ = "-";
 		if (*ttdir == '.')
-			strcpy(pathName + 1, "ttf");
+			xlfd_templ += "ttf";
 		else
-			strcpy(pathName + 1, ttdir);
-		info.xlfdLen = ttFont->getXLFDbase(pathName);
-		fwrite((void *)pathName, 1, info.xlfdLen, nameFile);
+			xlfd_templ += ttdir;
+
+		std::string xlfd = ttFont->getXLFDbase(xlfd_templ);
+		info.xlfdLen = xlfd.length();
+		fwrite((void *)xlfd.c_str(), 1, info.xlfdLen, nameFile);
 		fputc('\0', nameFile);
 
 		info.charSet = 'U';
