@@ -1,7 +1,7 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id: xfstt.cc,v 1.16 2003/08/07 06:26:24 guillem Exp $
+ * $Id: xfstt.cc,v 1.17 2003/08/07 06:29:52 guillem Exp $
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
@@ -152,12 +152,15 @@ static int
 ttSyncDir(FILE *infoFile, FILE *nameFile, char *ttdir, int gslist)
 {
 	int nfonts = 0;
+
 	if (!gslist)
 		printf(_("xfstt: sync in directory \"%s/%s\"\n"), fontdir, ttdir);
+
 	DIR *dirp = opendir(".");
 
 	while (dirent *de = readdir(dirp)) {
 		int namelen = strlen(de->d_name);
+
 		if (namelen - 4 <= 0)
 			continue;
 		char *ext = &de->d_name[namelen - 4];
@@ -200,9 +203,9 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, char *ttdir, int gslist)
 		fputc('\0', nameFile);
 
 		if (gslist)
-			printf("(%s)\t(/%s/%s)\t;\n",
+			printf("(%s)\t(%s/%s)\t;\n",
 			       fi.faceName, fontdir, pathName);
-		
+
 		pathName[0] = '-';
 		if (*ttdir == '.')
 			strcpy(pathName + 1, "ttf");
