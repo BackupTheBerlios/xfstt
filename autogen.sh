@@ -2,7 +2,7 @@
 #
 # autogen.sh
 #
-#	$Id: autogen.sh,v 1.3 2003/02/13 03:28:06 guillem Exp $
+#	$Id: autogen.sh,v 1.4 2003/02/26 07:05:58 guillem Exp $
 #
 # Authors:	Guillem Jover <guillem.jover@menta.net>
 #		Midnight Commander Authors
@@ -50,8 +50,10 @@ gettext_ver=`$GETTEXTIZE --version | \
        s/.* //;			# take text after the last space
        s/-.*//;			# strip "-pre" or "-rc" at the end
        s/\([^.][^.]*\)/0\1/g;	# prepend 0 to every token
-       s/0\([^.][^.]\)/\1/g;	# trim 0 from long tokens
+       s/0\([^.][^.]\)/\1/g;	# strip leading 0 from long tokens
+       s/$/.00.00/;		# add .00.00 for short version strings
        s/\.//g;			# remove dots
+       s/\(......\).*/\1/;	# leave only 6 leading digits
        '`
 
 if test $gettext_ver -lt 01038; then
