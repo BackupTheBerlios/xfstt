@@ -1,6 +1,6 @@
                       Xfstt Frequently Asked Questions
 
-	$Id: FAQ,v 1.4 2003/03/22 13:47:58 guillem Exp $
+	$Id: FAQ,v 1.5 2003/04/07 03:56:16 guillem Exp $
 
 This document addresses common questions (and some not so common ones)
 about xfstt, the X11 TrueType Font Server. You will want to read this file
@@ -96,7 +96,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	Using xfstt's fontpath as the first fontpath is not a good idea:
 	If the first truetype font would be a symbol/dingbat/wingdings
 	font, the default font would be very hard to read (it sure looks
-	interesting though :-)
+	interesting though :-).
 
 -----------------------------------------------------------------------------
 
@@ -171,7 +171,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	<http://moon.yerphi.am/~hovik/Archive/Archive-PC/Fonts>
 	<http://www.geocities.com/SoHo/7554/downloads/fonts>
 
-	and many many other web sites
+	and many many other web sites.
 
 2.4 How does one add fonts?
 
@@ -187,6 +187,7 @@ This FAQ is current as of version 1.4 of xfstt.
 2.5 What are these weird fontnames displayed by xlsfonts when using xfstt?
 
 	xlsfonts results while running xfstt look like:
+
 	TTUP020206030504050203040Times New Roman
 
 	The reason is that the X11 Font Server protocol does not provide a
@@ -194,7 +195,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	to provide this information without changing this protocol is to
 	"sideband" the typographic info into the fontname. The typographic
 	info provided by xfstt is the panose information. For details of
-	the panose specification have a look at
+	the panose specification have a look at:
 
 	<http://www.w3.org/pub/WWW/Fonts/Panose/pan2.html>
 
@@ -230,10 +231,10 @@ This FAQ is current as of version 1.4 of xfstt.
 	Xfstt tries to serve as many glyphs as possible. If there is no
 	room left in a limited reply it skips the remaining characters.
 	Since the X server already made up his opinion how big these
-	"phantom glyphs" are, it tries to display something: garbage
+	"phantom glyphs" are, it tries to display something: garbage.
 
 	It is a good idea to have the X server be started with the options
-	-deferglyphs 8 -deferglyphs 16
+	"-deferglyphs 8 -deferglyphs 16".
 	Then the X server will load characters only in small groups, not
 	all at once. The maximum size of the glyphs is still finite, but
 	they will have some more room.
@@ -242,7 +243,7 @@ This FAQ is current as of version 1.4 of xfstt.
 
 	The X11 font server protocol limits many replies to 256kB. If a
 	font name list would exceed this limit one would have to split
-	up the reply.  Many popular X11 servers cannot handle split up
+	up the reply. Many popular X11 servers cannot handle split up
 	replies yet.
 
 2.10 Why can't I use all 16bit characters?
@@ -277,15 +278,18 @@ This FAQ is current as of version 1.4 of xfstt.
 	resolution is different from the default 72 dpi. To
 	do this start the X server with the -dpi option.
 	Alternatively xfstt provides the --res option. Example:
+
 	xfstt --res 96
 
 2.12.2 The TrueType fonts are too big!!
 
 	As stated above, some X servers can't communicate
 	correctly with Xfstt, and Xfstt may sometimes pick 96dpi
-	as it's default, when it should be 72dpi or 75dpi.  This
+	as it's default, when it should be 72dpi or 75dpi. This
 	means that 12pt Arial looks the same as 16pt Helvetica.
-	To fix this, run Xfstt as: xfstt --res 72
+	To fix this, run Xfstt as:
+
+	xfstt --res 72
 
 2.13 How does one request an encoding different from iso8859-1?
 
@@ -293,6 +297,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	matches the iso8859-1 encoding for the first 256 characters.
 	Starting in version 0.9.8 the unicode can be remapped to other
 	encodings with the --encoding option. Example:
+
 	xfstt --encoding iso8859-2,koi8-r,windows-1251
 
 2.14 Why are multiple instances of xfstt running?
@@ -326,7 +331,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	The main problem is that /usr/ttfonts was fine but encouraged the
 	clutter of /usr. To avoid this bad habit (not to mention that under
 	Linux it breaks the FHS - the filesystem standard) it was moved to
-	/usr/share/fonts/truetype
+	"/usr/share/fonts/truetype".
 
 	Just move all of your fonts there and it should work.
 
@@ -356,11 +361,12 @@ This FAQ is current as of version 1.4 of xfstt.
 	Create some subdirectories in /usr/share/fonts/truetype, e.g.
 	modern, script, brush, old, symbol, ...
 	and put the appropriate fonts in there. The corresponding font
-	names will be -modern-*, -script-*, -brush-* and so on
+	names will be -modern-*, -script-*, -brush-* and so on.
 
 3.1 Use with Java (tm) 1.1 and up
 
-	Overwrite the fonts.properties file in $(JAVA_HOME)/lib/
+	Overwrite the fonts.properties file in $(JAVA_HOME)/lib/ with
+	the provided one in the examples/ dir.
 
 3.2 Use with Netscape/Communicator (tm)
 
@@ -403,6 +409,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	A solution is to use ghostscript's ability to render ttf fonts.
 	In order to help ghostscript figure out which fonts are available
 	the --gslist option was added to xfstt. Usage example:
+
 	xfstt --gslist --sync > fontmap
 
 3.6 Does xfstt have anti-aliasing/grayscaling technology?
@@ -429,7 +436,7 @@ This FAQ is current as of version 1.4 of xfstt.
 	Ok, for starters calm down. Start out by seeing if you can make it
 	happen again. Reproducibility is a good thing. Read the documentation
 	and see if this is a known issue or even a "feature" (obviously
-	crashing and running off at 100% CPU usage is not a feature)
+	crashing and running off at 100% CPU usage is not a feature).
 
 	If it is not a feature (or you believe you have a good reason that
 	no one else has thought of that it is a wrong feature) and is a bug
