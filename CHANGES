@@ -5,6 +5,7 @@ SVN
 	Remove win32 obsolete code
 	Use new error, warning and info functions
 	Changed some data types names
+	Fix hyphen used as minus sign in manpage
 
 1.6
 	Fixed ttSyncAll only looking at fontdir subdirectories

@@ -6,11 +6,11 @@
 xfstt \- X11 Font Server for TrueType fonts
 .SH SYNOPSIS
 .B xfstt
-[--port n] [--notcp] [--dir dirname] [--cache cachedir]
-[--multi] [--once] [--user username]
-[--gslist] [--sync] [--unstrap]
-[--res resolution] [--encoding list]
-[--help]
+[\-\-port n] [\-\-notcp] [\-\-dir dirname] [\-\-cache cachedir]
+[\-\-multi] [\-\-once] [\-\-user username]
+[\-\-gslist] [\-\-sync] [\-\-unstrap]
+[\-\-res resolution] [\-\-encoding list]
+[\-\-help]
 .br
 .SH DESCRIPTION
 Xfstt serves TrueType fonts to X11 servers. Start xfstt then tell X11 about
@@ -37,7 +37,7 @@ xfstt to set its UID and GID to that of the specified user
 .I "\-\-encoding"
 Remap to different encodings. Default is iso8859-1. Usage example:
 .br
-.B xfstt --encoding iso8859-2,koi8-r,windows-1251
+.B xfstt \-\-encoding iso8859-2,koi8-r,windows-1251
 .br
 .B !!! NOTE: one comma but no blanks between the encodings !!!
 .TP
@@ -81,7 +81,7 @@ Exit after the font client disconnects.
 .TP
 .I "\-\-multi"
 Opposite of
-.B --once
+.B \-\-once
 option. This has become the default behaviour,
 so it is obsolete now and is ignored for backwards compatibility.
 It will be removed in a future release.
