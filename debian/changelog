@@ -1,3 +1,10 @@
+xfstt (1.1) unstable; urgency=low
+
+  * Fixed Memory corruption (BUG# 49297)
+  * Fixed encodings problem (BUG# 49526, 51209 )
+
+ -- Stephen J. Carpenter <sjc@debian.org>  Sun,  7 Nov 1999 23:07:52 -0500
+
 xfstt (1.0) unstable; urgency=low
 
   * Fixed compile errors and some possible bugs

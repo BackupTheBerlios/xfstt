@@ -28,12 +28,10 @@ int Encoding::parse( char* mapnames, Encoding** maps0, int maxcodes)
 		if (m) {
 			*(maps++) = m;
 			mapname = strtok(NULL,", ");
-			break;
 		} else {
-			return 0;
+			mapname = strtok(NULL,", ");
 		}
 	}
-
 	return (maps - maps0);
 }
 

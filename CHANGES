@@ -1,3 +1,11 @@
+1.1
+	
+	'The 'oops' release"
+	FIX: --encodings works again (oops)
+	FIX: Memory corruption bug (this was there for a few releases)
+	Still waiting to hear back on a couple of othere 
+	(which is why I delayed this one a bit - sorry)
+
 1.0
 
 	Fix: illegal encodings causes xfstt to run away

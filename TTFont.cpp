@@ -4,6 +4,7 @@
 #include "ttf.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 TTFont::TTFont( char* fileName, int infoOnly):
 	RandomAccessFile( fileName),
@@ -338,9 +339,12 @@ int TTFont::getXLFDbase( char* result)
 {
 //#define XLFDEXT "-normal-tt-0-0-0-0-p-0-iso8859-1"
 //#define XLFDEXT	"-normal-tt-"
+	
+	char *convbuf;
+
 
 	// some fonts have only unicode names -> try to convert them to ascii
-	char convbuf[ 256];
+	convbuf = malloc(sizeof(char) * 256);
 	int lenFamily;
 	char* strFamily = nameTable->getString( 1, 1, &lenFamily, convbuf);
 	if( !strFamily) {
@@ -348,6 +352,8 @@ int TTFont::getXLFDbase( char* result)
 		lenFamily = strlen( strFamily);
 	}
 
+	if (strFamily == convbuf) 
+		convbuf = malloc(sizeof(char) * 256);
 	int lenSub;
 	char* strSubFamily = nameTable->getString( 1, 2, &lenSub, convbuf);
 	if( !strFamily) {

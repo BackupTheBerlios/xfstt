@@ -85,7 +85,7 @@ Encoding *encodings[ MAXENC];
 
 static void usage( int verbose)
 {
-	printf( "Xfstt 1.0, X font server for TT fonts\n");
+	printf( "Xfstt 1.1, X font server for TT fonts\n");
 	printf( "Usage: xfstt [[--gslist]--sync][--port portno][--unstrap]"
 		"[--user username]\n"
 		"\t\t[--dir ttfdir][--encoding list_of_encodings]"
@@ -1521,7 +1521,6 @@ void closeTTFdb()
 	infoSize = nameSize = aliasSize = 0;
 }
 
-// thanks Stephen Carpenter:
 // This is a cheesy little signal handler to make sure that the
 // pid file is properly disposed of when we are killed
 // possibly a better (more robust) signal handler could be written - sjc
@@ -1530,8 +1529,11 @@ void delPIDfile(int signal)
 {
 	unlink(PIDFILE);
 	if (sockname) {
-		chdir( "/tmp/.font-unix"); 
+		chdir("/tmp/.font-unix"); 
 		unlink(sockname);
+		// delete the dir to if its empty
+		chdir("/tmp");
+		rmdir(".font-unix"); 
 	}
 	exit(0);
 }
@@ -1553,7 +1555,7 @@ int main( int argc, char** argv)
 {
 	int multiConnection = 1;
 	int inetdConnection = 0;
-	int portno = 7101;
+	int portno = 7101;          // this is the default port
 	int gslist = 0;
 
 	Encoding::getDefault( encodings, MAXENC);
@@ -1609,14 +1611,16 @@ int main( int argc, char** argv)
 			printf( "xfstt unstrapped: you must start X11 "
 				"with \"-deferglyphs 16\" option!\n");
 		} else if( !strcmp( argv[i], "--daemon")) {
-			if( fork())
-				_exit( 0);
-			fclose( stdin);
-			fclose( stdout);
-			fclose( stderr);
+			// Not sure if all this is needed
+			// but AFAIK its the right way to daemon-ize
+			if(fork())
+				_exit(0);
+			fclose(stdin);
+			fclose(stdout);
+			fclose(stderr);
 			setsid();
-			if( fork())
-				_exit( 0);
+			if(fork())
+				_exit(0);
 		} else {
 			usage(0);
 			return -1;
@@ -1626,6 +1630,7 @@ int main( int argc, char** argv)
 	if( inetdConnection && multiConnection) {	// inetd
 		multiConnection = 0;
 		fprintf( stderr, "--inetd and --multi option collission\n");
+		exit(1); // we don't know what to do ...so exit.
 	}
 	
 	if (newuid == (uid_t)(-2)) {
@@ -1690,6 +1695,8 @@ int main( int argc, char** argv)
 	if (sockname) {
 		chdir( "/tmp/.font-unix");
 		unlink(sockname);
+		chdir("/tmp");
+		rmdir(".font-unix");
 	}
 
 	dprintf0( "xfstt: closing a connection\n");
