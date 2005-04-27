@@ -8,7 +8,7 @@ SVN
 	Fix hyphen used as minus sign in manpage
 	Fix build failure on Irix with gcc 3.2 (Thanks to Dirk Tilger)
 
-1.6
+1.6 (2003-08-07)
 	Fixed ttSyncAll only looking at fontdir subdirectories
 	Added more robust checking for cachedir
 	Removed a constant path size limitation (for the Hurd)
@@ -20,12 +20,12 @@ SVN
 	  The member getString doesn't need the conversion buffer anymore
 	Fixed the output format of --gslist
 
-1.5.1
+1.5.1 (2003-07-31)
 	Fixed a possible security problem by checking the byteorder magic in
 	the connection handshake:
 	  CAN-2003-0625
 
-1.5
+1.5 (2003-07-29)
 	Fixed multiple buffer overflows in the network packet handling code:
 	  CAN-2003-0581
 
@@ -43,7 +43,7 @@ SVN
 	Cleaned the examples in doc/examples: font.properties, test.sh
 	Updated the documentation: doc/FAQ, INSTALL, THANKS, TODO, xfstt.1x
 
-1.4
+1.4 (2002-11-19)
 	Autoconfiscated
 	Initial i18n support
 	Switched from flat to deep hierarchy
@@ -69,15 +69,15 @@ SVN
 	Added a README in libfstt/
 	Updated LSM
 
-1.3.1
+1.3.1 (2002-09-27)
 	Removed slackware and debian directories
 	Removed references in README to packaging dirs
 	Added --cache description to man page
 	Updated all references to current version
 	Corrected LSM
 
-1.3
-	New Maintainer Guillem Jover <guillem.jover@menta.net>
+1.3 (2002-08-02)
+	New Maintainer Guillem Jover <guillem@hadrons.org>
 	Fixed unix socket and its dir permissions
 	Added full path to unix socket address and use sockaddr_un instead
 	Added support for --notcp
@@ -89,11 +89,11 @@ SVN
 	Version is taken from first line of this file
 
 1.2
-	Fixes bug that broke xfstt when using unix
-	domain sockets under linux 2.4 (THANK YOU Oliver Suárez)
+	Fixes bug that broke xfstt when using unix domain sockets under
+	linux 2.4 (Thanks you Oliver Suárez)
 
-	Fixed bug in realloc() use.
-	Added Slackware folder.
+	Fixed bug in realloc() use
+	Added Slackware folder
 	Added Patch for Boxdrawing glyphs
 
 	New Encodings: iso8859_11 (latin/Thai) and koi8_u
@@ -101,126 +101,126 @@ SVN
 	Now compiles properly under newer versions of gcc
 
 1.1
-	'The 'oops' release"
-	FIX: --encodings works again (oops)
-	FIX: Memory corruption bug (this was there for a few releases)
-	Still waiting to hear back on a couple of othere 
+	"The 'oops' release"
+	Fix --encodings works again (oops)
+	Fix memory corruption bug (this was there for a few releases)
+	Still waiting to hear back on a couple of othere
 	(which is why I delayed this one a bit - sorry)
 
 1.0
-	Fix: illegal encodings causes xfstt to run away
-	FIX: now attempts to unlink unix socket on exit
+	Fix illegal encodings causes xfstt to run away
+	Fix now attempts to unlink unix socket on exit
 	Fix for BSD (was making Zombies - Thanks David Lowe)
 	Changed some types for clean compile
 	Added some Documentation to the FAQ
 
 0.9.99
-	New Maintainer Stephen Carpenter <sjc@debian.org> 
-	added fix for memory bug
-	added windows-sami2
+	New Maintainer Stephen Carpenter <sjc@debian.org>
+	Added fix for memory bug
+	Added windows-sami2
 	Port changed to 7101 to avoid xfs conflict
-	Should now be FHS complient (font dir now /usr/share/fonts/truetype) 
+	Should now be FHS complient (font dir now /usr/share/fonts/truetype)
 	Works with read-only /usr (stores databases in /var)
-	added "--user" option for security
-	UNICODE-2 now known as iso10646-1
+	Added "--user" option for security
+	Renamed UNICODE-2 now known as iso10646-1
 	Added encodeing iso8859-15
 	Fixed encoding match bug
 
 0.9.10
-	add euro currency symbol to encodings
-	unmap unused read mmaps
-	improve memory handling on freebsd
-	avoid remap on Digital Unix
-	allow multiple connections
-	fix "empty glyph" bug
-	fix "too many encodings" bug
-	add some encodings
-	add "--inetd" option
-	change -tt- in xlfd name to subfamily
+	Add euro currency symbol to encodings
+	Unmap unused read mmaps
+	Improve memory handling on freebsd
+	Avoid remap on Digital Unix
+	Allow multiple connections
+	Fix "empty glyph" bug
+	Fix "too many encodings" bug
+	Add some encodings
+	Add "--inetd" option
+	Change -tt- in xlfd name to subfamily
 
 0.9.9
-	add some more encodings
-	use daemon pid file
-	support mac7 fonts
-	allow bigger glyphs
-	shrink preallocated mmaps
+	Add some more encodings
+	Use daemon pid file
+	Support mac7 fonts
+	Allow bigger glyphs
+	Shrink preallocated mmaps
 
 0.9.8
-	fix "staroffice pattern" problem
-	fix "irix replysize" bug
-	fix "pretzel crash" bug
-	add "--encoding" option
-	add "--dir" option
-	add "--res" option
-	add "--gslist" option
+	Fix "staroffice pattern" problem
+	Fix "irix replysize" bug
+	Fix "pretzel crash" bug
+	Add "--encoding" option
+	Add "--dir" option
+	Add "--res" option
+	Add "--gslist" option
 
 0.9.7
-	fix "nround" bug
-	fix "hdmx xxexp" bug
-	fix "huge bitmaps" problem
-	redo "multi inet" fix for bad socket implementations
+	Fix "nround" bug
+	Fix "hdmx xxexp" bug
+	Fix "huge bitmaps" problem
+	Redo "multi inet" fix for bad socket implementations
 
 0.9.6
-	avoid anon mmaps for freebsd
-	fix "dash in fontname" bug
-	fix "multi inet" bug
-	fix "comic cvt" bug
-	solve pointsize/pixelsize conflicts
-	finish "instctrl" cmd
-	change "listFontsWithXInfo" to v2 protocol
+	Avoid anon mmaps for freebsd
+	Fix "dash in fontname" bug
+	Fix "multi inet" bug
+	Fix "comic cvt" bug
+	Solve pointsize/pixelsize conflicts
+	Finish "instctrl" cmd
+	Change "listFontsWithXInfo" to v2 protocol
 
 0.9.5
-	fix "fstobdf" bug
-	fix "scanlinepad != 32" bug
-	fix some bitmap byte order issues
-	fix "huge fontlist" bug
-	fix "flip region" bug
-	improve "--unstrap" behaviour
-	add "--port" option
-	add "--once" option
-	change default to --multi
+	Fix "fstobdf" bug
+	Fix "scanlinepad != 32" bug
+	Fix some bitmap byte order issues
+	Fix "huge fontlist" bug
+	Fix "flip region" bug
+	Improve "--unstrap" behaviour
+	Add "--port" option
+	Add "--once" option
+	Change default to --multi
 
 0.9.4
-	fix "listFontsWithXInfo" bug
-	fix "overlapping contours" bug
-	fix "big endian request length" bug
-	fix "unicode" bug
-	streamline hint engine
-	add "--version" option
+	Fix "listFontsWithXInfo" bug
+	Fix "overlapping contours" bug
+	Fix "big endian request length" bug
+	Fix "unicode" bug
+	Streamline hint engine
+	Add "--version" option
 
 0.9.3
-	improve composite glyph metrics
-	fix "algerian" bug
-	simplify drawing
+	Improve composite glyph metrics
+	Fix "algerian" bug
+	Simplify drawing
 
 0.9.2
-	add "--unstrap" option
+	Add "--unstrap" option
 
 0.9.1
-	remove need to always bit/byte swap to satisfy font client
-	add monospace signature to XLFD names if appropriate
-	codepage patch for navigator 4
-	add "--multi" option
+	Remove need to always bit/byte swap to satisfy font client
+	Add monospace signature to XLFD names if appropriate
+	Codepage patch for navigator 4
+	Add "--multi" option
 
 0.9.0
-	change composite glyph handling
-	scan line converter algorithm cleanup
-	fix handling of FS protocol range requests
+	Change composite glyph handling
+	Scan line converter algorithm cleanup
+	Fix handling of FS protocol range requests
 
 0.1.5
-	bugfixes only
+	Bugfixes only
 
 0.1.1
-	bugfixes only
+	Bugfixes only
 
 0.1.0
-	change scan line converter algorithm for much improved font quality
+	Change scan line converter algorithm for much improved font quality
 
 0.0.2
-	add XLFD support
-	add inet protocol for connecting to X11 server
-	move byte reordering from engine to font serving layer
+	Add XLFD support
+	Add inet protocol for connecting to X11 server
+	Move byte reordering from engine to font serving layer
 
 0.0.1
-	first public code drop
+	First public code drop
 
