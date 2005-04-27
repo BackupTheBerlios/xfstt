@@ -13,8 +13,8 @@ EXTRA_DIST = $(man_MANS) xfstt.lsm FAQ examples
 
 edit = sed \
 	-e 's,@VERSION\@,$(VERSION),g' \
-        -e 's,@datadir\@,$(pkgdatadir),g' \
-        -e 's,@localstatedir\@,$(localstatedir),g'
+	-e 's,@datadir\@,$(pkgdatadir),g' \
+	-e 's,@localstatedir\@,$(localstatedir),g'
 
 xfstt.1x: Makefile $(srcdir)/xfstt.1x.in
 	$(edit) $(srcdir)/xfstt.1x.in > $@
