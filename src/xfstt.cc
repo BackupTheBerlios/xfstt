@@ -5,7 +5,7 @@
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
- * portions are (C) 2002-2004 Guillem Jover
+ * portions are (C) 2002-2005 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -898,7 +898,7 @@ prepare2connect(int portno)
 u8_t buf[MAXREQSIZE + 256];
 
 static int
-connecting(int sd)
+fs_connecting(int sd)
 {
 	debug("Connecting\n");
 
@@ -1041,7 +1041,7 @@ fixup_bitmap(FontExtent *fe, u32_t hint)
 }
 
 static int
-send_fserror(int sd, int seqno)
+fs_error_length(int sd, int seqno)
 {
 	fsError reply;
 
@@ -1054,12 +1054,12 @@ send_fserror(int sd, int seqno)
 }
 
 static int
-check_length(int sd, int seqno, fsReq *req, int expected_size)
+fs_check_length(int sd, int seqno, fsReq *req, int expected_size)
 {
 	if (req->length < (expected_size >> 2)) {
 		debug("packet size mismatch: %d received bytes, "
 		      "%d expected bytes\n", req->length << 2, expected_size);
-		send_fserror(sd, seqno);
+		fs_error_length(sd, seqno);
 		return 0;
 	} else {
 		return 1;
@@ -1067,7 +1067,7 @@ check_length(int sd, int seqno, fsReq *req, int expected_size)
 }
 
 static int
-working(int sd, Rasterizer *raster, char *replybuf)
+fs_working(int sd, Rasterizer *raster, char *replybuf)
 {
 	FontParams fp0 = {{0, 0, 0, 0}, {0, 0, 0, 0}, {VGARES, VGARES}, 0}, fp;
 	int event_mask = 0;
@@ -1094,7 +1094,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 		if (length > MAXREQSIZE) {
 			debug("too much data: %d bytes (max=%d)\n",
 			      length, MAXREQSIZE);
-			send_fserror(sd, seqno);
+			fs_error_length(sd, seqno);
 			break;
 		}
 
@@ -1248,7 +1248,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			int expected_size = numres * sz_fsResolution
 					    + sz_fsSetResolutionReq;
 
-			if (!check_length(sd, seqno, fsreq, expected_size))
+			if (!fs_check_length(sd, seqno, fsreq, expected_size))
 				break;
 
 			fsResolution *res = (fsResolution *)(req + 1);
@@ -1297,7 +1297,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			char *pattern = (char *)(req + 1);
 			int expected_size = sz_fsListFontsReq + req->nbytes;
 
-			if (!check_length(sd, seqno, fsreq, expected_size))
+			if (!fs_check_length(sd, seqno, fsreq, expected_size))
 				break;
 
 			pattern[req->nbytes] = 0;
@@ -1517,7 +1517,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			int expected_size = sz_fsQueryXExtents8Req
 				            + req->num_ranges * item_size;
 
-			if (!check_length(sd, seqno, fsreq, expected_size))
+			if (!fs_check_length(sd, seqno, fsreq, expected_size))
 				break;
 
 			if (req->reqType == FS_QueryXExtents8) {
@@ -1613,7 +1613,7 @@ working(int sd, Rasterizer *raster, char *replybuf)
 			int expected_size = sz_fsQueryXBitmaps8Req
 					    + req->num_ranges * item_size;
 
-			if (!check_length(sd, seqno, fsreq, expected_size))
+			if (!fs_check_length(sd, seqno, fsreq, expected_size))
 				break;
 
 			if (req->reqType == FS_QueryXBitmaps8) {
@@ -1930,7 +1930,7 @@ main(int argc, char **argv)
 	else do {
 		int sd = inetdConnection ? 0 : prepare2connect(portno);
 
-		if (connecting(sd)) {
+		if (fs_connecting(sd)) {
 			if (!multiConnection || !fork()) {
 				setuid(newuid);
 				setgid(newgid);
@@ -1938,7 +1938,7 @@ main(int argc, char **argv)
 				Rasterizer *raster = new Rasterizer();
 				char *replybuf = (char *)allocMem(MAXREPLYSIZE);
 
-				working(sd, raster, replybuf);
+				fs_working(sd, raster, replybuf);
 				deallocMem(replybuf, MAXREPLYSIZE);
 				delete raster;
 
