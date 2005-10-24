@@ -1,5 +1,6 @@
 SVN
-	Added warning output and cleaned autogen.sh
+	Made gettext external
+	Use autoreconf instead of autogen.sh
 	Changed mail address
 	Generate the manpage at build time, to use variable paths and version
 	Remove win32 obsolete code

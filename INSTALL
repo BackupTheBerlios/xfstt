@@ -20,7 +20,7 @@ SVN Sources
 
    And running the following command on the source dir:
 
-	$ ./autogen.sh
+	$ autoreconf -Wall -f -i
 
    At this stage the source should be equivalent to the distributed tar
    source.

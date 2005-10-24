@@ -4,10 +4,10 @@
 #
 #	$Id$
 #
-# Copyright (C) 2002 Guillem Jover <guillem@hadrons.org>
+# Copyright (C) 2002, 2005 Guillem Jover <guillem@hadrons.org>
 #
 
-SUBDIRS = doc intl po libfstt src
+SUBDIRS = doc po libfstt src
 
 EXTRA_DIST = autogen.sh CHANGES
 

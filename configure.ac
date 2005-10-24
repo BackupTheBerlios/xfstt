@@ -53,12 +53,11 @@ AC_TYPE_SIGNAL
 AC_CHECK_FUNCS([gettimeofday pathconf memset munmap mkdir rmdir select socket sqrt])
 
 # Checks for i18n
-AM_GNU_GETTEXT
+AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.12.1])
 
 AC_CONFIG_FILES([Makefile
 		doc/Makefile
-		intl/Makefile
 		po/Makefile.in
 		libfstt/Makefile
                 src/Makefile])
