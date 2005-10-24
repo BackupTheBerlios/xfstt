@@ -5,15 +5,15 @@
 #	$Id$
 #
 
-AC_INIT([xfstt],[1.6])
-AC_PREREQ(2.53)
-AC_REVISION($Revision$)
+AC_INIT([xfstt], [1.6])
+AC_PREREQ([2.53])
+AC_REVISION([$Revision$])
 AC_CONFIG_SRCDIR([src/xfstt.cc])
-AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_AUX_DIR([config])
+AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE([foreign 1.5])
 AM_MAINTAINER_MODE
-AM_CONFIG_HEADER(config.h)
 
 # Checks for programs.
 AC_PROG_CXX
@@ -54,7 +54,7 @@ AC_CHECK_FUNCS([gettimeofday pathconf memset munmap mkdir rmdir select socket sq
 
 # Checks for i18n
 AM_GNU_GETTEXT
-AM_GNU_GETTEXT_VERSION(0.12.1)
+AM_GNU_GETTEXT_VERSION([0.12.1])
 
 AC_CONFIG_FILES([Makefile
 		doc/Makefile
