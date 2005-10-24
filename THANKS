@@ -1,6 +1,7 @@
 Thank you to all who made xfstt better!
 
 Patches:
+
 	Ove Kaaven (window-sami2 encoding support)
 	Bernhard Michel
 	David Lowe
@@ -35,6 +36,7 @@ Patches:
 	Dirk Tilger <miriup@users.berlios.de> (Irix gcc 3.2 bug)
 
 Ideas:
+
 	Jan Anderson
 	Emmanuel Blot
 	Brian Crowder
