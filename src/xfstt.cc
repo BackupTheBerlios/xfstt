@@ -66,10 +66,12 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <netinet/in.h>
+#include <netdb.h>
 #include <time.h>
 #include <X11/fonts/FS.h>
 #include <X11/fonts/FSproto.h>
 #include <pwd.h>
+#include <errno.h>
 
 
 // if you want to read good code skip this hacked up file!
@@ -98,7 +100,16 @@ char *pidfilename = PIDFILE;
 
 int defaultres = 0;
 const int default_port = 7101;
-int noTCP = 0;
+
+struct fs_conn {
+	bool listen_unix;
+	bool listen_inet;
+	int port;
+	int sd_max;
+	int *sd_list;
+	int sd_list_size;
+	int sd_list_used;
+};
 
 uid_t newuid = (uid_t)(-2);
 gid_t newgid = (uid_t)(-2);
@@ -833,63 +844,164 @@ closeTTFdb()
 	infoSize = nameSize = aliasSize = 0;
 }
 
-static int
-prepare2connect(int portno)
+#if defined(HAVE_IPV6)
+static bool
+fs_connection_setup_inet(fs_conn &conn, struct addrinfo hints, *res)
 {
-	static struct sockaddr_un s_unix;
-	static struct sockaddr_in s_inet;
-	static int sd_unix = 0;
-	static int sd_inet = 0;
+	int inet_ports = 0;
+	const int on = 1;
 
-	if (!sd_unix) {
+	for (; res && conn.sd_list_used < conn.sd_list_size; res = res->ai_next) {
+		int sd;
+
+		sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+		if (sd < 0)
+			continue;
+
+#if defined(HAVE_IPV6_V6ONLY)
+		if (res->ai_family == PF_INET6 &&
+		    setsockopt(sd, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) < 0) {
+			error(_("setting socket option (IPv6 only).\n"));
+			close(sd);
+			continue;
+		}
+#endif
+
+		if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
+			error(_("setting socket option (reuseaddr).\n"));
+			close(sd);
+			continue;
+		}
+
+		if (bind(sd, res->ai_addr, res->ai_addrlen) < 0) {
+			close(sd);
+			continue;
+		}
+
+		listen(sd, 1);
+		conn.sd_list[conn.sd_list_used++] = sd;
+		inet_ports++;
+	}
+
+	if (!inet_ports) {
+		error(_("cannot open TCP/IP port %d, try another port; %s!\n"),
+		      conn.port, strerror(errno));
+		return false;
+	} else
+		return true;
+}
+#endif
+
+static int
+fs_connection_setup(fs_conn &conn)
+{
+	int sd;
+
+	if (conn.listen_unix) {
+		struct sockaddr_un s_unix;
 		mode_t old_umask;
 
 		// prepare unix connection
-		sd_unix = socket(PF_UNIX, SOCK_STREAM, 0);
+		sd = socket(PF_UNIX, SOCK_STREAM, 0);
 
 		s_unix.sun_family = AF_UNIX;
-		sprintf(s_unix.sun_path, "%s/fs%d", sockdir, portno);
+		sprintf(s_unix.sun_path, "%s/fs%d", sockdir, conn.port);
 		sockname = s_unix.sun_path;
 		mkdir(sockdir, 01777);
 		unlink(s_unix.sun_path);
 		old_umask = umask(0);
-		if (bind(sd_unix, (struct sockaddr *)&s_unix, sizeof(s_unix))) {
-			error(_("could not write to %s/. Please check "
+
+		if (bind(sd, (struct sockaddr *)&s_unix, sizeof(s_unix)) < 0) {
+			error(_("could not write to %s/, please check "
 			      "permissions.\n"), sockdir);
+			close(sd);
+		} else {
+			listen(sd, 1);
+			conn.sd_list[conn.sd_list_used++] = sd;
 		}
 		umask(old_umask);
-		listen(sd_unix, 1);	// only one connection
 	}
 
-	if (!noTCP && !sd_inet) {
-		// prepare inet connection
-		sd_inet = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (conn.listen_inet) {
+#if defined(HAVE_IPV6)
+		struct addrinfo hints, *res;
+		char *service;
+		int err;
+
+		// prepare inet connections
+		memset(&hints, 0, sizeof(hints));
+		hints.ai_family = PF_UNSPEC;
+		hints.ai_flags = AI_PASSIVE;
+		hints.ai_socktype = SOCK_STREAM;
+		asprintf(&service, "%d", conn.port);
+
+		err = getaddrinfo(NULL, service, &hints, &res);
+
+		free(service);
+
+		if (err) {
+			perror(gai_strerror(err));
+		} else {
+			fs_connection_setup_inet(conn, res);
+		}
+
+		freeaddrinfo(res);
+#else
+		struct sockaddr_in s_inet;
+
+		// prepare inet connections
+		sd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 		s_inet.sin_family = AF_INET;
-		s_inet.sin_port = htons(portno);
+		s_inet.sin_port = htons(conn.port);
 		s_inet.sin_addr.s_addr = htonl(INADDR_ANY);
-		if (bind(sd_inet, (struct sockaddr *)&s_inet, sizeof(s_inet))) {
-			error(_("cannot open TCP/IP port %d. Try another "
-			      "port!"), portno);
+
+		if (bind(sd, (struct sockaddr *)&s_inet, sizeof(s_inet)) < 0) {
+			error(_("cannot open TCP/IP port %d, "
+				"try another port; %s!\n"), conn.port,
+				strerror(errno));
+			close(sd);
 		}
-		listen(sd_inet, 1);	// only one connection
+		listen(sd, 1);
+		conn.sd_list[conn.sd_list_used++] = sd;
+#endif
 	}
 
-	fd_set sdlist;
-	FD_ZERO(&sdlist);
-	FD_SET(sd_unix, &sdlist);
-	if (!noTCP)
-		FD_SET(sd_inet, &sdlist);
-	int maxsd = (sd_inet > sd_unix) ? sd_inet : sd_unix;
-	select(maxsd + 1, &sdlist, 0L, 0L, 0L);
+	conn.sd_max = 0;
+
+	for (int n = 0; n < conn.sd_list_used; n++) {
+		if (conn.sd_list[n] > conn.sd_max)
+			conn.sd_max = conn.sd_list[n];
+	}
+
+	debug("connection setup (sockets = %d)\n", conn.sd_list_used);
+
+	return 0;
+}
+
+static int
+fs_connection_new(fs_conn &conn)
+{
+	int n;
+	fd_set sd_set;
+
+	FD_ZERO(&sd_set);
+
+	for (n = 0; n < conn.sd_list_used; n++)
+		FD_SET(conn.sd_list[n], &sd_set);
+
+	select(conn.sd_max + 1, &sd_set, 0L, 0L, 0L);
 
 	int sd = 0;
-	socklen_t saLength = sizeof(struct sockaddr);
-	if (FD_ISSET(sd_unix, &sdlist))
-		sd = accept(sd_unix, (struct sockaddr *)&s_unix, &saLength);
-	else if (!noTCP && FD_ISSET(sd_inet, &sdlist))
-		sd = accept(sd_inet, (struct sockaddr *)&s_inet, &saLength);
-	debug("accept(saLength = %d) = %d\n", saLength, sd);
+
+	for (n = 0; n < conn.sd_list_used; n++) {
+		if (FD_ISSET(conn.sd_list[n], &sd_set)) {
+			sd = accept(conn.sd_list[n], NULL, NULL);
+			break;
+		}
+	}
+
+	debug("accept(%d) = %d\n", conn.sd_list[n], sd);
 
 	return sd;
 }
@@ -1792,16 +1904,23 @@ main(int argc, char **argv)
 {
 	int multiConnection = 1;
 	int inetdConnection = 0;
-	int portno = default_port;
 	int gslist = 0;
 	int sync_db = 0;
 	int daemon = 0;
+	fs_conn fs_conn;
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 
 	Encoding::getDefault(encodings, MAXENC);
+
+	fs_conn.listen_unix = true;
+	fs_conn.listen_inet = true;
+	fs_conn.port = default_port;
+	fs_conn.sd_list_size = 16;
+	fs_conn.sd_list_used = 0;
+	fs_conn.sd_list = new int [fs_conn.sd_list_size];
 
 	for (int i = 1; i < argc; ++i) {
 		if (!strcmp(argv[i], "--gslist")) {
@@ -1810,13 +1929,13 @@ main(int argc, char **argv)
 			sync_db = 1;
 		} else if (!strcmp(argv[i], "--port")) {
 			if (i <= argc)
-				portno = xatoi(argv[++i]);
-			if (!portno) {
+				fs_conn.port = xatoi(argv[++i]);
+			if (!fs_conn.port) {
 				error(_("illegal port number!\n"));
-				portno = default_port;
+				fs_conn.port = default_port;
 			}
 		} else if (!strcmp(argv[i], "--notcp")) {
-			noTCP = 1;
+			fs_conn.listen_inet = false;
 		} else if (!strcmp(argv[i], "--res")) {
 			if (i <= argc)
 				defaultres = xatoi(argv[++i]);
@@ -1925,10 +2044,12 @@ main(int argc, char **argv)
 
 	signal(SIGCHLD, SIG_IGN); // We don't need no stinkinig zombies -sjc
 
+	fs_connection_setup(fs_conn);
+
 	if (retry <= 0)
 		error(_("good bye.\n"));
 	else do {
-		int sd = inetdConnection ? 0 : prepare2connect(portno);
+		int sd = inetdConnection ? 0 : fs_connection_new(fs_conn);
 
 		if (fs_connecting(sd)) {
 			if (!multiConnection || !fork()) {

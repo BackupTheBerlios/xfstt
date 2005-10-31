@@ -9,7 +9,6 @@ TODO list:
  - fix the need to sync to be able to use gslist.
  - add signal handler (HUP?) to re-sync fonts dir.
  - error messages using syslog (depends on error()).
- - add IPv6 support.
  - add memory sharing support (multi-threading?).
  - add anti-aliasing support (using the X render extension).
  - add endianess agnostic support.
