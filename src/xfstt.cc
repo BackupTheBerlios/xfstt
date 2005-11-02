@@ -846,7 +846,7 @@ closeTTFdb()
 
 #if defined(HAVE_IPV6)
 static bool
-fs_connection_setup_inet(fs_conn &conn, struct addrinfo hints, *res)
+fs_connection_setup_inet(fs_conn &conn, struct addrinfo *res)
 {
 	int inet_ports = 0;
 	const int on = 1;
