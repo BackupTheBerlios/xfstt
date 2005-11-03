@@ -10,6 +10,7 @@ SVN
 	Fix hyphen used as minus sign in manpage
 	Fix build failure on Irix with gcc 3.2 (Thanks to Dirk Tilger)
 	Add IPv6 support
+	Update FSF's address
 
 1.6 (2003-08-07)
 

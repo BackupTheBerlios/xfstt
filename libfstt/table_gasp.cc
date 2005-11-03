@@ -1,7 +1,7 @@
 /*
  * Grid-fitting And Scan-conversion Procedure Table
  *
- * $Id: table_gasp.cc,v 1.2 2003/06/18 05:42:03 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -16,8 +16,8 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * License along with this library; if not, write to the Free Softaware
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  */
 

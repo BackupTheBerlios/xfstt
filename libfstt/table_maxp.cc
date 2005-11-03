@@ -1,7 +1,7 @@
 /*
  * Maximum Parameter Table
  * 
- * $Id: table_maxp.cc,v 1.1 2002/11/14 12:08:11 guillem Exp $
+ * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
@@ -16,8 +16,8 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * License along with this library; if not, write to the Free Softaware
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  */
 
