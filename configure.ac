@@ -61,10 +61,12 @@ AC_CHECK_FUNCS([gettimeofday pathconf munmap mkdir rmdir select socket])
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.12.1])
 
-AC_CONFIG_FILES([Makefile
-		doc/Makefile
-		po/Makefile.in
-		libfstt/Makefile
-                src/Makefile])
+AC_CONFIG_FILES([
+	Makefile
+	doc/Makefile
+	po/Makefile.in
+	libfstt/Makefile
+	src/Makefile
+])
 AC_OUTPUT
 
