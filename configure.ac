@@ -19,11 +19,7 @@ AM_MAINTAINER_MODE
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
 AC_PROG_RANLIB
-AC_PROG_AWK
-AC_PROG_YACC
 
 # Checks for libraries.
 AC_CHECK_LIB([m], [sqrt])
@@ -34,7 +30,7 @@ AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_HEADER_TIME
-AC_CHECK_HEADERS([fcntl.h limits.h netinet/in.h stddef.h stdlib.h string.h sys/socket.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h netinet/in.h sys/socket.h sys/time.h unistd.h])
 
 AC_CHECK_DECL([PF_INET6],
 	      [AC_DEFINE([HAVE_IPV6], [1],
@@ -59,7 +55,7 @@ AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_STAT
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS([gettimeofday pathconf memset munmap mkdir rmdir select socket sqrt])
+AC_CHECK_FUNCS([gettimeofday pathconf munmap mkdir rmdir select socket])
 
 # Checks for i18n
 AM_GNU_GETTEXT([external])
