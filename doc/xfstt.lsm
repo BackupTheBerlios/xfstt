@@ -1,16 +1,16 @@
 Begin4
 Title:		xfstt
-Version:	1.6
-Entered-date:	2003-08-07
+Version:	1.7
+Entered-date:	2005-11-30
 Description:	X Font Server for TrueType fonts
 Keywords:	X11 truetype font server ttf
 Author:		duerr@de.ibm.com (Herbert Duerr)
 		sjc@debian.org (Stephen Carpenter)
 Maintained-by:	guillem@hadrons.org (Guillem Jover)
 Primary-site:	http://download.berlios.de/xfstt
-		xfstt-1.6.tar.gz
+		xfstt-1.7.tar.gz
 Alternate-site:	ftp://metalab.unc.edu/pub/Linux/X11/font
-		xfstt-1.6.tar.gz
+		xfstt-1.7.tar.gz
 		xfstt.lsm
 Platforms:	GNU C++
 Copying-policy:	LGPL

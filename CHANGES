@@ -1,4 +1,4 @@
-SVN
+1.7 (2005-11-30)
 
 	Made gettext external
 	Use autoreconf instead of autogen.sh
