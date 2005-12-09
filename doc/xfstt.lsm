@@ -9,7 +9,7 @@ Author:		duerr@de.ibm.com (Herbert Duerr)
 Maintained-by:	guillem@hadrons.org (Guillem Jover)
 Primary-site:	http://download.berlios.de/xfstt
 		xfstt-1.7.tar.gz
-Alternate-site:	ftp://metalab.unc.edu/pub/Linux/X11/font
+Alternate-site:	ftp://metalab.unc.edu/pub/linux/X11/fonts
 		xfstt-1.7.tar.gz
 		xfstt.lsm
 Platforms:	GNU C++
