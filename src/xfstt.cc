@@ -1966,8 +1966,7 @@ main(int argc, char **argv)
 			return 0;
 		} else if (!strcmp(argv[i], "--inetd")) { // thanks Feanor
 			inetdConnection = 1;
-		} else if (!strcmp(argv[i], "--multi")) {
-			multiConnection = 1;
+			multiConnection = 0;
 		} else if (!strcmp(argv[i], "--once")) {
 			multiConnection = 0;
 		} else if (!strcmp(argv[i], "--unstrap")) {
@@ -1987,13 +1986,6 @@ main(int argc, char **argv)
 			error(_("sync failed.\n"));
 		cleanupMem();
 		return 0;
-	}
-
-	if (inetdConnection && multiConnection) {
-		multiConnection = 0;
-		error(_("--inetd and --multi option collission.\n"));
-		// we don't know what to do ...so exit.
-		return 1;
 	}
 
 	if (daemon) {

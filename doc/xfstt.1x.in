@@ -14,7 +14,6 @@ xfstt \- X11 Font Server for TrueType fonts
 .IR dirname ]
 .RB [ \-\-cache
 .IR cachedir ]
-.RB [ \-\-multi ]
 .RB [ \-\-once ]
 .RB [ \-\-user
 .IR username ]
@@ -92,13 +91,6 @@ unicode range.
 .TP
 .B \-\-once
 Exit after the font client disconnects.
-.TP
-.B \-\-multi
-Opposite of
-.B \-\-once
-option. This has become the default behaviour,
-so it is obsolete now and is ignored for backwards compatibility.
-It will be removed in a future release.
 .TP
 .B \-\-inetd
 Tell xfstt to be used as inetd service.
