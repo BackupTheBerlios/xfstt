@@ -1,16 +1,31 @@
+.\" vi: syn=nroff
 .\"
 .\"	$Id$
 .\"
-.TH xfstt 1x 2003-08-05 @VERSION@ "Xfstt User's Manual" \" -*- nroff -*-
+.TH xfstt 1x 2006-02-08 @VERSION@ "Xfstt User's Manual" \" -*- nroff -*-
 .SH NAME
 xfstt \- X11 Font Server for TrueType fonts
 .SH SYNOPSIS
 .B xfstt
-[\-\-port n] [\-\-notcp] [\-\-dir dirname] [\-\-cache cachedir]
-[\-\-multi] [\-\-once] [\-\-user username]
-[\-\-gslist] [\-\-sync] [\-\-unstrap]
-[\-\-res resolution] [\-\-encoding list]
-[\-\-help]
+.RB [ \-\-port
+.IR number ]
+.RB [ \-\-notcp ]
+.RB [ \-\-dir
+.IR dirname ]
+.RB [ \-\-cache
+.IR cachedir ]
+.RB [ \-\-multi ]
+.RB [ \-\-once ]
+.RB [ \-\-user
+.IR username ]
+.RB [ \-\-gslist ]
+.RB [ \-\-sync ]
+.RB [ \-\-unstrap ]
+.RB [ \-\-res
+.IR resolution ]
+.RB [ \-\-encoding
+.IR item [ ,... ]]
+.RB [ \-\-help ]
 .br
 .SH DESCRIPTION
 Xfstt serves TrueType fonts to X11 servers. Start xfstt then tell X11 about
@@ -20,79 +35,78 @@ or (assuming the X11 server runs on host 127.0.0.1)
 .B "xset fp+ inet/127.0.0.1:7101"
 .SH OPTIONS
 .TP
-.I "\-\-sync"
+.B \-\-sync
 Synchronize the font database with installed fonts and exit when done.
 Don't do this while xfstt is running.
 .TP
-.I "\-\-gslist"
+.B \-\-gslist
 Print font list in a format usable for ghostscript during
 .BR \-\-sync .
 .TP
-.I "\-\-user username
+.BI \-\-user " username"
 This is a security feature which is designed to lessen the impact of
 any future security holes which are found in xfstt. This will cause
 xfstt to set its UID and GID to that of the specified user
 (if that user doesn't exist then it will use your current UID and GID)
 .TP
-.I "\-\-encoding"
-Remap to different encodings. Default is iso8859-1. Usage example:
+.BI \-\-encoding " item" [ ",..." ]
+Remap to different encodings, listed each separated by a comma. Default
+is iso8859-1. Usage example:
 .br
 .B xfstt \-\-encoding iso8859-2,koi8-r,windows-1251
-.br
-.B !!! NOTE: one comma but no blanks between the encodings !!!
 .TP
-.I "\-\-port number"
+.BI \-\-port " number"
 Change the port number for xfstt's font services.
 This version of Xfstt defaults to port
 .IR 7101 .
 .TP
-.I "\-\-notcp"
+.B \-\-notcp
 Don't open TCP socket, use unix domain only.
 .TP
-.I "\-\-dir name"
+.BI \-\-dir " name"
 Change xfstt's font directory.
 The default directory is
 .IR @datadir@/fonts/truetype .
 .TP
-.I "\-\-cache name"
+.BI \-\-cache " name"
 Change xfstt's font cache directory.
 The default directory is
 .IR @localstatedir@/cache/xfstt .
 .TP
-.I "\-\-pidfile name"
+.BI \-\-pidfile " name"
 Change xfstt's pidfile location.
 The default file name is
 .IR @localstatedir@/run/xfstt.pid .
 .TP
-.I "\-\-res value"
+.BI \-\-res " value"
 Force the resolution for underspecified fonts to value (typically 96 or 120).
 Default is the value the X11 server suggests which can be adjusted by the
 -dpi option of the X11 server. Standard X11 servers have defaults of 72 dpi.
 .TP
-.I "\-\-unstrap"
+.B \-\-unstrap
 Allow some more unicode characters. This is dangerous for many X11 servers.
 Start the X server with the "-deferglyphs 16" option to give the X server
 a better chance of surviving. For very carefully implemented X servers you
 may recompile with UNSTRAPLIMIT set to 65535 in order to get the complete
 unicode range.
 .TP
-.I "\-\-once"
+.B \-\-once
 Exit after the font client disconnects.
 .TP
-.I "\-\-multi"
+.B \-\-multi
 Opposite of
 .B \-\-once
 option. This has become the default behaviour,
 so it is obsolete now and is ignored for backwards compatibility.
 It will be removed in a future release.
 .TP
-.I "\-\-inetd"
+.B \-\-inetd
 Tell xfstt to be used as inetd service.
 .TP
-.I "\-\-daemon"
+.B \-\-daemon
 Behave like a daemon.
 .TP
-.I "\-\-help"
+.B \-\-help
 Print brief usage information on standard output and exit.
 .SH "SEE ALSO"
 .BR xfs (1),
