@@ -1,0 +1,7 @@
+2006-02-08  Guillem Jover  <guillem@hadrons.org>
+
+	* src/xfstt.cc (main): Remove --multi option parsing. Make --inetd
+	set multiConnection to 1. Remove the now irrelevant check for
+	inetdConnection and multiConnection activated at the same time.
+	* doc/xfstt.1x.in: Remove mention to the --multi option.
+
