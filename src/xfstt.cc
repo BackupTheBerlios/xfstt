@@ -2006,7 +2006,7 @@ main(int argc, char **argv)
 
 	// Make a pid file for easy starting and killing like
 	// a good little daemon
-	if (multiConnection) {
+	if (daemon) {
 		FILE *pidfile = fopen(pidfilename, "w");
 
 		if (pidfile) {
