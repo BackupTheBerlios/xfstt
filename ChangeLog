@@ -1,3 +1,10 @@
+2006-02-10  Guillem Jover  <guillem@hadrons.org>
+
+	* src/xfstt.cc (version): New function.
+	(usage): Remove version printing. Print description for --version.
+	(main): Recognize --version.
+	* doc/xfstt.1x.in: Document --version.
+
 2006-02-08  Guillem Jover  <guillem@hadrons.org>
 
 	* src/xfstt.cc (main): Create a pid file if daemonizing, not if

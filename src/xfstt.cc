@@ -120,16 +120,20 @@ char *sockdir = "/tmp/.font-unix";
 #define MAXENC 16	/* Maximum number of encodings */
 Encoding *encodings[MAXENC];
 
+static void
+version()
+{
+	printf("%s %s\n", PACKAGE, VERSION);
+}
 
 static void
 usage(int verbose)
 {
-	printf(_("xfstt %s, X font server for truetype fonts\n"), VERSION);
 	printf(_("Usage: xfstt [--gslist][--sync][--port portno][--unstrap]"
 		"[--user username]\n"
 		"\t\t[--dir ttfdir][--cache ttfcachedir][--pidfile pidfile]\n"
 		"\t\t[--encoding list_of_encodings][--res resolution]\n"
-		"\t\t[--notcp][--daemon][--inetd]\n\n"));
+		"\t\t[--notcp][--daemon][--inetd][--version]\n\n"));
 
 	if (!verbose)
 		return;
@@ -153,6 +157,7 @@ usage(int verbose)
 	printf(_("\t--once     exit after the font client disconnects\n"));
 	printf(_("\t--daemon   run in the background\n"));
 	printf(_("\t--inetd    run as inetd service\n"));
+	printf(_("\t--version  show the version\n"));
 	printf(_("\n\tattach to X Server by \"xset fp+ unix/:%i\"\n"),
 	       default_port);
 	printf(_("\t\tor \"xset fp+ inet/127.0.0.1:%i\"\n"), default_port);
@@ -1963,6 +1968,9 @@ main(int argc, char **argv)
 			}
 		} else if (!strcmp(argv[i], "--help")) {
 			usage(1);
+			return 0;
+		} else if (!strcmp(argv[i], "--version")) {
+			version();
 			return 0;
 		} else if (!strcmp(argv[i], "--inetd")) { // thanks Feanor
 			inetdConnection = 1;
