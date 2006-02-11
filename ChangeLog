@@ -1,3 +1,7 @@
+2006-02-11  Guillem Jover  <guillem@hadrons.org>
+
+	* src/xfstt.cc (main): Print description for --help.
+
 2006-02-10  Guillem Jover  <guillem@hadrons.org>
 
 	* src/xfstt.cc (version): New function.

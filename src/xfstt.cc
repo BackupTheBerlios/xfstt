@@ -133,7 +133,7 @@ usage(int verbose)
 		"[--user username]\n"
 		"\t\t[--dir ttfdir][--cache ttfcachedir][--pidfile pidfile]\n"
 		"\t\t[--encoding list_of_encodings][--res resolution]\n"
-		"\t\t[--notcp][--daemon][--inetd][--version]\n\n"));
+		"\t\t[--notcp][--daemon][--inetd][--help][--version]\n\n"));
 
 	if (!verbose)
 		return;
@@ -157,6 +157,7 @@ usage(int verbose)
 	printf(_("\t--once     exit after the font client disconnects\n"));
 	printf(_("\t--daemon   run in the background\n"));
 	printf(_("\t--inetd    run as inetd service\n"));
+	printf(_("\t--help     show this help message\n"));
 	printf(_("\t--version  show the version\n"));
 	printf(_("\n\tattach to X Server by \"xset fp+ unix/:%i\"\n"),
 	       default_port);
