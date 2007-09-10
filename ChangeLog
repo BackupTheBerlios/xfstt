@@ -1,3 +1,9 @@
+2006-09-10  Guillem Jover  <guillem@hadrons.org>
+
+	* src/xfstt.cc (usage): Remove options from usage summary. Print an
+	'Options:' string before the detailed list. Indent the options to two
+	spaces instead of a tab. Coalesce option groups into single strings.
+
 2006-02-11  Guillem Jover  <guillem@hadrons.org>
 
 	* src/xfstt.cc (main): Print description for --help.

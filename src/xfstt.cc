@@ -129,42 +129,38 @@ version()
 static void
 usage(int verbose)
 {
-	printf(_("Usage: xfstt [--gslist][--sync][--port portno][--unstrap]"
-		"[--user username]\n"
-		"\t\t[--dir ttfdir][--cache ttfcachedir][--pidfile pidfile]\n"
-		"\t\t[--encoding list_of_encodings][--res resolution]\n"
-		"\t\t[--notcp][--daemon][--inetd][--help][--version]\n\n"));
+	printf(_("Usage: xfstt [<options>]\n\n"));
 
 	if (!verbose)
 		return;
 
-	printf(_("\t--sync     sync database with font directory content\n"));
-	printf(_("\t--gslist   print ghostscript style ttf fontlist\n"));
-	printf(_("\t--port     change port number (default %i)\n"),
-	       default_port);
-	printf(_("\t--notcp    don't open TCP socket, use unix domain only\n"));
-	printf(_("\t--dir      change font directory\n"));
-	printf(_("\t           (default %s)\n"), FONTDIR);
-	printf(_("\t--cache    change font cache directory\n"));
-	printf(_("\t           (default %s)\n"), CACHEDIR);
-	printf(_("\t--pidfile  change pid file location\n"));
-	printf(_("\t           (default %s)\n"), PIDFILE);
-	printf(_("\t--res      force default resolution to this value\n"));
-	printf(_("\t--encoding change encoding (default %s)\n"),
-	       encodings[0]->strName);
-	printf(_("\t--unstrap  !DANGER! serve all unicodes !DANGER!\n"));
-	printf(_("\t--user     username that children should run as\n"));
-	printf(_("\t--once     exit after the font client disconnects\n"));
-	printf(_("\t--daemon   run in the background\n"));
-	printf(_("\t--inetd    run as inetd service\n"));
-	printf(_("\t--help     show this help message\n"));
-	printf(_("\t--version  show the version\n"));
-	printf(_("\n\tattach to X Server by \"xset fp+ unix/:%i\"\n"),
-	       default_port);
-	printf(_("\t\tor \"xset fp+ inet/127.0.0.1:%i\"\n"), default_port);
-	printf(_("\tdetach from X Server by \"xset -fp unix/:%u\"\n"),
-	       default_port);
-	printf(_("\t\tor \"xset -fp inet/127.0.0.1:%i\"\n"), default_port);
+	printf(_(
+"Options: \n"
+"  --sync               sync database with font directory content\n"
+"  --gslist             print ghostscript style ttf fontlist\n"
+"  --port <value>       change port number (default %i)\n"
+"  --notcp              don't open TCP socket, use unix domain only\n"
+"  --dir <directory>    change font directory (default %s)\n"
+"  --cache <directory>  change font cache directory (default %s)\n"
+"  --pidfile <file>     change pid file location (default %s)\n"
+"  --res <value>        force default resolution to this value\n"
+"  --encoding <list>    change encoding (default %s)\n"
+"  --unstrap            !DANGER! serve all unicodes !DANGER!\n"
+"  --user <username>    username that children should run as\n"
+"  --once               exit after the font client disconnects\n"
+"  --daemon             run in the background\n"
+"  --inetd              run as inetd service\n"
+"  --help               show this help message\n"
+"  --version            show the version\n"
+"\n"), default_port, FONTDIR, CACHEDIR, PIDFILE, encodings[0]->strName);
+
+	printf(_(
+"Attach to X Server by \"xset fp+ unix/:%i\"\n"
+"  or \"xset fp+ inet/127.0.0.1:%i\"\n"), default_port, default_port);
+
+	printf(_(
+"Detach from X Server by \"xset -fp unix/:%u\"\n"
+"  or \"xset -fp inet/127.0.0.1:%i\"\n"), default_port, default_port);
 }
 
 static int
