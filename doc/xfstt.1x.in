@@ -2,31 +2,13 @@
 .\"
 .\"	$Id$
 .\"
-.TH xfstt 1x 2006-02-10 @VERSION@ "Xfstt User's Manual" \" -*- nroff -*-
+.TH xfstt 1x 2007-09-10 @VERSION@ "Xfstt User's Manual" \" -*- nroff -*-
 .SH NAME
 xfstt \- X11 Font Server for TrueType fonts
 .SH SYNOPSIS
 .B xfstt
-.RB [ \-\-port
-.IR number ]
-.RB [ \-\-notcp ]
-.RB [ \-\-dir
-.IR dirname ]
-.RB [ \-\-cache
-.IR cachedir ]
-.RB [ \-\-once ]
-.RB [ \-\-user
-.IR username ]
-.RB [ \-\-gslist ]
-.RB [ \-\-sync ]
-.RB [ \-\-unstrap ]
-.RB [ \-\-res
-.IR resolution ]
-.RB [ \-\-encoding
-.IR item [ ,... ]]
-.RB [ \-\-help ]
-.RB [ \-\-version ]
-.br
+.RI [ options ]
+.
 .SH DESCRIPTION
 Xfstt serves TrueType fonts to X11 servers. Start xfstt then tell X11 about
 the font server with
@@ -53,7 +35,8 @@ xfstt to set its UID and GID to that of the specified user
 Remap to different encodings, listed each separated by a comma. Default
 is iso8859-1. Usage example:
 .br
-.B xfstt \-\-encoding iso8859-2,koi8-r,windows-1251
+.B xfstt \-\-encoding
+.IR iso8859-2 , koi8-r , windows-1251
 .TP
 .BI \-\-port " number"
 Change the port number for xfstt's font services.
