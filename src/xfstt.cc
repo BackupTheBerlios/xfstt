@@ -5,7 +5,7 @@
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
- * portions are (C) 2002-2005 Guillem Jover
+ * portions are (C) 2002-2007 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -110,6 +110,9 @@ struct fs_conn {
 	int sd_list_size;
 	int sd_list_used;
 };
+
+// Forward declarations
+static int fs_client_error(int sd, int seqno, int error);
 
 uid_t newuid = (uid_t)(-2);
 gid_t newgid = (uid_t)(-2);
@@ -479,14 +482,8 @@ findFont(Font fid, int sd, int seqno)
 
 	debug("fid = %ld not found!\n", fid);
 
-	if (sd) {
-		fsError reply;
-		reply.type = FS_Error;
-		reply.request = FSBadFont;
-		reply.sequenceNumber = seqno;
-		reply.length = sizeof(reply) >> 2;
-		write(sd, (void *)&reply, sizeof(reply));
-	}
+	if (sd)
+		fs_client_error(sd, seqno, FSBadFont);
 
 	return 0;
 }
@@ -1155,12 +1152,12 @@ fixup_bitmap(FontExtent *fe, u32_t hint)
 }
 
 static int
-fs_error_length(int sd, int seqno)
+fs_client_error(int sd, int seqno, int error)
 {
 	fsError reply;
 
 	reply.type = FS_Error;
-	reply.request = FSBadLength;
+	reply.request = error;
 	reply.sequenceNumber = seqno;
 	reply.length = sizeof(reply) >> 2;
 
@@ -1173,7 +1170,7 @@ fs_check_length(int sd, int seqno, fsReq *req, int expected_size)
 	if (req->length < (expected_size >> 2)) {
 		debug("packet size mismatch: %d received bytes, "
 		      "%d expected bytes\n", req->length << 2, expected_size);
-		fs_error_length(sd, seqno);
+		fs_client_error(sd, seqno, FSBadLength);
 		return 0;
 	} else {
 		return 1;
@@ -1208,7 +1205,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 		if (length > MAXREQSIZE) {
 			debug("too much data: %d bytes (max=%d)\n",
 			      length, MAXREQSIZE);
-			fs_error_length(sd, seqno);
+			fs_client_error(sd, seqno, FSBadLength);
 			break;
 		}
 
@@ -1516,13 +1513,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 				write(sd, (void *)&reply, sizeof(reply));
 				debug(" opened\n");
 			} else {
-				fsError reply;
-				reply.type = FS_Error;
-				reply.request = FSBadName;
-				reply.sequenceNumber = seqno;
-				reply.length = sizeof(reply) >> 2;
-
-				write(sd, (void *)&reply, sizeof(reply));
+				fs_client_error(sd, seqno, FSBadName);
 				debug(" not found\n");
 			}
 			debug("fhint = %04lX, fmask = %04lX, fid = %ld\n",

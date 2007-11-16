@@ -1,3 +1,11 @@
+2007-11-16  Guillem Jover  <guillem@hadrons.org>
+
+	* src/xfstt.cc (fs_error_length): Rename to ...
+	(fs_client_error): ... this. Take an additional argument with the
+	error number. Fix all callers.
+	(findFont): Call fs_client_error instead of duped code.
+	(fs_working): Likewise.
+
 2006-09-10  Guillem Jover  <guillem@hadrons.org>
 
 	* src/xfstt.cc (usage): Remove options from usage summary. Print an
