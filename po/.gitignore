@@ -1,0 +1,9 @@
+Makefile*
+Makevars.template
+POTFILES
+Rules-quot
+*.sed
+*.sin
+*.header
+stamp-po
+xfstt.pot
