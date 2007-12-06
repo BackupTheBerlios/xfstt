@@ -94,9 +94,9 @@ u16_t maxLastChar = 255;
 
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
-char *fontdir = FONTDIR;
-char *cachedir = CACHEDIR;
-char *pidfilename = PIDFILE;
+const char *fontdir = FONTDIR;
+const char *cachedir = CACHEDIR;
+const char *pidfilename = PIDFILE;
 
 int defaultres = 0;
 const int default_port = 7101;
@@ -117,8 +117,8 @@ static int fs_client_error(int sd, int seqno, int error);
 uid_t newuid = (uid_t)(-2);
 gid_t newgid = (uid_t)(-2);
 
-char *sockname;
-char *sockdir = "/tmp/.font-unix";
+const char *sockname;
+const char *sockdir = "/tmp/.font-unix";
 
 #define MAXENC 16	/* Maximum number of encodings */
 Encoding *encodings[MAXENC];
@@ -167,7 +167,7 @@ usage(int verbose)
 }
 
 static int
-ttSyncDir(FILE *infoFile, FILE *nameFile, char *ttdir, int gslist)
+ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, int gslist)
 {
 	int nfonts = 0;
 	int ttdir_len = strlen(ttdir);

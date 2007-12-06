@@ -1,3 +1,12 @@
+2007-12-06  Guillem Jover  <guillem@hadrons.org>
+
+	* src/encoding.h (Encoding::Encoding): Make argument const.
+	* src/encoding.cc (Encoding::Encoding): Likewise.
+	* src/xfstt.cc (fontdir, cachedir, pidfilename, sockname)
+	(sockdir): Make const.
+	(ttSyncDir): Make arguments const.
+	* libfstt/ttfont.cc (TTFont::getFontInfo): Make 'faceName' const.
+
 2007-11-16  Guillem Jover  <guillem@hadrons.org>
 
 	* src/xfstt.cc (fs_error_length): Rename to ...

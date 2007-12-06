@@ -38,7 +38,7 @@ public:
 	const int lenName;
 
 protected:
-	Encoding(char *name);
+	Encoding(const char *name);
 
 private:
 	static Encoding *first, *last;

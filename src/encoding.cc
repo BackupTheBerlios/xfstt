@@ -35,7 +35,7 @@ static unsigned short boxtable[32] = {
 Encoding *Encoding::first = 0;
 Encoding *Encoding::last = 0;
 
-Encoding::Encoding(char *mapname):
+Encoding::Encoding(const char *mapname):
 	strName(mapname), lenName(strlen(mapname))
 {
 	if (!first)

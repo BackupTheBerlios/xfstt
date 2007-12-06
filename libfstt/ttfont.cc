@@ -236,7 +236,7 @@ TTFont::getFontInfo(FontInfo *fi)
 			fi->panose[i] = 0;		// any
 	}
 
-	char *faceName;
+	const char *faceName;
 	char *p_faceName = nameTable->getString(1, 4, &fi->faceLength);
 
 	if (p_faceName) {
