@@ -1,3 +1,4 @@
+.deps
 ABOUT-NLS
 Makefile
 Makefile.in
@@ -7,3 +8,5 @@ config
 config.*
 m4
 stamp-h1
+*.o
+*.a
