@@ -2,8 +2,6 @@
 #
 # xfstt Makefile
 #
-#	$Id$
-#
 # Copyright (C) 2002, 2005 Guillem Jover <guillem@hadrons.org>
 #
 

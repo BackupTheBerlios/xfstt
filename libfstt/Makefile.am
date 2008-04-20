@@ -2,8 +2,6 @@
 #
 # libfstt Makefile
 #
-#	$Id$
-#
 # Copyright (C) 2002 Guillem Jover <guillem@hadrons.org>
 #
 

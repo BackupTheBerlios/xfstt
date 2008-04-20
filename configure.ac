@@ -2,8 +2,6 @@
 #
 # xfstt configure.ac
 #
-#	$Id$
-#
 
 AC_INIT([xfstt], [1.7])
 AC_PREREQ([2.53])

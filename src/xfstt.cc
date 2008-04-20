@@ -1,8 +1,6 @@
 /*
  * X Font Server for *.ttf Files
  *
- * $Id$
- *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
  * portions are (C) 2002-2007 Guillem Jover

@@ -1,7 +1,5 @@
 /*
  * Maximum Parameter Table
- * 
- * $Id$
  *
  * Copyright (C) 1997-1998 Herbert Duerr
  *

@@ -1,8 +1,6 @@
 /*
  * Header for glyph remapping subsystem
  *
- * $Id$
- *
  * Copyright (C) 1998 Herbert Duerr
  *
  * This library is free software; you can redistribute it and/or

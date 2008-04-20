@@ -1,8 +1,6 @@
 /*
  * Message handling routines
  *
- * $Id$
- *
  * Copyright (C) 2004 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or

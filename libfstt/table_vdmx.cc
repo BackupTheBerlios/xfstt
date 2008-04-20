@@ -1,8 +1,6 @@
 /*
  * Vertical Device Metrics
  *
- * $Id$
- *
  * Copyright (C) 1997-1998  Herbert Duerr
  *
  * This library is free software; you can redistribute it and/or

@@ -9,8 +9,6 @@
 # and Gergely Egervary <mauzi@lin.lkg.c3.hu>
 # modified by Guillem Jover <guillem@hadrons.org>
 #
-# $Id$
-#
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 XFSTT=/usr/bin/xfstt

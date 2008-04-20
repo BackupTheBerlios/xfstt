@@ -1,8 +1,6 @@
 /*
  * OS2 Info Table
  *
- * $Id$
- *
  * Copyright (C) 1997-1998 Herbert Duerr
  *
  * This library is free software; you can redistribute it and/or
