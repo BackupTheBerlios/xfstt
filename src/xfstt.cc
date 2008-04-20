@@ -471,19 +471,28 @@ listTTFNFonts(char *pattern, int index, char *buf)
 }
 
 static XFSFont *
-findFont(Font fid, int sd, int seqno)
+findFont(Font fid)
 {
 	XFSFont *xfs = xfsFont;
+
 	for (int i = MAXOPENFONTS; --i >= 0; ++xfs)
 		if (fid == xfs->fid)
 			return xfs;
 
 	debug("fid = %ld not found!\n", fid);
 
-	if (sd)
+	return 0;
+}
+
+static XFSFont *
+fs_find_font(Font fid, int sd, int seqno)
+{
+	XFSFont *xfs = findFont(fid);
+
+	if (!xfs)
 		fs_client_error(sd, seqno, FSBadFont);
 
-	return 0;
+	return xfs;
 }
 
 static XFSFont *
@@ -496,7 +505,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 	if (!ttFont || ttFont->badFont())
 		return 0;
 
-	XFSFont *xfs = findFont(0, 0, 0);
+	XFSFont *xfs = findFont(0);
 	if (!xfs) {
 		debug("Too many open fonts!\n");
 		delete ttFont;
@@ -1537,7 +1546,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			reply.s1.font_header_flags = FontInfoHorizontalOverlap
 						     | FontInfoInkInside;
 
-			XFSFont *xfs = findFont(req->id, sd, seqno);
+			XFSFont *xfs = fs_find_font(req->id, sd, seqno);
 			if (!xfs)
 				break;
 			FontInfo *fi = &xfs->fi;
@@ -1633,7 +1642,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 					p16[i] = htons(p8[i]);
 			}
 
-			XFSFont *xfs = findFont(req->fid, sd, seqno);
+			XFSFont *xfs = fs_find_font(req->fid, sd, seqno);
 			if (!xfs)
 				break;
 
@@ -1729,7 +1738,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 					p16[i] = ntohs(p8[i]);
 			}
 
-			XFSFont *xfs = findFont(req->fid, sd, seqno);
+			XFSFont *xfs = fs_find_font(req->fid, sd, seqno);
 			if (!xfs)
 				break;
 
@@ -1830,7 +1839,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			fsCloseReq *req = (fsCloseReq *)buf;
 			debug("FS_CloseFont fid = %ld\n", req->id);
 
-			XFSFont *xfs = findFont(req->id, sd, seqno);
+			XFSFont *xfs = fs_find_font(req->id, sd, seqno);
 			if (xfs) {
 				deallocMem(xfs->fe.buffer, xfs->fe.buflen);
 				delete xfs->ttFont;
