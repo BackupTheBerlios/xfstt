@@ -4,7 +4,7 @@ Installation Notes
 These install instructions should suffice for 98% of all users. For more
 advanced requirements refer to the xfstt(1x) man page or the FAQ.
 
-SVN Sources
+Git Sources
 -----------
 
 0) Maintainer setup
