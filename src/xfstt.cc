@@ -295,7 +295,7 @@ cachefile(const char *leafname)
 }
 
 static int
-ttSyncAll(int gslist = 0)
+ttSyncAll(bool gslist = false)
 {
 	if (!gslist)
 		debug("TrueType syncing\n");
@@ -1916,11 +1916,11 @@ setuidgid(char *name)
 int
 main(int argc, char **argv)
 {
-	int multiConnection = 1;
-	int inetdConnection = 0;
-	int gslist = 0;
-	int sync_db = 0;
-	int daemon = 0;
+	bool multiConnection = true;
+	bool inetdConnection = false;
+	bool gslist = false;
+	bool sync_db = false;
+	bool daemon = false;
 	fs_conn fs_conn;
 
 	setlocale(LC_ALL, "");
