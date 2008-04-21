@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1997-1999 Herbert Duerr
  * portions are (C) 1999 Stephen Carpenter and others
- * portions are (C) 2002-2007 Guillem Jover
+ * portions are (C) 2002-2008 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -109,8 +109,18 @@ struct fs_conn {
 	int sd_list_used;
 };
 
+#define MAXREQSIZE 4096
+
+struct fs_client {
+	int sd;
+	int seqno;
+	int event_mask;
+	u8_t buf[MAXREQSIZE + 256];
+	char *replybuf;
+};
+
 // Forward declarations
-static int fs_client_error(int sd, int seqno, int error);
+static int fs_client_error(fs_client &client, int error);
 
 uid_t newuid = (uid_t)(-2);
 gid_t newgid = (uid_t)(-2);
@@ -485,12 +495,12 @@ findFont(Font fid)
 }
 
 static XFSFont *
-fs_find_font(Font fid, int sd, int seqno)
+fs_find_font(Font fid, fs_client &client)
 {
 	XFSFont *xfs = findFont(fid);
 
 	if (!xfs)
-		fs_client_error(sd, seqno, FSBadFont);
+		fs_client_error(client, FSBadFont);
 
 	return xfs;
 }
@@ -1012,17 +1022,15 @@ fs_connection_new(fs_conn &conn)
 	return sd;
 }
 
-#define MAXREQSIZE 4096
-u8_t buf[MAXREQSIZE + 256];
-
 static int
-fs_connecting(int sd)
+fs_connecting(fs_client &client)
 {
 	debug("Connecting\n");
 
-	int i = read(sd, buf, MAXREQSIZE);	// read fsConnClientPrefix
+	// read fsConnClientPrefix
+	int i = read(client.sd, client.buf, MAXREQSIZE);
 
-	fsConnClientPrefix *req = (fsConnClientPrefix *)buf;
+	fsConnClientPrefix *req = (fsConnClientPrefix *)client.buf;
 
 	if (i < (int)sizeof(fsConnClientPrefix))
 		return 0;
@@ -1052,7 +1060,7 @@ fs_connecting(int sd)
 	replySetup.alternate_len = 0;
 	replySetup.auth_len = 0;
 
-	write(sd, (void *)&replySetup, sizeof(replySetup));
+	write(client.sd, (void *)&replySetup, sizeof(replySetup));
 
 	struct {
 		fsConnSetupAccept s1;
@@ -1066,7 +1074,7 @@ fs_connecting(int sd)
 	replyAccept.vendor[0] = 'H';
 	replyAccept.vendor[1] = 'D';
 
-	write(sd, (void *)&replyAccept, sizeof(replyAccept));
+	write(client.sd, (void *)&replyAccept, sizeof(replyAccept));
 
 	return 1;
 }
@@ -1159,25 +1167,27 @@ fixup_bitmap(FontExtent *fe, u32_t hint)
 }
 
 static int
-fs_client_error(int sd, int seqno, int error)
+fs_client_error(fs_client &client, int error)
 {
 	fsError reply;
 
 	reply.type = FS_Error;
 	reply.request = error;
-	reply.sequenceNumber = seqno;
+	reply.sequenceNumber = client.seqno;
 	reply.length = sizeof(reply) >> 2;
 
-	return write(sd, (void *)&reply, sizeof(reply));
+	return write(client.sd, (void *)&reply, sizeof(reply));
 }
 
 static int
-fs_check_length(int sd, int seqno, fsReq *req, int expected_size)
+fs_check_length(fs_client &client, int expected_size)
 {
-	if (req->length < (expected_size >> 2)) {
+	fsReq *fsreq = (fsReq *)client.buf;
+
+	if (fsreq->length < (expected_size >> 2)) {
 		debug("packet size mismatch: %d received bytes, "
-		      "%d expected bytes\n", req->length << 2, expected_size);
-		fs_client_error(sd, seqno, FSBadLength);
+		      "%d expected bytes\n", fsreq->length << 2, expected_size);
+		fs_client_error(client, FSBadLength);
 		return 0;
 	} else {
 		return 1;
@@ -1185,46 +1195,47 @@ fs_check_length(int sd, int seqno, fsReq *req, int expected_size)
 }
 
 static int
-fs_working(int sd, Rasterizer *raster, char *replybuf)
+fs_working(fs_client &client, Rasterizer *raster)
 {
 	FontParams fp0 = {{0, 0, 0, 0}, {0, 0, 0, 0}, {VGARES, VGARES}, 0}, fp;
-	int event_mask = 0;
 	int i;
+
+	client.event_mask = 0;
 
 	if (defaultres)
 		fp0.resolution[0] = fp.resolution[1] = defaultres;
 
-	for (int seqno = 1;; ++seqno) {
-		int l = read(sd, buf, sz_fsReq);
+	for (client.seqno = 1; ; ++client.seqno) {
+		int l = read(client.sd, client.buf, sz_fsReq);
 		if (l < sz_fsReq)
 			return l;
 
 #ifdef DEBUG
 		debug("===STARTREQ=========== %d\n", l);
 		for (i = 0; i < sz_fsReq; ++i)
-			debug("%02X ", buf[i]);
+			debug("%02X ", client.buf[i]);
 		debug("\n");
 		sync();
 #endif
 
-		fsReq *fsreq = (fsReq *)buf;
+		fsReq *fsreq = (fsReq *)client.buf;
 		int length = fsreq->length << 2;
 		if (length > MAXREQSIZE) {
 			debug("too much data: %d bytes (max=%d)\n",
 			      length, MAXREQSIZE);
-			fs_client_error(sd, seqno, FSBadLength);
+			fs_client_error(client, FSBadLength);
 			break;
 		}
 
 		for (; l < length; l += i) {
-			i = read(sd, buf + l, length-l);
+			i = read(client.sd, client.buf + l, length - l);
 			if (i <= 0)
 				return i;
 		}
 
 #ifdef DEBUG
 		for (i = sz_fsReq; i < length; ++i) {
-			debug("%02X ", buf[i]);
+			debug("%02X ", client.buf[i]);
 			if ((i & 3) == 3)
 				debug(" ");
 			if ((i & 15) == (15 - sz_fsReq))
@@ -1245,10 +1256,10 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			fsListExtensionsReply reply;
 			reply.type = FS_Reply;
 			reply.nExtensions = 0;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 
@@ -1258,7 +1269,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			fsQueryExtensionReply reply;
 			reply.type = FS_Reply;
 			reply.present = 0;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 			reply.major_version = 0;
 			reply.minor_version = 0;
@@ -1268,7 +1279,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			reply.first_error = 0;
 			reply.num_errors = 0;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 
@@ -1277,12 +1288,12 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsListCataloguesReply reply;
 			reply.type = FS_Reply;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 			reply.num_replies = 0;
 			reply.num_catalogues = 0;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 
@@ -1301,31 +1312,31 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			fsGetCataloguesReply reply;
 			reply.type = FS_Reply;
 			reply.num_catalogues = 0;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 
 		case FS_SetEventMask:
 			{
-			fsSetEventMaskReq *req = (fsSetEventMaskReq *)buf;
-			event_mask = req->event_mask;
-			debug("FS_SetEventMask %04X\n", event_mask);
+			fsSetEventMaskReq *req = (fsSetEventMaskReq *)client.buf;
+			client.event_mask = req->event_mask;
+			debug("FS_SetEventMask %04X\n", client.event_mask);
 			}
 			break;
 
 		case FS_GetEventMask:
-			debug("FS_GetEventMask = %04X\n", event_mask);
+			debug("FS_GetEventMask = %04X\n", client.event_mask);
 			{
 			fsGetEventMaskReply reply;
 			reply.type = FS_Reply;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
-			reply.event_mask = event_mask;
+			reply.event_mask = client.event_mask;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 
@@ -1335,11 +1346,11 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			fsCreateACReply reply;
 			reply.type = FS_Reply;
 			reply.auth_index = 0;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 			reply.status = AuthSuccess;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 
@@ -1348,10 +1359,10 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			{
 			fsGenericReply reply;
 			reply.type = FS_Reply;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 
@@ -1361,12 +1372,12 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 
 		case FS_SetResolution:
 			{
-			fsSetResolutionReq *req = (fsSetResolutionReq *)buf;
+			fsSetResolutionReq *req = (fsSetResolutionReq *)client.buf;
 			int numres = req->num_resolutions;
 			int expected_size = numres * sz_fsResolution
 					    + sz_fsSetResolutionReq;
 
-			if (!fs_check_length(sd, seqno, fsreq, expected_size))
+			if (!fs_check_length(client, expected_size))
 				break;
 
 			fsResolution *res = (fsResolution *)(req + 1);
@@ -1398,24 +1409,24 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 
 			reply.s1.type = FS_Reply;
 			reply.s1.num_resolutions = 1;
-			reply.s1.sequenceNumber = seqno;
+			reply.s1.sequenceNumber = client.seqno;
 			reply.s1.length = sizeof(reply) >> 2;
 			reply.s2.x_resolution = fp0.resolution[0];
 			reply.s2.y_resolution = fp0.resolution[1];
 			reply.s2.point_size = fp0.point[0] * 10;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 
 			break;
 
 		case FS_ListFonts:
 			{
-			fsListFontsReq* req = (fsListFontsReq *)buf;
+			fsListFontsReq* req = (fsListFontsReq *)client.buf;
 			char *pattern = (char *)(req + 1);
 			int expected_size = sz_fsListFontsReq + req->nbytes;
 
-			if (!fs_check_length(sd, seqno, fsreq, expected_size))
+			if (!fs_check_length(client, expected_size))
 				break;
 
 			pattern[req->nbytes] = 0;
@@ -1424,13 +1435,13 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 
 			fsListFontsReply reply;
 			reply.type = FS_Reply;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			// XXX: XFree doesn't handle split up replies yet
 			reply.following = 0;
 			reply.nFonts = 0;
 
-			char *buf = replybuf;
-			char *endbuf = replybuf + MAXREPLYSIZE - 256;
+			char *buf = client.replybuf;
+			char *endbuf = client.replybuf + MAXREPLYSIZE - 256;
 			for (i = 0; reply.nFonts < req->maxNames; i = 1) {
 				if (buf >= endbuf)
 					break;
@@ -1454,11 +1465,11 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 				++reply.nFonts;
 			}
 			debug("Found %ld fonts\n", reply.nFonts);
-			reply.length = (sizeof(reply) + (buf - replybuf)
+			reply.length = (sizeof(reply) + (buf - client.replybuf)
 				       + 3) >> 2;
 
-			write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)replybuf,
+			write(client.sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)client.replybuf,
 			      (reply.length << 2) - sizeof(reply));
 			}
 			break;
@@ -1476,28 +1487,28 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			fsListFontsWithXInfoReply reply;
 			reply.type = FS_Reply;
 			reply.nameLength = 0;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 			reply.nReplies = 0;
-			// XXX: write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)&reply, sizeof(fsGenericReply));
+			// XXX: write(client.sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(fsGenericReply));
 #else
 			fsImplementationError error;
 			error.type = FS_Error;
 			error.request = FSBadImplementation;
-			error.sequenceNumber = seqno;
+			error.sequenceNumber = client.seqno;
 			error.length = sizeof(error) >> 2;
 
 			debug(" fsError size = %u bytes, %u ints\n",
 			      sizeof(error), error.length);
-			write(sd, (void *)&error, sizeof(error));
+			write(client.sd, (void *)&error, sizeof(error));
 #endif
 			}
 			break;
 
 		case FS_OpenBitmapFont:
 			{
-			fsOpenBitmapFontReq *req = (fsOpenBitmapFontReq *)buf;
+			fsOpenBitmapFontReq *req = (fsOpenBitmapFontReq *)client.buf;
 			char *fontName = (char *)(req + 1) + 1;
 			fontName[*(u8_t *)(req + 1)] = 0;
 			debug("FS_OpenBitmapFont \"%s\"", fontName);
@@ -1512,15 +1523,15 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 				fsOpenBitmapFontReply reply;
 				reply.type = FS_Reply;
 				reply.otherid_valid = fsFalse;
-				reply.sequenceNumber = seqno;
+				reply.sequenceNumber = client.seqno;
 				reply.length = sizeof(reply) >> 2;
 				reply.otherid = 0;
 				reply.cachable = fsTrue;
 
-				write(sd, (void *)&reply, sizeof(reply));
+				write(client.sd, (void *)&reply, sizeof(reply));
 				debug(" opened\n");
 			} else {
-				fs_client_error(sd, seqno, FSBadName);
+				fs_client_error(client, FSBadName);
 				debug(" not found\n");
 			}
 			debug("fhint = %04lX, fmask = %04lX, fid = %ld\n",
@@ -1530,7 +1541,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 
 		case FS_QueryXInfo:
 			{
-			fsQueryXInfoReq *req = (fsQueryXInfoReq *)buf;
+			fsQueryXInfoReq *req = (fsQueryXInfoReq *)client.buf;
 			debug("FS_QueryXInfo fid = %ld\n", req->id);
 
 			struct {
@@ -1541,12 +1552,12 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			} reply;
 
 			reply.s1.type = FS_Reply;
-			reply.s1.sequenceNumber = seqno;
+			reply.s1.sequenceNumber = client.seqno;
 			reply.s1.length = sizeof(reply) >> 2;
 			reply.s1.font_header_flags = FontInfoHorizontalOverlap
 						     | FontInfoInkInside;
 
-			XFSFont *xfs = fs_find_font(req->id, sd, seqno);
+			XFSFont *xfs = fs_find_font(req->id, client);
 			if (!xfs)
 				break;
 			FontInfo *fi = &xfs->fi;
@@ -1609,14 +1620,14 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			reply.dummyName = htonl(0x464F4E54);
 			reply.dummyValue = htonl(0x54544678);
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 
 		case FS_QueryXExtents8:
 		case FS_QueryXExtents16:
 			{
-			fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)buf;
+			fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)client.buf;
 
 			debug("FS_QueryXExtents%s fid = %ld, ",
 			      (req->reqType == FS_QueryXExtents8 ? "8" : "16"),
@@ -1629,7 +1640,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			int expected_size = sz_fsQueryXExtents8Req
 				            + req->num_ranges * item_size;
 
-			if (!fs_check_length(sd, seqno, fsreq, expected_size))
+			if (!fs_check_length(client, expected_size))
 				break;
 
 			if (req->reqType == FS_QueryXExtents8) {
@@ -1642,11 +1653,12 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 					p16[i] = htons(p8[i]);
 			}
 
-			XFSFont *xfs = fs_find_font(req->fid, sd, seqno);
+			XFSFont *xfs = fs_find_font(req->fid, client);
 			if (!xfs)
 				break;
 
-			fsXCharInfo *ext0 = (fsXCharInfo *)replybuf, *ext = ext0;
+			fsXCharInfo *ext0 = (fsXCharInfo *)client.replybuf;
+			fsXCharInfo *ext = ext0;
 			u16_t *ptr = (u16_t *)(req + 1);
 			int nranges = req->num_ranges;
 			if (req->range) {
@@ -1669,7 +1681,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 
 			fsQueryXExtents16Reply reply;
 			reply.type = FS_Reply;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.num_extents = ext - ext0;
 			reply.length = (sizeof(reply) + 3
 				       + ((u8_t *)ext - (u8_t *)ext0)) >> 2;
@@ -1705,15 +1717,16 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 				      ext->width, ext->ascent, ext->descent);
 #endif
 			}
-			write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)ext0, (u8_t *)ext - (u8_t *)ext0);
+			write(client.sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)ext0, (u8_t *)ext - (u8_t *)ext0);
+
 			}
 			break;
 
 		case FS_QueryXBitmaps8:
 		case FS_QueryXBitmaps16:
 			{
-			fsQueryXBitmaps16Req *req = (fsQueryXBitmaps16Req *)buf;
+			fsQueryXBitmaps16Req *req = (fsQueryXBitmaps16Req *)client.buf;
 
 			debug("FS_QueryXBitmaps16 fid = %ld, fmt = %04lX\n",
 			      req->fid, req->format);
@@ -1725,7 +1738,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			int expected_size = sz_fsQueryXBitmaps8Req
 					    + req->num_ranges * item_size;
 
-			if (!fs_check_length(sd, seqno, fsreq, expected_size))
+			if (!fs_check_length(client, expected_size))
 				break;
 
 			if (req->reqType == FS_QueryXBitmaps8) {
@@ -1738,13 +1751,14 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 					p16[i] = ntohs(p8[i]);
 			}
 
-			XFSFont *xfs = fs_find_font(req->fid, sd, seqno);
+			XFSFont *xfs = fs_find_font(req->fid, client);
 			if (!xfs)
 				break;
 
 			fixup_bitmap(&xfs->fe, req->format);
 
-			fsOffset32 *ofs0 = (fsOffset32 *)replybuf, *ofs = ofs0;
+			fsOffset32 *ofs0 = (fsOffset32 *)client.replybuf;
+			fsOffset32 *ofs = ofs0;
 			u16_t *ptr = (u16_t *)(req + 1);
 			int nranges = req->num_ranges;
 			if (req->range) {
@@ -1767,7 +1781,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 
 			fsQueryXBitmaps16Reply reply;
 			reply.type = FS_Reply;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.num_chars = ofs - ofs0;
 			reply.nbytes = xfs->fe.bmplen;
 			reply.replies_hint = 0;
@@ -1779,7 +1793,7 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 
 			char *bmp0 = (char *)ofs, *bmp = bmp0;
 			ofs = ofs0;
-			char *replylimit = replybuf + MAXREPLYSIZE;
+			char *replylimit = client.replybuf + MAXREPLYSIZE;
 			for (i = reply.num_chars; --i >= 0; ++ofs) {
 				int ch = ofs->position;
 				ch = xfs->encoding->map2unicode(ch);
@@ -1810,9 +1824,9 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 #if 1
 			reply.length = (sizeof(reply) + reply.nbytes + 3
 				       + ((u8_t *)ofs - (u8_t *)ofs0)) >> 2;
-			write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)ofs0, (u8_t *)ofs - (u8_t *)ofs0);
-			write(sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
+			write(client.sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)ofs0, (u8_t *)ofs - (u8_t *)ofs0);
+			write(client.sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
 #else
 {
 			int nbytes = reply.nbytes;
@@ -1820,15 +1834,15 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			reply.replies_hint = 1;
 			reply.length = (sizeof(reply)
 				       + ((u8_t *)ofs - (u8_t *)ofs0)) >> 2;
-			write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)ofs0, (u8_t *)ofs - (u8_t *)ofs0);
+			write(client.sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)ofs0, (u8_t *)ofs - (u8_t *)ofs0);
 
 			reply.nbytes = nbytes;
 			reply.replies_hint = 0;
-			reply.sequenceNumber = ++seqno;
+			reply.sequenceNumber = ++client.seqno;
 			reply.length = (sizeof(reply) + (bmp - bmp0)) >> 2;
-			write(sd, (void *)&reply, sizeof(reply));
-			write(sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
+			write(client.sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
 }
 #endif
 			}
@@ -1836,10 +1850,10 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 
 		case FS_CloseFont:
 			{
-			fsCloseReq *req = (fsCloseReq *)buf;
+			fsCloseReq *req = (fsCloseReq *)client.buf;
 			debug("FS_CloseFont fid = %ld\n", req->id);
 
-			XFSFont *xfs = fs_find_font(req->id, sd, seqno);
+			XFSFont *xfs = fs_find_font(req->id, client);
 			if (xfs) {
 				deallocMem(xfs->fe.buffer, xfs->fe.buflen);
 				delete xfs->ttFont;
@@ -1854,13 +1868,13 @@ fs_working(int sd, Rasterizer *raster, char *replybuf)
 			fsRequestError reply;
 			reply.type = FS_Error;
 			reply.request = FSBadRequest;
-			reply.sequenceNumber = seqno;
+			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 			reply.timestamp = 0;
 			reply.major_opcode = fsreq->reqType;
 			reply.minor_opcode = fsreq->data;
 
-			write(sd, (void *)&reply, sizeof(reply));
+			write(client.sd, (void *)&reply, sizeof(reply));
 			}
 			break;
 		}
@@ -2044,25 +2058,27 @@ main(int argc, char **argv)
 	if (retry <= 0)
 		error(_("good bye.\n"));
 	else do {
-		int sd = inetdConnection ? 0 : fs_connection_new(fs_conn);
+		fs_client client;
 
-		if (fs_connecting(sd)) {
+		client.sd = inetdConnection ? 0 : fs_connection_new(fs_conn);
+
+		if (fs_connecting(client)) {
 			if (!multiConnection || !fork()) {
 				setuid(newuid);
 				setgid(newgid);
 
 				Rasterizer *raster = new Rasterizer();
-				char *replybuf = (char *)allocMem(MAXREPLYSIZE);
-
-				fs_working(sd, raster, replybuf);
-				deallocMem(replybuf, MAXREPLYSIZE);
+				client.replybuf = (char *)allocMem(MAXREPLYSIZE);
+				fs_working(client, raster);
+				deallocMem(client.replybuf, MAXREPLYSIZE);
 				delete raster;
 
 				if (!inetdConnection)
-					shutdown(sd, 2);
-				close(sd);
+					shutdown(client.sd, 2);
+				close(client.sd);
 
 				debug("xfstt: closing a connection\n");
+
 				cleanupMem();
 
 				return 0;
@@ -2074,7 +2090,7 @@ main(int argc, char **argv)
 				waitpid(-1, &status, WNOHANG);
 			}
 		}
-		close(sd);
+		close(client.sd);
 	} while (multiConnection);
 
 	if (sockname) {
