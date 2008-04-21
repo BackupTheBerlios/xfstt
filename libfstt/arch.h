@@ -79,6 +79,10 @@ typedef unsigned long long u64_t;
 #    endif
 #endif
 
+#ifndef MULDIV
+#  define MULDIV(a, b, c) (int)(((s64_t)(a) * (b) + (c >> 1)) / (c))
+#endif
+
 //=========== add special cases here ==================
 
 #ifdef __sgi

@@ -42,10 +42,6 @@
 #include <assert.h>
 #include <string>
 
-#ifndef MULDIV
-#  define MULDIV(a,b,c) (int)(((s64_t)(a) * (b) + (c >> 1)) / (c))
-#endif
-
 #ifndef DEBUG
 #  define debug(format, ...)
 #  define STATIC static
