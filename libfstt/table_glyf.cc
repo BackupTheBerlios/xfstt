@@ -20,7 +20,6 @@
  */
 
 #include "ttf.h"
-#include <stdio.h>
 
 GlyphTable::GlyphTable(RandomAccessFile &f, int offset, int length):
 	RandomAccessFile(f, offset, length)

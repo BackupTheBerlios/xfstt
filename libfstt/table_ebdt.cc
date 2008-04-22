@@ -20,7 +20,6 @@
  */
 
 #include "ttf.h"
-#include <string.h>
 
 EbdtTable::EbdtTable(RandomAccessFile &f, int offset, int length):
 	RandomAccessFile(f, offset, length)

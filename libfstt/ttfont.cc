@@ -20,7 +20,6 @@
  */
 
 #include "ttf.h"
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -399,7 +398,6 @@ TTFont::write2File(char *filename)
 }
 
 
-#include <string>
 #include <cctype>
 
 // result has to be preset with the category name "-category-",
