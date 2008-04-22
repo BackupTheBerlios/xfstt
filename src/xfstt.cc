@@ -231,13 +231,13 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, int gslist)
 			printf("(%s)\t(%s/%s)\t;\n",
 			       fi.faceName, fontdir, pathName);
 
-		std::string xlfd_templ = "-";
+		string xlfd_templ = "-";
 		if (*ttdir == '.')
 			xlfd_templ += "ttf";
 		else
 			xlfd_templ += ttdir;
 
-		std::string xlfd = ttFont->getXLFDbase(xlfd_templ);
+		string xlfd = ttFont->getXLFDbase(xlfd_templ);
 		info.xlfdLen = xlfd.length();
 		fwrite((void *)xlfd.c_str(), 1, info.xlfdLen, nameFile);
 		fputc('\0', nameFile);

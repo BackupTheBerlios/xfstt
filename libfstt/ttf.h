@@ -42,6 +42,8 @@
 #include <assert.h>
 #include <string>
 
+using std::string;
+
 #ifndef DEBUG
 #  define debug(format, ...)
 #  define STATIC static
@@ -281,7 +283,7 @@ public:
 	int getGlyphWidth(int mppemx, int glyphNo);
 	int getGlyphMetrics(int glyphNo);
 
-	std::string getXLFDbase(std::string xlfd_templ);
+	string getXLFDbase(string xlfd_templ);
 
 	// for comparing with reference implementation
 	int patchGlyphCode(GlyphTable *glyph, int instruction);

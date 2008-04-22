@@ -406,18 +406,18 @@ TTFont::write2File(char *filename)
 // returns "-category-family-weight-slant-setwidth-TT-"
 // XXX: "pixelsize-pointsize-xres-yres-spacing-avgwidth-charset-encoding"
 
-std::string
-TTFont::getXLFDbase(std::string xlfd_templ)
+string
+TTFont::getXLFDbase(string xlfd_templ)
 {
 //#define XLFDEXT "-normal-tt-0-0-0-0-p-0-iso8859-1"
 //#define XLFDEXT "-normal-tt-"
 
 	int lenFamily;
 	char *p_strFamily = nameTable->getString(1, 1, &lenFamily);
-	std::string strFamily;
+	string strFamily;
 
 	if (p_strFamily) {
-		strFamily = std::string(p_strFamily, lenFamily);
+		strFamily = string(p_strFamily, lenFamily);
 	} else {
 		strFamily = "unknown";
 		lenFamily = strFamily.length();
@@ -425,16 +425,16 @@ TTFont::getXLFDbase(std::string xlfd_templ)
 
 	int lenSub;
 	char *p_strSubFamily = nameTable->getString(1, 2, &lenSub);
-	std::string strSubFamily;
+	string strSubFamily;
 
 	if (p_strFamily) {
-		strSubFamily = std::string(p_strSubFamily, lenSub);
+		strSubFamily = string(p_strSubFamily, lenSub);
 	} else {
 		strSubFamily = "tt";
 		lenSub = strSubFamily.length();
 	}
 
-	std::string::iterator i;
+	string::iterator i;
 
 	for (i = strFamily.begin(); i < strFamily.end(); i++)
 		if (*i == '-')
@@ -443,7 +443,7 @@ TTFont::getXLFDbase(std::string xlfd_templ)
 		if (*i == '-')
 			*i = ' ';
 
-	std::string xlfd = xlfd_templ + '-' + strFamily;
+	string xlfd = xlfd_templ + '-' + strFamily;
 
 	if (os2Table) {
 		xlfd += (os2Table->selection & 32) ? "-bold" : "-medium";
