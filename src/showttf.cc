@@ -50,7 +50,7 @@ static int white;
 static Rasterizer *raster;
 static u8_t *pixmap;
 
-#define BMPSIZE 1048*2048
+#define BMPSIZE		1048 * 2048
 u8_t *bitmap = 0;
 
 #define DEFAULT_WIDTH	200
@@ -87,7 +87,6 @@ glyph2image(int glyphNo, int size, int angle, XImage *img)
 	if (length == 0)
 		return;
 
-	
 	if (raster->anti_aliasing <= 0)
 		switch (SCANLINEPAD) {
 		case 8:
@@ -161,6 +160,7 @@ int
 xAllocColor(int rgb)
 {
 	XColor c;
+
 	c.red = (rgb >> 8) & 0xff00;
 	c.green = rgb & 0xff00;
 	c.blue = (rgb << 8) & 0xff00;
