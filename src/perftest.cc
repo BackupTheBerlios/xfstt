@@ -43,7 +43,7 @@
 int numGlyphs = 0;
 
 static int
-ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, char *ttdir)
+ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, const char *ttdir)
 {
 	int nfonts = 0;
 	printf("xfstt: perftest in directory " FONTDIR "/%s\n", ttdir);
