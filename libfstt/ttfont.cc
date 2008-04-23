@@ -2,6 +2,7 @@
  * General handling of *ttf files
  *
  * Copyright (C) 1997-1998 Herbert Duerr
+ * Copyright (C) 2008 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -233,25 +234,17 @@ TTFont::getFontInfo(FontInfo *fi)
 			fi->panose[i] = 0;		// any
 	}
 
-	const char *faceName;
-	char *p_faceName = nameTable->getString(1, 4, &fi->faceLength);
+	string faceName = nameTable->getString(1, 4);
 
-	if (p_faceName) {
-		faceName = p_faceName;
-	} else {
+	if (faceName.empty())
 		faceName = "Unknown";
-		fi->faceLength = strlen(faceName);
-	}
 
-	if (fi->faceLength > 32)
-		fi->faceLength = 32;
+	if (fi->faceLength > sizeof(fi->faceName))
+		fi->faceLength = sizeof(fi->faceName);
+	else
+		fi->faceLength = faceName.size();
 
-	strncpy(fi->faceName, faceName, fi->faceLength);
-	if (p_faceName)
-		delete faceName;
-
-	if (fi->faceLength < 31)
-		fi->faceName[fi->faceLength] = 0;
+	faceName.copy(fi->faceName, fi->faceLength);
 }
 
 
@@ -410,27 +403,14 @@ TTFont::getXLFDbase(string xlfd_templ)
 //#define XLFDEXT "-normal-tt-0-0-0-0-p-0-iso8859-1"
 //#define XLFDEXT "-normal-tt-"
 
-	int lenFamily;
-	char *p_strFamily = nameTable->getString(1, 1, &lenFamily);
-	string strFamily;
+	string strFamily = nameTable->getString(1, 1);
+	string strSubFamily = nameTable->getString(1, 2);
 
-	if (p_strFamily) {
-		strFamily = string(p_strFamily, lenFamily);
-	} else {
+	if (strFamily.empty())
 		strFamily = "unknown";
-		lenFamily = strFamily.length();
-	}
 
-	int lenSub;
-	char *p_strSubFamily = nameTable->getString(1, 2, &lenSub);
-	string strSubFamily;
-
-	if (p_strFamily) {
-		strSubFamily = string(p_strSubFamily, lenSub);
-	} else {
+	if (strFamily.empty())
 		strSubFamily = "tt";
-		lenSub = strSubFamily.length();
-	}
 
 	string::iterator i;
 
@@ -455,11 +435,6 @@ TTFont::getXLFDbase(string xlfd_templ)
 
 	for (i = xlfd.begin(); i < xlfd.end(); i++)
 		*i = std::tolower(*i);
-
-	if (p_strFamily)
-		delete p_strFamily;
-	if (p_strSubFamily)
-		delete p_strSubFamily;
 
 	debug("xlfd = \"%s\"\n", xlfd.c_str());
 

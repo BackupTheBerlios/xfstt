@@ -311,7 +311,7 @@ public:
 		NAME_TRADEMARK = 7
 	};
 
-	char *getString(int platformId, int strId, int *len);
+	string getString(int platformId, int strId);
 };
 
 // Font specific flags

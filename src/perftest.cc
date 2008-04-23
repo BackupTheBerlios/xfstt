@@ -2,6 +2,7 @@
  * Test ttf engine performance
  *
  * Copyright (C) 1997-1998 Herbert Duerr
+ * Copyright (C) 2008 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -49,13 +50,15 @@ ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, char *ttdir)
 	DIR *dirp = opendir(".");
 
 	while (dirent *de = readdir(dirp)) {
-		int namelen = strlen(de->d_name);
+		string filename(de->d_name);
+		int namelen = filename.size();
+
 		if (namelen - 4 <= 0) continue;
-		char *ext = &de->d_name[namelen - 4];
-		if (ext[0] != '.') continue;
-		if (tolower(ext[1]) != 't') continue;
-		if (tolower(ext[2]) != 't') continue;
-		if (tolower(ext[3]) != 'f') continue;
+
+		string ext = string(filename, namelen - 4, namelen);
+
+		if (ext != ".ttf")
+			continue;
 
 		struct stat statbuf;
 		stat(de->d_name, &statbuf);

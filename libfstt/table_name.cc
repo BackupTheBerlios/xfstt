@@ -2,6 +2,7 @@
  * Name Table
  *
  * Copyright (C) 1997-1998 Herbert Duerr
+ * Copyright (C) 2008 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,8 +30,8 @@ NameTable::NameTable(RandomAccessFile &f, int offset, int length):
 	strBase = readUShort();		// start of string offset
 }
 
-char *
-NameTable::getString(int pfId, int strId, int *pLen)
+string
+NameTable::getString(int pfId, int strId)
 {
 	// name records
 	seekAbsolute(6);
@@ -63,39 +64,30 @@ NameTable::getString(int pfId, int strId, int *pLen)
 
 		if (platformId == pfId && nameId == strId) {
 			char *p = (char *)base + strBase + strOffset;
-#if 0
-			for (int j = 0; j < strLength; ++j)
-				debug("%c", *(p++));
-			debug("\n");
-#endif
-			*pLen = strLength;
-			p = (char *)base + strBase + strOffset;
 
 			if (p <= (char *)base)
 				return 0;
 			if (p >= (char *)base + getLength())
 				return 0;
 
-			char *str = new char [*pLen];
-			memcpy(str, p, *pLen);
-
-			return str;
+			return string(p, strLength);
 		}
 	}
 
 	// hack to convert unicode -> ascii
 	if (pfId == 1) {
-		const char *p = getString(3, strId, pLen);
+		const string p = getString(3, strId);
 
-		if (!p)
+		if (p.empty())
 			return 0;
 
-		*pLen >>= 1;
-		char *convbuf = new char [*pLen];
-		for (int i = *pLen; --i >= 0;)
-			convbuf[i] = p[2 * i + 1];
+		int len = p.size() >> 1;
 
-		delete p;
+		string convbuf;
+		convbuf.reserve(len);
+
+		for (int i = len; --i >= 0;)
+			convbuf[i] = p[2 * i + 1];
 
 		return convbuf;
 	}

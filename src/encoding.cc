@@ -2,6 +2,7 @@
  * Remap from unicode to other encodings
  *
  * Copyright (C) 1998 Herbert Duerr
+ * Copyright (C) 2008 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +21,6 @@
  */
 
 #include "encoding.h"
-#include <string.h>
 
 // Map box drawing gliphs to 0x00 .. 0x1f for curses based program
 static unsigned short boxtable[32] = {
@@ -33,8 +33,8 @@ static unsigned short boxtable[32] = {
 Encoding *Encoding::first = 0;
 Encoding *Encoding::last = 0;
 
-Encoding::Encoding(const char *mapname):
-	strName(mapname), lenName(strlen(mapname))
+Encoding::Encoding(const string mapname):
+	Name(mapname)
 {
 	if (!first)
 		first = this;
@@ -45,34 +45,49 @@ Encoding::Encoding(const char *mapname):
 	next = 0;
 }
 
+static string
+string_token(string str, string sep, unsigned int &pos)
+{
+	string ret;
+	unsigned int n = str.find_first_of(sep, pos);
+
+	if (n == string::npos) {
+		pos = n;
+	} else {
+		ret = string(str, pos, n - pos);
+		pos = n + 1;
+	}
+
+	return ret;
+}
+
 int
-Encoding::parse(char *mapnames, Encoding **maps0, int maxcodes)
+Encoding::parse(string mapnames, Encoding **maps0, int maxcodes)
 {
 	Encoding **maps = maps0;
 	Encoding *m;
-	char *mapname;
+	string mapname;
+	unsigned int pos = 0;
 
-	mapname = strtok(mapnames, ", ");
-	while (mapname && maps - maps0 < maxcodes) {
+	do {
+		mapname = string_token(mapnames, ", ", pos);
+
 		m = find(mapname);
-		if (m) {
+		if (m)
 			*(maps++) = m;
-			mapname = strtok(NULL, ", ");
-		} else {
-			mapname = strtok(NULL, ", ");
-		}
-	}
+	} while (pos != string::npos && maps - maps0 < maxcodes);
+
 	return (maps - maps0);
 }
 
 // Search the list of encodings for an encoding with the given name.
 Encoding *
-Encoding::find(char *mapname)
+Encoding::find(string mapname)
 {
 	Encoding *m;
 
 	for (m = first; m; m = m->next) {
-		if (!strcmp(mapname, m->strName)) {
+		if (mapname == m->Name) {
 			return m;
 		}
 		if (m == last) {

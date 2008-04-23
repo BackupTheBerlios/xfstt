@@ -163,7 +163,7 @@ usage(int verbose)
 "  --inetd              run as inetd service\n"
 "  --help               show this help message\n"
 "  --version            show the version\n"
-"\n"), default_port, FONTDIR, CACHEDIR, PIDFILE, encodings[0]->strName);
+"\n"), default_port, FONTDIR, CACHEDIR, PIDFILE, encodings[0]->Name.c_str());
 
 	printf(_(
 "Attach to X Server by \"xset fp+ unix/:%i\"\n"
@@ -382,7 +382,7 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 		xlfdExt[8] = proportion;
 		strcpy(buf, xlfdName);
 		strcpy(buf + ttfn->xlfdLen, xlfdExt);
-		strcpy(buf + ttfn->xlfdLen + 12, encodings[mapIndex]->strName);
+		strcpy(buf + ttfn->xlfdLen + 12, encodings[mapIndex]->Name.c_str());
 		if (!encodings[++mapIndex]) mapIndex = 0;
 		*buf0 = strlen(buf);
 		return *buf0 + 1;
@@ -414,8 +414,8 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 	*buf = 0;
 	// XXX: this hack satisfies Mozilla, thanks Andrew Turner
 	if (!strcmp(buf - 4, "-0-0")) {
-		strcpy(buf - 3, encodings[mapIndex]->strName);
-		buf += encodings[mapIndex]->lenName - 3;
+		strcpy(buf - 3, encodings[mapIndex]->Name.c_str());
+		buf += encodings[mapIndex]->Name.size() - 3;
 		if (!encodings[++mapIndex])
 			mapIndex = 0;
 	} else
@@ -741,7 +741,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 	if (!encoding)
 		encoding = encodings[0];
 
-	debug("\nopenXLFD(\"%s\"), %s\n", xlfdName, encoding->strName);
+	debug("\nopenXLFD(\"%s\"), %s\n", xlfdName, encoding->Name.c_str());
 	debug("size %d, resx %d, resy %d\n",
 	      fp->point[0], fp->resolution[0], fp->resolution[1]);
 
@@ -1972,7 +1972,7 @@ main(int argc, char **argv)
 					maps = Encoding::enumerate(maps);
 					if (!maps)
 						exit(0);
-					info("\t%s\n", maps->strName);
+					info("\t%s\n", maps->Name.c_str());
 				}
 			}
 		} else if (!strcmp(argv[i], "--help")) {

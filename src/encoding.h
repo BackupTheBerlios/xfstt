@@ -22,21 +22,24 @@
 #ifndef ENCODING_H
 #define ENCODING_H
 
+#include <string>
+
+using std::string;
+
 class Encoding {
 public:
 	virtual ~Encoding() {}
 	virtual int map2unicode(int code) = 0;
 	virtual int hasGlyphs(int /*unicodeRange*/[4]) { return 1; }
 	static void getDefault(Encoding **maps, int maxcodes);
-	static int parse(char *mapnames, Encoding **maps, int maxcodes);
-	static Encoding *find(char *mapname);
+	static int parse(string mapnames, Encoding **maps, int maxcodes);
+	static Encoding *find(string mapname);
 	static Encoding *enumerate(Encoding *iterator);
 
-	const char *strName;
-	const int lenName;
+	const string Name;
 
 protected:
-	Encoding(const char *name);
+	Encoding(const string name);
 
 private:
 	static Encoding *first, *last;
