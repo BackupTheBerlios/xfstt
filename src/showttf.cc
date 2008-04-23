@@ -178,7 +178,7 @@ main(int argc, char** argv)
 		return -1;
 	}
 
-	char *ttFileName = (argc == 2) ? argv[1] : (char *)DEFAULT_FONT;
+	char *ttFileName = (argc == 2) ? argv[1] : DEFAULT_FONT;
 
 	pixmap = new u8_t[1024 * 1024];
 
