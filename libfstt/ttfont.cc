@@ -392,6 +392,7 @@ TTFont::write2File(char *filename)
 
 
 #include <cctype>
+#include <algorithm>
 
 // result has to be preset with the category name "-category-",
 // returns "-category-family-weight-slant-setwidth-TT-"
@@ -412,14 +413,8 @@ TTFont::getXLFDbase(string xlfd_templ)
 	if (strFamily.empty())
 		strSubFamily = "tt";
 
-	string::iterator i;
-
-	for (i = strFamily.begin(); i < strFamily.end(); i++)
-		if (*i == '-')
-			*i = ' ';
-	for (i = strSubFamily.begin(); i < strSubFamily.end(); i++)
-		if (*i == '-')
-			*i = ' ';
+	std::replace(strFamily.begin(), strFamily.end(), '-', ' ');
+	std::replace(strSubFamily.begin(), strSubFamily.end(), '-', ' ');
 
 	string xlfd = xlfd_templ + '-' + strFamily;
 
@@ -433,8 +428,7 @@ TTFont::getXLFDbase(string xlfd_templ)
 
 	xlfd += "-normal-" + strSubFamily + '-';
 
-	for (i = xlfd.begin(); i < xlfd.end(); i++)
-		*i = std::tolower(*i);
+	std::transform(xlfd.begin(), xlfd.end(), xlfd.begin(), std::tolower);
 
 	debug("xlfd = \"%s\"\n", xlfd.c_str());
 
