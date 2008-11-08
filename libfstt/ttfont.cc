@@ -394,6 +394,12 @@ TTFont::write2File(char *filename)
 #include <cctype>
 #include <algorithm>
 
+static char
+char_tolower(const char c)
+{
+	return std::tolower(c);
+}
+
 // result has to be preset with the category name "-category-",
 // returns "-category-family-weight-slant-setwidth-TT-"
 // XXX: "pixelsize-pointsize-xres-yres-spacing-avgwidth-charset-encoding"
@@ -428,7 +434,7 @@ TTFont::getXLFDbase(string xlfd_templ)
 
 	xlfd += "-normal-" + strSubFamily + '-';
 
-	std::transform(xlfd.begin(), xlfd.end(), xlfd.begin(), std::tolower);
+	std::transform(xlfd.begin(), xlfd.end(), xlfd.begin(), char_tolower);
 
 	debug("xlfd = \"%s\"\n", xlfd.c_str());
 
