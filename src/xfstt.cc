@@ -1180,7 +1180,7 @@ fs_client_error(fs_client &client, int error)
 }
 
 static int
-fs_check_length(fs_client &client, int expected_size)
+fs_check_size(fs_client &client, int expected_size)
 {
 	fsReq *fsreq = (fsReq *)client.buf;
 	int size = fsreq->length << 2;
@@ -1220,29 +1220,29 @@ fs_working(fs_client &client, Rasterizer *raster)
 #endif
 
 		fsReq *fsreq = (fsReq *)client.buf;
-		int length = fsreq->length << 2;
-		if (length > MAXREQSIZE) {
+		int size = fsreq->length << 2;
+		if (size > MAXREQSIZE) {
 			debug("too much data: %d bytes (max=%d)\n",
-			      length, MAXREQSIZE);
+			      size, MAXREQSIZE);
 			fs_client_error(client, FSBadLength);
 			break;
 		}
 
-		for (; l < length; l += i) {
-			i = read(client.sd, client.buf + l, length - l);
+		for (; l < size; l += i) {
+			i = read(client.sd, client.buf + l, size - l);
 			if (i <= 0)
 				return i;
 		}
 
 #ifdef DEBUG
-		for (i = sz_fsReq; i < length; ++i) {
+		for (i = sz_fsReq; i < size; ++i) {
 			debug("%02X ", client.buf[i]);
 			if ((i & 3) == 3)
 				debug(" ");
 			if ((i & 15) == (15 - sz_fsReq))
 				debug("\n");
 		}
-		debug("\n===ENDREQ============= %d\n", length);
+		debug("\n===ENDREQ============= %d\n", size);
 		sync();
 #endif
 
@@ -1378,7 +1378,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			int expected_size = numres * sz_fsResolution
 					    + sz_fsSetResolutionReq;
 
-			if (!fs_check_length(client, expected_size))
+			if (!fs_check_size(client, expected_size))
 				break;
 
 			fsResolution *res = (fsResolution *)(req + 1);
@@ -1427,7 +1427,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			char *pattern = (char *)(req + 1);
 			int expected_size = sz_fsListFontsReq + req->nbytes;
 
-			if (!fs_check_length(client, expected_size))
+			if (!fs_check_size(client, expected_size))
 				break;
 
 			pattern[req->nbytes] = 0;
@@ -1641,7 +1641,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			int expected_size = sz_fsQueryXExtents8Req
 				            + req->num_ranges * item_size;
 
-			if (!fs_check_length(client, expected_size))
+			if (!fs_check_size(client, expected_size))
 				break;
 
 			if (req->reqType == FS_QueryXExtents8) {
@@ -1739,7 +1739,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			int expected_size = sz_fsQueryXBitmaps8Req
 					    + req->num_ranges * item_size;
 
-			if (!fs_check_length(client, expected_size))
+			if (!fs_check_size(client, expected_size))
 				break;
 
 			if (req->reqType == FS_QueryXBitmaps8) {
