@@ -1183,10 +1183,11 @@ static int
 fs_check_length(fs_client &client, int expected_size)
 {
 	fsReq *fsreq = (fsReq *)client.buf;
+	int size = fsreq->length << 2;
 
-	if (fsreq->length < (expected_size >> 2)) {
+	if (size < expected_size) {
 		debug("packet size mismatch: %d received bytes, "
-		      "%d expected bytes\n", fsreq->length << 2, expected_size);
+		      "%d expected bytes\n", size, expected_size);
 		fs_client_error(client, FSBadLength);
 		return 0;
 	} else {
