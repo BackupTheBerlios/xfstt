@@ -115,7 +115,10 @@ struct fs_client {
 	int sd;
 	int seqno;
 	int event_mask;
-	u8_t buf[MAXREQSIZE + 256];
+	union {
+		fsReq req;
+		u8_t buf[MAXREQSIZE + 256];
+	};
 	char *replybuf;
 };
 
@@ -1182,8 +1185,7 @@ fs_client_error(fs_client &client, int error)
 static int
 fs_check_size(fs_client &client, int expected_size)
 {
-	fsReq *fsreq = (fsReq *)client.buf;
-	int size = fsreq->length << 2;
+	int size = client.req.length << 2;
 
 	if (size < expected_size) {
 		debug("packet size mismatch: %d received bytes, "
@@ -1219,8 +1221,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		sync();
 #endif
 
-		fsReq *fsreq = (fsReq *)client.buf;
-		int size = fsreq->length << 2;
+		int size = client.req.length << 2;
 		if (size > MAXREQSIZE) {
 			debug("too much data: %d bytes (max=%d)\n",
 			      size, MAXREQSIZE);
@@ -1246,7 +1247,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		sync();
 #endif
 
-		switch (fsreq->reqType) {
+		switch (client.req.reqType) {
 		case FS_Noop:
 			debug("FS_Noop\n");
 			break;
@@ -1864,7 +1865,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			break;
 
 		default:
-			debug("Unknown FS request 0x%02X !\n", fsreq->reqType);
+			debug("Unknown FS request 0x%02X !\n", client.req.reqType);
 			{
 			fsRequestError reply;
 			reply.type = FS_Error;
@@ -1872,8 +1873,8 @@ fs_working(fs_client &client, Rasterizer *raster)
 			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
 			reply.timestamp = 0;
-			reply.major_opcode = fsreq->reqType;
-			reply.minor_opcode = fsreq->data;
+			reply.major_opcode = client.req.reqType;
+			reply.minor_opcode = client.req.data;
 
 			write(client.sd, (void *)&reply, sizeof(reply));
 			}
