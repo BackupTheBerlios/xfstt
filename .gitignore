@@ -2,6 +2,7 @@
 ABOUT-NLS
 Makefile
 Makefile.in
+autom4te.cache
 aclocal.m4
 configure
 config
