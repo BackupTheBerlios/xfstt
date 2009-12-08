@@ -15,5 +15,5 @@ edit = sed \
 	-e 's,@localstatedir\@,$(localstatedir),g'
 
 xfstt.1x: Makefile $(srcdir)/xfstt.1x.in
-	$(edit) $(srcdir)/xfstt.1x.in > $@
+	$(AM_V_GEN) $(edit) $(srcdir)/xfstt.1x.in > $@
 
