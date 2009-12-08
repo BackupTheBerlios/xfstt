@@ -32,18 +32,19 @@
 
 // environment specific
 
-#ifdef __i386__
-#  define MSB_BYTE_FIRST	0	// MSB=1, LSB=0
-#  define MSB_BIT_FIRST		0	// MSB=2, LSB=0
-#  define FSBYTEORDER		'l'	// 'l' little endian, 'B' big endian
-#  define LOGSLP		5	// default SCANLINEPAD is 32bits = 1<<5
-					// change it to 3 for some font clients
-#else
+#ifdef WORDS_BIGENDIAN
 #  define MSB_BYTE_FIRST	1
 #  define MSB_BIT_FIRST		2
 #  define FSBYTEORDER		'B'
-#  define LOGSLP		5
+#else
+#  define MSB_BYTE_FIRST	0
+#  define MSB_BIT_FIRST		0
+#  define FSBYTEORDER		'l'
 #endif
+
+// default SCANLINEPAD is 32bits = 1<<5
+// change it to 3 for some font clients
+#  define LOGSLP		5
 
 // architecture specific
 

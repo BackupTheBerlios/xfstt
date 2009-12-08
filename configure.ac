@@ -43,6 +43,7 @@ AC_CHECK_DECL([IPV6_V6ONLY],
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
+AC_C_BIGENDIAN
 AC_TYPE_UID_T
 AC_TYPE_MODE_T
 AC_TYPE_PID_T
