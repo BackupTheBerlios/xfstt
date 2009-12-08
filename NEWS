@@ -1,6 +1,7 @@
 1.8 (git)
 
 	Remove the obsolete --multi option
+	Bump gettext dependency to 0.17
 
 1.7 (2005-11-30)
 
