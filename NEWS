@@ -2,6 +2,7 @@
 
 	Remove the obsolete ‘--multi’ option.
 	Bump gettext dependency to 0.17.
+	Blank unused fields of the fsError struct when sending an error.
 
 1.7 (2005-11-30)
 

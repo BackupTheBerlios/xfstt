@@ -1183,6 +1183,9 @@ fs_client_error(fs_client &client, int error)
 	reply.request = error;
 	reply.sequenceNumber = client.seqno;
 	reply.length = sizeof(reply) >> 2;
+	reply.timestamp = 0;
+	reply.major_opcode = 0;
+	reply.minor_opcode = 0;
 
 	return write(client.sd, (void *)&reply, sizeof(reply));
 }
