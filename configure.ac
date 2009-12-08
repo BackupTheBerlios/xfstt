@@ -5,7 +5,6 @@
 
 AC_INIT([xfstt], [1.7])
 AC_PREREQ([2.53])
-AC_REVISION([$Revision$])
 AC_CONFIG_SRCDIR([src/xfstt.cc])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_HEADERS([config.h])
