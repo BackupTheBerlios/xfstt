@@ -755,8 +755,11 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 		char *xlfd = file + ttfn->pathLen + 1;
 		char *p = xlfdName;
 		for (; *p; ++p, ++xlfd) {
-			if (*p == '*')
-				for (++p; *xlfd != *p; ++xlfd);
+			if (*p == '*') {
+				++p;
+				while (*xlfd != *p)
+					++xlfd;
+			}
 			if (*p != *xlfd) break;
 		}
 		if (*p == 0 && *xlfd == 0) {
