@@ -316,7 +316,8 @@ TTFont::getGlyphWidth(int mppemx, int glyphNo)
 
 // verify on reference implementation
 int
-TTFont::patchGlyphCode(GlyphTable *g, int glyphNo)
+TTFont::patchGlyphCode(GlyphTable *g XFSTT_ATTR_UNUSED,
+                       int glyphNo XFSTT_ATTR_UNUSED)
 {
 	return 0;
 }

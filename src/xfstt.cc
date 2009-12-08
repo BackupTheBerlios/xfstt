@@ -1891,7 +1891,7 @@ fs_working(fs_client &client, Rasterizer *raster)
  * possibly a better (more robust) signal handler could be written - sjc
  */
 void
-delPIDfile(int signal)
+delPIDfile(int signal XFSTT_ATTR_UNUSED)
 {
 	unlink(pidfilename);
 	if (sockname) {

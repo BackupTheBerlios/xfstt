@@ -22,6 +22,14 @@
 #ifndef LIBFSTT_ARCH_H
 #define LIBFSTT_ARCH_H
 
+// Compiler support
+
+#ifdef __GNUC__
+#define XFSTT_ATTR_UNUSED	__attribute__((unused))
+#else
+#define XFSTT_ATTR_UNUSED
+#endif
+
 // environment specific
 
 #ifdef __i386__

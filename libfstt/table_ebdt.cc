@@ -28,7 +28,8 @@ EbdtTable::EbdtTable(RandomAccessFile &f, int offset, int length):
 }
 
 int
-EbdtTable::readBitmap(int format, u8_t *bitmap, GlyphMetrics *gm)
+EbdtTable::readBitmap(int format, u8_t *bitmap,
+                      GlyphMetrics *gm XFSTT_ATTR_UNUSED)
 {
 	int height, width;
 	int hBearX, hBearY;

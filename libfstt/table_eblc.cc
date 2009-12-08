@@ -32,7 +32,9 @@ EblcTable::EblcTable(RandomAccessFile &f, int offset, int length):
 }
 
 void
-EblcTable::readStrike(int glyphNo, int _ppemx, int _ppemy)
+EblcTable::readStrike(int glyphNo,
+                      int _ppemx XFSTT_ATTR_UNUSED,
+                      int _ppemy XFSTT_ATTR_UNUSED)
 {
 	int strikeOfs = readUInt();
 	/* strikeSize = */ readUInt();
@@ -85,7 +87,7 @@ EblcTable::readStrike(int glyphNo, int _ppemx, int _ppemy)
 }
 
 void
-EblcTable::readSubTableArray(int glyphNo, int ofsSTA)
+EblcTable::readSubTableArray(int glyphNo XFSTT_ATTR_UNUSED, int ofsSTA)
 {
 	int firstGlyph = readUShort();
 	int lastGlyph = readUShort();

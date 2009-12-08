@@ -49,7 +49,7 @@ shrinkMem(void *ptr, int newsize)
 }
 
 void
-deallocMem(void *ptr, int size)
+deallocMem(void *ptr, int size XFSTT_ATTR_UNUSED)
 {
 	free(ptr);
 }
