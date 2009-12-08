@@ -45,7 +45,7 @@
 using std::string;
 
 #ifndef DEBUG
-#  define debug(format, ...)
+#  define debug(format, ...)	while (0) { }
 #  define STATIC static
 #else
 #  define debug(format, ...)	fprintf(stderr, format, ##__VA_ARGS__)
