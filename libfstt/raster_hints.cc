@@ -969,7 +969,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		if (opc & 0x10)
 			gs.rp0 = gs.rp2;
 		debug("\nmdrp1.wanted = %d", n);
-		if (opc & 0x08)
+		if (opc & 0x08) {
 			if (n >= 0) {
 				if (n < +gs.min_distance)
 					n = +gs.min_distance;
@@ -977,6 +977,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 				if (n > -gs.min_distance)
 					n = -gs.min_distance;
 			}
+		}
 		if (opc & 0x04)
 			n = round(n);
 		debug("\nmdrp2.wanted = %d", n);
