@@ -20,6 +20,8 @@
  *
  */
 
+#include "config.h"
+
 #define MAXFONTBUFSIZE (2048*2048)
 
 #include "ttf.h"

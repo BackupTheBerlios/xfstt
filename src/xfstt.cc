@@ -21,6 +21,8 @@
  *
  */
 
+#include "config.h"
+
 /* the unstrap limit is set to 10500 characters in order to limit
  * getextent replies to (10500|255)*24Bytes < 256kBytes;
  * if you are sure your X11 server doesn't request more
@@ -36,8 +38,6 @@
 #define MAXFONTBUFSIZE	(1 << 24)
 #define MINFONTBUFSIZE	(1 << 18)
 
-
-#include "config.h"
 #include "gettext.h"
 #include <locale.h>
 #define _(str) gettext(str)

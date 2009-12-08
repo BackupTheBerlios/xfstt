@@ -35,12 +35,13 @@
  *
  */
 
-#include "arch.h"
 #include "config.h"
 
 #include <stdio.h>
 #include <assert.h>
 #include <string>
+
+#include "arch.h"
 
 using std::string;
 

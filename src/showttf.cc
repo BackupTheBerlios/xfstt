@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #define STARTGLYF	6
 #define DEFAULT_FONT	"times.ttf"
 
