@@ -1,34 +1,34 @@
 1.8 (git)
 
-	Remove the obsolete --multi option
-	Bump gettext dependency to 0.17
+	Remove the obsolete ‘--multi’ option.
+	Bump gettext dependency to 0.17.
 
 1.7 (2005-11-30)
 
-	Made gettext external
-	Use autoreconf instead of autogen.sh
-	Changed mail address
-	Generate the manpage at build time, to use variable paths and version
-	Remove win32 obsolete code
-	Use new error, warning and info functions
-	Changed some data types names
-	Fix hyphen used as minus sign in manpage
-	Fix build failure on Irix with gcc 3.2 (Thanks to Dirk Tilger)
-	Add IPv6 support
-	Update FSF's address
+	Made gettext external.
+	Use autoreconf instead of ‘autogen.sh’.
+	Changed mail address.
+	Generate the manpage at build time, to use variable paths and version.
+	Remove win32 obsolete code.
+	Use new error, warning and info functions.
+	Changed some data types names.
+	Fix hyphen used as minus sign in manpage.
+	Fix build failure on Irix with gcc 3.2 (thanks to Dirk Tilger).
+	Add IPv6 support.
+	Update FSF's address.
 
 1.6 (2003-08-07)
 
-	Fixed ttSyncAll only looking at fontdir subdirectories
-	Added more robust checking for cachedir
-	Removed a constant path size limitation (for the Hurd)
-	Fixed a typo in "syncing"
-	Minor indentation fixes
-	Started the transition to using C++ strings
+	Fixed ttSyncAll only looking at fontdir subdirectories.
+	Added more robust checking for cachedir.
+	Removed a constant path size limitation (for the Hurd).
+	Fixed a typo in “syncing”.
+	Minor indentation fixes.
+	Started the transition to using C++ strings.
 	Changed the libfstt API:
-	  Fixed multiple memory leakages
-	  The member getString doesn't need the conversion buffer anymore
-	Fixed the output format of --gslist
+	 · Fixed multiple memory leakages.
+	 · The member getString doesn't need the conversion buffer anymore.
+	Fixed the output format of ‘--gslist’.
 
 1.5.1 (2003-07-31)
 
@@ -41,221 +41,220 @@
 	Fixed multiple buffer overflows in the network packet handling code:
 	  CAN-2003-0581
 
-	New encoding: iso8859-14
-	Moved hardcoded dir locations to configure space
-	Mkdir the fontdir and cachedir in the make install target
-	Improve error messages when cachedir does not exist
-	Remove --gslist dependency on order of arguments
-	Replaced dprintfN with a debug function
-	Cleaned the debugging output
-	Indentation and minor source cosmetic changes
-	Updated to gettext 0.12.1, version 0.11.5 was buggy
+	New encoding: ‘iso8859-14’.
+	Moved hardcoded dir locations to configure space.
+	Mkdir the fontdir and cachedir in the make install target.
+	Improve error messages when cachedir does not exist.
+	Remove ‘--gslist’ dependency on order of arguments.
+	Replaced dprintfN with a debug function.
+	Cleaned the debugging output.
+	Indentation and minor source cosmetic changes.
+	Updated to gettext 0.12.1, version 0.11.5 was buggy.
 
-	Added a System V init file example
-	Cleaned the examples in doc/examples: font.properties, test.sh
-	Updated the documentation: doc/FAQ, INSTALL, THANKS, TODO, xfstt.1x
+	Added a System V init file example.
+	Cleaned the examples in doc/examples: ‘font.properties’, ‘test.sh’.
+	Updated the documentation: doc/FAQ, INSTALL, THANKS, TODO, xfstt.1x.
 
 1.4 (2002-11-19)
 
-	Autoconfiscated
-	Initial i18n support
-	Switched from flat to deep hierarchy
-	Split library code
-	Renamed source files
-	  Changed all .cpp extensions to .cc
-	  All *.cc *.h file names to lower case
-	  *table.cc -> table_*.cc
-	  raster*.cc -> raster_*.cc
-	Added header recursive inclusion protection
-	Added LGPL notice to all source files
-	Changed ### to XXX. To search for problems: XXX, FIXME, TODO
-	Changed indentation
+	Autoconfiscated.
+	Initial i18n support.
+	Switched from flat to deep hierarchy.
+	Split library code.
+	Renamed source files:
+	 · Changed all ‘.cpp’ extensions to ‘.cc’.
+	 · All ‘*.cc’ and ‘*.h’ file names to lower case.
+	 · *table.cc → table_*.cc
+	 · raster*.cc → raster_*.cc
+	Added header recursive inclusion protection.
+	Added LGPL notice to all source files.
+	Changed ### to XXX. To search for problems: XXX, FIXME, TODO.
+	Changed indentation.
 
-	Fixed slow down with some programs using FS_ListFontsWithXInfo
-	Fixed childs unlinking unix socket when father uid == childs uid
-	Added an option to specify pidfile location
-	Added endpwent() to prevent leaking one fd
-	Changed usage output
+	Fixed slow down with some programs using FS_ListFontsWithXInfo.
+	Fixed childs unlinking unix socket when father uid == childs uid.
+	Added an option to specify pidfile location.
+	Added endpwent() to prevent leaking one fd.
+	Changed usage output.
 
-	Updated INSTALL and README
-	Added a TODO file
-	Added a README in libfstt/
-	Updated LSM
+	Updated INSTALL and README.
+	Added a TODO file.
+	Added a README in libfstt/.
+	Updated LSM.
 
 1.3.1 (2002-09-27)
 
-	Removed slackware and debian directories
-	Removed references in README to packaging dirs
-	Added --cache description to man page
-	Updated all references to current version
-	Corrected LSM
+	Removed slackware and debian directories.
+	Removed references in README to packaging dirs.
+	Added --cache description to man page.
+	Updated all references to current version.
+	Corrected LSM.
 
 1.3 (2002-08-02)
 
-	New Maintainer Guillem Jover <guillem@hadrons.org>
-	Fixed unix socket and its dir permissions
-	Added full path to unix socket address and use sockaddr_un instead
-	Added support for --notcp
-	Removed hard coded limits on path length (needed by the Hurd)
-	Updated man page and FAQ
-	Stripped .txt from THANKS and README file names
-	Renamed tst.sh to test.sh
-	Cleaned Makefile
-	Version is taken from first line of this file
+	New maintainer Guillem Jover <guillem@hadrons.org>.
+	Fixed unix socket and its dir permissions.
+	Added full path to unix socket address and use sockaddr_un instead.
+	Added support for ‘--notcp’.
+	Removed hard coded limits on path length (needed by the Hurd).
+	Updated man page and FAQ.
+	Stripped .txt from THANKS and README file names.
+	Renamed ‘tst.sh’ to ‘test.sh’.
+	Cleaned Makefile.
+	Version is taken from first line of this file.
 
 1.2
 
 	Fixes bug that broke xfstt when using unix domain sockets under
-	linux 2.4 (Thanks you Oliver Su�rez)
+	  linux 2.4 (thanks to Oliver Suárez).
 
-	Fixed bug in realloc() use
-	Added Slackware folder
-	Added Patch for Boxdrawing glyphs
+	Fixed bug in realloc() use.
+	Added Slackware folder.
+	Added Patch for Boxdrawing glyphs.
 
-	New Encodings: iso8859_11 (latin/Thai) and koi8_u
+	New Encodings: ‘iso8859_11’ (latin/Thai) and ‘koi8_u’.
 
-	Now compiles properly under newer versions of gcc
+	Now compiles properly under newer versions of gcc.
 
 1.1 (1999-11-04)
 
-	"The 'oops' release"
-	Fix --encodings works again (oops)
-	Fix memory corruption bug (this was there for a few releases)
-	Still waiting to hear back on a couple of othere
-	(which is why I delayed this one a bit - sorry)
+	The “oops” release.
+	Fix ‘--encodings’ works again (oops).
+	Fix memory corruption bug (this was there for a few releases).
+	Still waiting to hear back on a couple of others (which is why I
+	  delayed this one a bit - sorry).
 
 1.0 (1999-08-16)
 
-	Fix illegal encodings causes xfstt to run away
-	Fix now attempts to unlink unix socket on exit
-	Fix for BSD (was making Zombies - Thanks David Lowe)
-	Changed some types for clean compile
-	Added some Documentation to the FAQ
+	Fix illegal encodings causes xfstt to run away.
+	Fix now attempts to unlink unix socket on exit.
+	Fix for BSD (was making zombies, thanks to David Lowe).
+	Changed some types for clean compile.
+	Added some documentation to the FAQ.
 
 0.9.99 (1999-04-28)
 
-	New Maintainer Stephen Carpenter <sjc@debian.org>
-	Added fix for memory bug
-	Added windows-sami2
-	Port changed to 7101 to avoid xfs conflict
-	Should now be FHS complient (font dir now /usr/share/fonts/truetype)
-	Works with read-only /usr (stores databases in /var)
-	Added "--user" option for security
-	Renamed UNICODE-2 now known as iso10646-1
-	Added encodeing iso8859-15
-	Fixed encoding match bug
+	New maintainer Stephen Carpenter <sjc@debian.org>.
+	Added fix for memory bug.
+	Added ‘windows-sami2’.
+	Port changed to 7101 to avoid xfs conflict.
+	Should now be FHS complient (font dir now «/usr/share/fonts/truetype»).
+	Works with read-only /usr (stores databases in «/var»).
+	Added ‘--user’ option for security.
+	Renamed UNICODE-2 now known as ‘iso10646-1’.
+	Added encodeing ‘iso8859-15’.
+	Fixed encoding match bug.
 
 0.9.10 (1998-10-25)
 
-	Add euro currency symbol to encodings
-	Unmap unused read mmaps
-	Improve memory handling on freebsd
-	Avoid remap on Digital Unix
-	Allow multiple connections
-	Fix "empty glyph" bug
-	Fix "too many encodings" bug
-	Add some encodings
-	Add "--inetd" option
-	Change -tt- in xlfd name to subfamily
+	Add euro currency symbol to encodings.
+	Unmap unused read mmaps.
+	Improve memory handling on freebsd.
+	Avoid remap on Digital Unix.
+	Allow multiple connections.
+	Fix “empty glyph” bug.
+	Fix “too many encodings” bug.
+	Add some encodings.
+	Add ‘--inetd’ option.
+	Change -tt- in xlfd name to subfamily.
 
 0.9.9 (1998-06-01)
 
-	Add some more encodings
-	Use daemon pid file
-	Support mac7 fonts
-	Allow bigger glyphs
-	Shrink preallocated mmaps
+	Add some more encodings.
+	Use daemon pid file.
+	Support ‘mac7’ fonts.
+	Allow bigger glyphs.
+	Shrink preallocated mmaps.
 
 0.9.8 (1998-03-25)
 
-	Fix "staroffice pattern" problem
-	Fix "irix replysize" bug
-	Fix "pretzel crash" bug
-	Add "--encoding" option
-	Add "--dir" option
-	Add "--res" option
-	Add "--gslist" option
+	Fix “staroffice pattern” problem.
+	Fix “irix replysize” bug.
+	Fix “pretzel crash” bug.
+	Add ‘--encoding’ option.
+	Add ‘--dir’ option.
+	Add ‘--res’ option.
+	Add ‘--gslist’ option.
 
 0.9.7 (1998-02-16)
 
-	Fix "nround" bug
-	Fix "hdmx xxexp" bug
-	Fix "huge bitmaps" problem
-	Redo "multi inet" fix for bad socket implementations
+	Fix “nround” bug.
+	Fix “hdmx xxexp” bug.
+	Fix “huge bitmaps” problem.
+	Redo “multi inet” fix for bad socket implementations.
 
 0.9.6
 
-	Avoid anon mmaps for freebsd
-	Fix "dash in fontname" bug
-	Fix "multi inet" bug
-	Fix "comic cvt" bug
-	Solve pointsize/pixelsize conflicts
-	Finish "instctrl" cmd
-	Change "listFontsWithXInfo" to v2 protocol
+	Avoid anon mmaps for FreeBSD.
+	Fix “dash in fontname” bug.
+	Fix “multi inet” bug.
+	Fix “comic cvt” bug.
+	Solve pointsize/pixelsize conflicts.
+	Finish “instctrl” cmd.
+	Change “listFontsWithXInfo” to v2 protocol.
 
 0.9.5
 
-	Fix "fstobdf" bug
-	Fix "scanlinepad != 32" bug
-	Fix some bitmap byte order issues
-	Fix "huge fontlist" bug
-	Fix "flip region" bug
-	Improve "--unstrap" behaviour
-	Add "--port" option
-	Add "--once" option
-	Change default to --multi
+	Fix “fstobdf” bug.
+	Fix “scanlinepad != 32” bug.
+	Fix some bitmap byte order issues.
+	Fix “huge fontlist” bug.
+	Fix “flip region” bug.
+	Improve ‘--unstrap’ behaviour.
+	Add ‘--port’ option.
+	Add ‘--once’ option.
+	Change default to ‘--multi’.
 
 0.9.4
 
-	Fix "listFontsWithXInfo" bug
-	Fix "overlapping contours" bug
-	Fix "big endian request length" bug
-	Fix "unicode" bug
-	Streamline hint engine
-	Add "--version" option
+	Fix “listFontsWithXInfo” bug.
+	Fix “overlapping contours” bug.
+	Fix “big endian request length” bug.
+	Fix “unicode” bug.
+	Streamline hint engine.
+	Add ‘--version’ option.
 
 0.9.3
 
-	Improve composite glyph metrics
-	Fix "algerian" bug
-	Simplify drawing
+	Improve composite glyph metrics.
+	Fix “algerian” bug.
+	Simplify drawing.
 
 0.9.2
 
-	Add "--unstrap" option
+	Add ‘--unstrap’ option.
 
 0.9.1
 
-	Remove need to always bit/byte swap to satisfy font client
-	Add monospace signature to XLFD names if appropriate
-	Codepage patch for navigator 4
-	Add "--multi" option
+	Remove need to always bit/byte swap to satisfy font client.
+	Add monospace signature to XLFD names if appropriate.
+	Codepage patch for navigator 4.
+	Add ‘--multi’ option.
 
 0.9.0
 
-	Change composite glyph handling
-	Scan line converter algorithm cleanup
-	Fix handling of FS protocol range requests
+	Change composite glyph handling.
+	Scan line converter algorithm cleanup.
+	Fix handling of FS protocol range requests.
 
 0.1.5
 
-	Bugfixes only
+	Bugfixes only.
 
 0.1.1
 
-	Bugfixes only
+	Bugfixes only.
 
 0.1.0
 
-	Change scan line converter algorithm for much improved font quality
+	Change scan line converter algorithm for much improved font quality.
 
 0.0.2
 
-	Add XLFD support
-	Add inet protocol for connecting to X11 server
-	Move byte reordering from engine to font serving layer
+	Add XLFD support.
+	Add inet protocol for connecting to X11 server.
+	Move byte reordering from engine to font serving layer.
 
 0.0.1
 
-	First public code drop
-
+	First public code drop.
