@@ -46,10 +46,10 @@ Encoding::Encoding(const string mapname):
 }
 
 static string
-string_token(string str, string sep, unsigned int &pos)
+string_token(string str, string sep, size_t &pos)
 {
 	string ret;
-	unsigned int n = str.find_first_of(sep, pos);
+	size_t n = str.find_first_of(sep, pos);
 
 	if (n == string::npos) {
 		pos = n;
@@ -67,7 +67,7 @@ Encoding::parse(string mapnames, Encoding **maps0, int maxcodes)
 	Encoding **maps = maps0;
 	Encoding *m;
 	string mapname;
-	unsigned int pos = 0;
+	size_t pos = 0;
 
 	do {
 		mapname = string_token(mapnames, ", ", pos);
