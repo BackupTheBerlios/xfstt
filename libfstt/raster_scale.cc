@@ -65,8 +65,11 @@ Rasterizer::useTTFont(TTFont* _ttFont, int _flags)
 		return;
 	}
 
+	/* XXX */
+#if 0
 	if (ttFont == _ttFont)
-/* XXX:		return*/;
+		return;
+#endif
 
 	ttFont = _ttFont;
 	status = NOT_READY;
