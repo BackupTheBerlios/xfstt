@@ -1503,15 +1503,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			// XXX: write(client.sd, (void *)&reply, sizeof(reply));
 			write(client.sd, (void *)&reply, sizeof(fsGenericReply));
 #else
-			fsImplementationError error;
-			error.type = FS_Error;
-			error.request = FSBadImplementation;
-			error.sequenceNumber = client.seqno;
-			error.length = sizeof(error) >> 2;
-
-			debug(" fsError size = %u bytes, %u ints\n",
-			      sizeof(error), error.length);
-			write(client.sd, (void *)&error, sizeof(error));
+			fs_client_error(client, FSBadImplementation);
 #endif
 			}
 			break;
