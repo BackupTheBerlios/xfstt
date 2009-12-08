@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-TTFont::TTFont(char *fileName, int infoOnly):
+TTFont::TTFont(const char *fileName, int infoOnly):
 	RandomAccessFile(fileName),
 	nameTable(0), headTable(0), maxpTable(0),
 	cmapTable(0), locaTable(0), glyphTable(0),
@@ -378,7 +378,7 @@ TTFont::updateChecksums()
 }
 
 int
-TTFont::write2File(char *filename)
+TTFont::write2File(const char *filename)
 {
 	FILE *fd = fopen(filename, "wb");
 

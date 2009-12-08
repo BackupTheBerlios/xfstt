@@ -72,7 +72,7 @@ private:
 	int	length;
 
 public:
-	RandomAccessFile(char *fileName);
+	RandomAccessFile(const char *fileName);
 	RandomAccessFile(RandomAccessFile &f, int offset, int _length) {
 		length = _length;
 		absbase = f.base;
@@ -270,7 +270,7 @@ public:	// XXX: perftest needs maxpTable
 	Point	*points;
 
 public:
-	TTFont(char *fileName, int infoOnly = 0);
+	TTFont(const char *fileName, int infoOnly = 0);
 	~TTFont();
 
 	int badFont();
@@ -290,7 +290,7 @@ public:
 	int patchGlyphCode(GlyphTable *glyph, int instruction);
 	int checksum(u8_t *buf, int len);
 	void updateChecksums();
-	int write2File(char *filename);
+	int write2File(const char *filename);
 	void patchName(u8_t *patchData, int patchLength);
 };
 

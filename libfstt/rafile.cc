@@ -169,7 +169,7 @@ operator delete(void *ptr)
 #endif /* MEMDEBUG */
 
 
-RandomAccessFile::RandomAccessFile(char *fileName)
+RandomAccessFile::RandomAccessFile(const char *fileName)
 {
 	int fd = open(fileName, O_RDONLY);
 	if (fd <= 0) {
