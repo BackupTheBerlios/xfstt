@@ -27,7 +27,7 @@ CmapTable::CmapTable(RandomAccessFile &f, int offset, int length):
 	format(-1), subtableOffset(0)
 {
 	/* version = */ readUShort();
-	s16_t nSubTables = readSShort();
+	int16_t nSubTables = readSShort();
 
 	for (int i = nSubTables; --i >= 0;) {
 		/* platformID = */ readUShort();
@@ -86,7 +86,7 @@ CmapTable::char2glyphNo(char char8)
 }
 
 int
-CmapTable::unicode2glyphNo(u16_t unicode)
+CmapTable::unicode2glyphNo(uint16_t unicode)
 {
 	if (format == -1)
 		return 0;
@@ -123,7 +123,7 @@ CmapTable::unicode2glyphNo(u16_t unicode)
 	// check corresponding startCount
 	int ofs = subtableOffset + 16 + (f4NSegments << 1) + (lower << 1);
 	seekAbsolute(ofs);
-	u16_t startCount = readUShort();
+	uint16_t startCount = readUShort();
 	if (unicode < startCount)
 		return 0;
 
@@ -133,7 +133,7 @@ CmapTable::unicode2glyphNo(u16_t unicode)
 
 	// get idRangeOffset
 	seekAbsolute(ofs += (f4NSegments << 1));
-	u16_t idRangeOffset = readUShort();
+	uint16_t idRangeOffset = readUShort();
 
 	// calculate GlyphIndex
 	if (idRangeOffset == 0)
@@ -143,8 +143,8 @@ CmapTable::unicode2glyphNo(u16_t unicode)
 	return readUShort();
 }
 
-u16_t
-CmapTable::nextUnicode(u16_t unicode)
+uint16_t
+CmapTable::nextUnicode(uint16_t unicode)
 {
 	++unicode;
 
@@ -186,7 +186,7 @@ CmapTable::nextUnicode(u16_t unicode)
 	return unicode;
 }
 
-u16_t
+uint16_t
 CmapTable::firstUnicode()
 {
 	if (format == -1)
@@ -197,12 +197,12 @@ CmapTable::firstUnicode()
 		return f6FirstCode;
 
 	seekAbsolute(subtableOffset + 16 + (f4NSegments << 1));
-	u16_t i = readUShort();
+	uint16_t i = readUShort();
 	debug("First Unicode = %d\n", i);
 	return i;
 }
 
-u16_t
+uint16_t
 CmapTable::lastUnicode()
 {
 	if (format == -1)
@@ -213,7 +213,7 @@ CmapTable::lastUnicode()
 		return f6FirstCode + f6EntryCount - 1;
 
 	seekAbsolute(subtableOffset + 14 + ((f4NSegments - 2) << 1));
-	u16_t i = readUShort();
+	uint16_t i = readUShort();
 	debug("Last Unicode = %d\n", i);
 	return i;
 }

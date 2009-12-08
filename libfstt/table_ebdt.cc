@@ -28,7 +28,7 @@ EbdtTable::EbdtTable(RandomAccessFile &f, int offset, int length):
 }
 
 int
-EbdtTable::readBitmap(int format, u8_t *bitmap,
+EbdtTable::readBitmap(int format, uint8_t *bitmap,
                       GlyphMetrics *gm XFSTT_ATTR_UNUSED)
 {
 	int height, width;
@@ -76,7 +76,7 @@ EbdtTable::readBitmap(int format, u8_t *bitmap,
 		//memcpy(bitmap, tellAbs(), height * ((width + 7) >> 3));
 		{
 			int len = height * ((width + 7) >> 3);
-			for (u8_t *p = bitmap; --len >= 0; ++p)
+			for (uint8_t *p = bitmap; --len >= 0; ++p)
 				*p = readUByte();
 		}
 		break;

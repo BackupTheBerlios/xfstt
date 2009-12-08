@@ -51,7 +51,7 @@
 // panose[9]	= bXHeight
 
 typedef struct {
-	u8_t	nameLen;
+	uint8_t	nameLen;
 	char	magic[2];		// magic == "TT"
 	char	charset;		// U=unicode, A=ascii, S=symbol
 	char	panoseMagic;		// 'P'

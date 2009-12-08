@@ -180,7 +180,7 @@ RandomAccessFile::RandomAccessFile(const char *fileName)
 	struct stat st;
 	fstat(fd, &st);
 	length = st.st_size;
-	base = (u8_t *)mmap(0L, length, PROT_READ, MAP_SHARED, fd, 0L);
+	base = (uint8_t *)mmap(0L, length, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
 	ptr = absbase = base;
 }
@@ -193,11 +193,11 @@ RandomAccessFile::closeRAFile()
 	}
 }
 
-u32_t
+uint32_t
 RandomAccessFile::calcChecksum()
 {
-	u32_t checksum = 0;
-	u8_t *saveptr = ptr;
+	uint32_t checksum = 0;
+	uint8_t *saveptr = ptr;
 
 	for (int len = length >> 2; --len >= 0;)
 		checksum += readUInt();

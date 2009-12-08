@@ -130,7 +130,7 @@ main(int argc, char **argv)
 
 	FontExtent fe;
 	fe.buflen = MAXFONTBUFSIZE;
-	fe.buffer = (u8_t *)allocMem(fe.buflen);
+	fe.buffer = (uint8_t *)allocMem(fe.buflen);
 
 	Rasterizer raster;
 

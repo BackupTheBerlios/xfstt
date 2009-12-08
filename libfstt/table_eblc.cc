@@ -39,7 +39,7 @@ EblcTable::readStrike(int glyphNo,
 	int strikeOfs = readUInt();
 	/* strikeSize = */ readUInt();
 	int strikeNum = readUInt();
-	/* u32_t colorRef = */ readUInt();	// should be 0
+	/* uint32_t colorRef = */ readUInt();	// should be 0
 
 	// horizontal sbit metrics
 	/* ascend = */ readSByte();

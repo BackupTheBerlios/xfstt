@@ -19,11 +19,10 @@
 
 #include "config.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-
-typedef unsigned char u8_t;
 
 void
 usage()
@@ -34,12 +33,12 @@ usage()
 }
 
 int
-checksum(u8_t *buf, int len)
+checksum(uint8_t *buf, int len)
 {
 	len = (len + 3) >> 2;
 	int sum = 0;
 
-	for (u8_t *p = buf; --len >= 0; p += 4) {
+	for (uint8_t *p = buf; --len >= 0; p += 4) {
 		int val = (p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3];
 		sum += val;
 	}
@@ -70,7 +69,7 @@ patchttf(int argc, char **argv)
 	struct stat st;
 	stat(inTTname, &st);
 	int flen = st.st_size;
-	u8_t *buf = new u8_t[flen + 3];
+	uint8_t *buf = new uint8_t[flen + 3];
 	for (int ibuf = 0; ibuf < 3; ++ibuf)
 		buf[flen + ibuf] = 0;
 	printf("TTFsize = %d\n", flen);
@@ -101,7 +100,7 @@ patchttf(int argc, char **argv)
 			return -i;
 		for (p += 2; *p; ++p, ++addr) {
 			int c = *p | 0x20;
-			u8_t nhex = (c > '9') ? c - 'a' + 10 : c - '0';
+			uint8_t nhex = (c > '9') ? c - 'a' + 10 : c - '0';
 			c = *++p | 0x20;
 			nhex <<= 4;
 			nhex |= (c > '9') ? c - 'a' + 10 : c - '0';
@@ -116,18 +115,18 @@ patchttf(int argc, char **argv)
 	// update the checksums
 	int nTables = (buf[4] << 8) + buf[5];
 	//printf("nTables = %d\n", nTables);
-	u8_t *headTable = 0;
+	uint8_t *headTable = 0;
 	for (int iTable = 0; iTable < nTables; ++iTable) {
-		u8_t *b = &buf[12 + iTable * 16];
+		uint8_t *b = &buf[12 + iTable * 16];
 		int name = (b[0] << 24) + (b[1] << 16) + (b[2] << 8) + b[3];
 		int offset = (b[8] << 24) + (b[9] << 16) + (b[10] << 8) + b[11];
 		int length = (b[12] << 24) + (b[13] << 16) + (b[14] << 8) + b[15];
 		//printf("offset = %08X, length = %08X\n", offset, length);
 		int check = checksum(buf + offset, length);
-		b[4] = (u8_t) (check >> 24);
-		b[5] = (u8_t) (check >> 16);
-		b[6] = (u8_t) (check >> 8);
-		b[7] = (u8_t) check;
+		b[4] = (uint8_t)(check >> 24);
+		b[5] = (uint8_t)(check >> 16);
+		b[6] = (uint8_t)(check >> 8);
+		b[7] = (uint8_t)check;
 		//printf("checksum[%d] = %08X\n", iTable, check);
 		if (name == 0x68656164) {
 			headTable = buf + offset;
@@ -137,10 +136,10 @@ patchttf(int argc, char **argv)
 
 	int check = checksum(buf, flen) - 0xB1B0AFBA;
 	//printf("csAdjust = %08X\n", check);
-	headTable[8] = (u8_t) (check >> 24);
-	headTable[9] = (u8_t) (check >> 16);
-	headTable[10] = (u8_t) (check >> 8);
-	headTable[11] = (u8_t) check;
+	headTable[8] = (uint8_t)(check >> 24);
+	headTable[9] = (uint8_t)(check >> 16);
+	headTable[10] = (uint8_t)(check >> 8);
+	headTable[11] = (uint8_t)check;
 
 	// write the patched file
 	fp = fopen(outTTname, "wb");

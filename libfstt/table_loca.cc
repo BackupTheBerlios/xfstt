@@ -39,7 +39,7 @@ LocaTable::getGlyphOffset(int glyphNo)
 			ofs = -1;
 	} else {
 		seekAbsolute(glyphNo << 1);
-		u16_t ofs16 = readUShort();
+		uint16_t ofs16 = readUShort();
 		if (ofs16 != readUShort())
 			ofs = ofs16 << 1;
 		else

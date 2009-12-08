@@ -41,13 +41,13 @@ NameTable::getString(int pfId, int strId)
 		// 1: Macintosh
 		// 2: ISO
 		// 3: MS encoding
-		u16_t platformId = readUShort();
+		uint16_t platformId = readUShort();
 
 		// 3.0 undefined charset
 		// 3.1 UGL charset with unicode indexing
-		/* u16_t encodingId = */ readUShort();
+		/* uint16_t encodingId = */ readUShort();
 
-		/* u16_t languageId = */ readUShort();
+		/* uint16_t languageId = */ readUShort();
 
 		// 0: copyright notice
 		// 1: font family
@@ -57,10 +57,10 @@ NameTable::getString(int pfId, int strId)
 		// 5: version
 		// 6: postscript name
 		// 7: trademark notice
-		u16_t nameId = readUShort();
+		uint16_t nameId = readUShort();
 
-		u16_t strLength = readUShort();
-		u16_t strOffset = readUShort();
+		uint16_t strLength = readUShort();
+		uint16_t strOffset = readUShort();
 
 		if (platformId == pfId && nameId == strId) {
 			char *p = (char *)base + strBase + strOffset;

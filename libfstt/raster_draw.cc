@@ -140,7 +140,7 @@ endSort(Dot *l, Dot *r)
 
 // draw ignoring dropout candidates
 static void
-drawHorizontal(u8_t *const bmp, int height, int dX)
+drawHorizontal(uint8_t *const bmp, int height, int dX)
 {
 	for (Dot *p = dots[0] + 1; p < dots0; p += 2) {
 		if (p[1].x - p[0].x < 96)
@@ -178,7 +178,7 @@ drawHorizontal(u8_t *const bmp, int height, int dX)
 
 // draw horizontal dropout candidates
 static void
-drawHDropouts(u8_t *const bmp, int height, int dX)
+drawHDropouts(uint8_t *const bmp, int height, int dX)
 {
 	for (Dot *p = dots[0] + 1; p < dots0; p += 2) {
 		if (p[1].x - p[0].x >= 96 )
@@ -201,7 +201,7 @@ drawHDropouts(u8_t *const bmp, int height, int dX)
 
 // draw vertical dropout candidates
 static void
-drawVDropouts(u8_t *const bmp, int height, int dX)
+drawVDropouts(uint8_t *const bmp, int height, int dX)
 {
 	for (Dot *p = dots[1] + 1; p < dots1; p += 2) {
 		if (p[1].x - p[0].x >= 63)
@@ -216,14 +216,14 @@ drawVDropouts(u8_t *const bmp, int height, int dX)
 		int y = height - ((p[1].x + p[0].x) >> (SHIFT+1));
 		TYPESLP *ptr = (TYPESLP *)&bmp[y * dX];
 		ptr += x >> LOGSLP;
-		hscan &= ~*(TYPESLP *)((u8_t *)ptr - dX);
-		hscan &= ~*(TYPESLP *)((u8_t *)ptr + dX);
+		hscan &= ~*(TYPESLP *)((uint8_t *)ptr - dX);
+		hscan &= ~*(TYPESLP *)((uint8_t *)ptr + dX);
 		*ptr |= hscan;
 	}
 }
 
 void
-Rasterizer::drawBitmap(u8_t *const bmp, int height, int dX)
+Rasterizer::drawBitmap(uint8_t *const bmp, int height, int dX)
 {
 	// sort horizontal/vertical dots
 	debug("dropoutControl = %d\n", gs.dropout_control);
@@ -251,7 +251,7 @@ Rasterizer::drawBitmap(u8_t *const bmp, int height, int dX)
 }
 
 void
-Rasterizer::drawGlyph(u8_t *const bmp, u8_t *const endbmp)
+Rasterizer::drawGlyph(uint8_t *const bmp, uint8_t *const endbmp)
 {
 	if (bmp + length >= endbmp) {
 		length = 0;
@@ -366,19 +366,19 @@ manual_tail_recursion:
 
 // the secrets of "grayscaling technology" ...
 void
-Rasterizer::antiAliasing2(u8_t* bmp)
+Rasterizer::antiAliasing2(uint8_t* bmp)
 {
 	void *buf0 = allocMem(length);
 	memcpy(buf0, bmp, length);
 
-	u8_t *p1 = (u8_t *)buf0;
+	uint8_t *p1 = (uint8_t *)buf0;
 	for (int y = height>>1; --y >= 0; p1 += dX) {
 		for (int x = dX >> (LOGSLP - 3); --x >= 0;) {
 			TYPESLP c1 = *(TYPESLP *)p1;
 			TYPESLP c2 = *(TYPESLP *)(p1 + dX);
 			p1 += 1U << (LOGSLP - 3);
 			for (int i = SCANLINEPAD >> 1; --i >= 0;) {
-				u8_t c3 = (c1 & 1) + (c2 & 1)
+				uint8_t c3 = (c1 & 1) + (c2 & 1)
 					  + (((c1 & 2) + (c2 & 2)) >> 1);
 #if MSB_BIT_FIRST
 				bmp[i] = c3;

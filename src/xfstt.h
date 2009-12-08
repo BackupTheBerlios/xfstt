@@ -26,33 +26,33 @@
 
 typedef struct {
 	int	nameOfs;
-	u8_t	nameLen;
-	u8_t	pathLen;
-	u8_t	xlfdLen;
-	u8_t	pad;
+	uint8_t nameLen;
+	uint8_t pathLen;
+	uint8_t xlfdLen;
+	uint8_t pad;
 
-	u8_t	charSet;
-	u8_t	slant;
+	uint8_t charSet;
+	uint8_t slant;
 
 	// panose attributes
-	u8_t	bFamilyType;
-	u8_t	bSerifStyle;
-	u8_t	bWeight;
-	u8_t	bProportion;
-	u8_t	bContrast;
-	u8_t	bStrokeVariation;
-	u8_t	bArmStyle;
-	u8_t	bLetterForm;
-	u8_t	bMidLine;
-	u8_t	bXHeight;
+	uint8_t bFamilyType;
+	uint8_t bSerifStyle;
+	uint8_t bWeight;
+	uint8_t bProportion;
+	uint8_t bContrast;
+	uint8_t bStrokeVariation;
+	uint8_t bArmStyle;
+	uint8_t bLetterForm;
+	uint8_t bMidLine;
+	uint8_t bXHeight;
 } TTFNdata;
 
 typedef struct {
 	char	magic[4];		// == TTFN
 	char	type[4];		// == INFO or NAME
-	u16_t	version;
-	u16_t	key;
-	u32_t	crc;
+	uint16_t version;
+	uint16_t key;
+	uint32_t crc;
 	//TTFNdata ttfn[];
 } TTFNheader;
 

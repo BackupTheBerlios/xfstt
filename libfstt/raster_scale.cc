@@ -223,14 +223,14 @@ Rasterizer::getFontExtent(FontExtent *fe)
 		dX = (((fe->xBlackboxMax - 1) | ((8 << ~format) - 1)) + 1) >> 3;
 	}
 
-	u32_t buflen = fe->buflen;
-	u8_t *endbmp = fe->buffer + buflen;
+	uint32_t buflen = fe->buflen;
+	uint8_t *endbmp = fe->buffer + buflen;
 
 	CharInfo *ci = (CharInfo *)fe->buffer;
 	fe->bmpFormat = MSB_BIT_FIRST | MSB_BYTE_FIRST;
 	fe->numGlyphs = ttFont->maxpTable->numGlyphs;
-	fe->bitmaps = (u8_t *)&ci[fe->numGlyphs];
-	u8_t *buffer = fe->bitmaps;
+	fe->bitmaps = (uint8_t *)&ci[fe->numGlyphs];
+	uint8_t *buffer = fe->bitmaps;
 	if (buffer >= endbmp) {
 		// XXX: not even enough room for charinfo!!! what to do???
 		return;
@@ -264,7 +264,8 @@ Rasterizer::getFontExtent(FontExtent *fe)
 
 
 int
-Rasterizer::putChar8Bitmap(char c, u8_t *bmp, u8_t *endbmp, GlyphMetrics *gm)
+Rasterizer::putChar8Bitmap(char c, uint8_t *bmp, uint8_t *endbmp,
+                           GlyphMetrics *gm)
 {
 	debug("charNo8 = %d", c);
 	int glyphNo = ttFont->getGlyphNo8(c);
@@ -273,7 +274,8 @@ Rasterizer::putChar8Bitmap(char c, u8_t *bmp, u8_t *endbmp, GlyphMetrics *gm)
 
 
 int
-Rasterizer::putChar16Bitmap(int c, u8_t *bmp, u8_t *endbmp, GlyphMetrics *gm)
+Rasterizer::putChar16Bitmap(int c, uint8_t *bmp, uint8_t *endbmp,
+                            GlyphMetrics *gm)
 {
 	int glyphNo = ttFont->getGlyphNo16(c);
 	debug("charNo16 = %d", c);
@@ -282,7 +284,8 @@ Rasterizer::putChar16Bitmap(int c, u8_t *bmp, u8_t *endbmp, GlyphMetrics *gm)
 
 
 int
-Rasterizer::putGlyphBitmap(int glyphNo, u8_t *bmp, u8_t *endbmp, GlyphMetrics *gm)
+Rasterizer::putGlyphBitmap(int glyphNo, uint8_t *bmp, uint8_t *endbmp,
+                           GlyphMetrics *gm)
 {
 	debug("\n=============== glyphNo %d ==================\n", glyphNo);
 

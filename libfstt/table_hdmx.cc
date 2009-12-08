@@ -40,7 +40,7 @@ HdmxTable::getMaxWidth(int mppemx)
 	// XXX: is it possible to avoid the linear search?
 	int i;
 	for (i = nRecords; --i >= 0; seekRelative(recordLen)) {
-		u8_t ppem = readUByte();
+		uint8_t ppem = readUByte();
 		if (ppem >= mppemx) {
 			int maxWidth = readUByte();
 			if (ppem > mppemx)

@@ -26,7 +26,7 @@ KernTable::KernTable(RandomAccessFile &f, int offset, int length):
 	kernOffset(0)
 {
 	/* version = */ readUShort();
-	s16_t nTables = readSShort();
+	int16_t nTables = readSShort();
 
 	for(; --nTables >= 0; seekRelative(kernLength - 14)) {
 		/* subVersion = */ readUShort();

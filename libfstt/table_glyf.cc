@@ -59,14 +59,14 @@ GlyphTable::getGlyphData(int glyphNo, LocaTable *locaTable, Rasterizer *raster)
 
 	Point *pp = points;
 	for (int iFlags = nPoints; --iFlags >= 0; ++pp) {
-		u8_t flag = readUByte();
+		uint8_t flag = readUByte();
 		if (flag & F_SAME)
 			for (int j = readUByte(); --j >= 0; --iFlags, ++pp)
 				pp->flags = flag;
 		pp->flags = flag;
 	}
 
-	s16_t oldval = 0;
+	int16_t oldval = 0;
 	pp = points;
 	for (int iXpos = nPoints; --iXpos >= 0; ++pp) {
 		switch (pp->flags & (X_SHORT | X_EXT)) {
@@ -117,7 +117,7 @@ int
 GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 				  Rasterizer *raster)
 {
-	u16_t flag;
+	uint16_t flag;
 
 	int sumEndpoints = 0;
 	int sumPoints = 0;

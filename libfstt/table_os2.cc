@@ -24,22 +24,22 @@
 OS2Table::OS2Table(RandomAccessFile &f, int offset, int length):
 	RandomAccessFile(f, offset, length)
 {
-	/* s16_t version =*/ readUShort();
+	/* int16_t version =*/ readUShort();
 	avg_width = readUShort();
 	weightClass = readUShort();
-	/* s16_t usWidthClass = */ readUShort();
-	/* s16_t fsType = */ readUShort();
-	/* s16_t ySubXSize = */ readSShort();
-	/* s16_t ySubYSize = */ readSShort();
-	/* s16_t ySubXOffset = */ readSShort();
-	/* s16_t ySubYOffset = */ readSShort();
-	/* s16_t ySuperXSize = */ readSShort();
-	/* s16_t ySuperYSize = */ readSShort();
-	/* s16_t ySuperXOffset = */ readSShort();
-	/* s16_t ySuperYOffset = */ readSShort();
-	/* s16_t yStrikeoutSize = */ readSShort();
-	/* s16_t yStrikeoutPos = */ readSShort();
-	/* s16_t familyClass = */ readUShort();
+	/* int16_t usWidthClass = */ readUShort();
+	/* int16_t fsType = */ readUShort();
+	/* int16_t ySubXSize = */ readSShort();
+	/* int16_t ySubYSize = */ readSShort();
+	/* int16_t ySubXOffset = */ readSShort();
+	/* int16_t ySubYOffset = */ readSShort();
+	/* int16_t ySuperXSize = */ readSShort();
+	/* int16_t ySuperYSize = */ readSShort();
+	/* int16_t ySuperXOffset = */ readSShort();
+	/* int16_t ySuperYOffset = */ readSShort();
+	/* int16_t yStrikeoutSize = */ readSShort();
+	/* int16_t yStrikeoutPos = */ readSShort();
+	/* int16_t familyClass = */ readUShort();
 	panose[0] = readUByte();
 	panose[1] = readUByte();
 	panose[2] = readUByte();

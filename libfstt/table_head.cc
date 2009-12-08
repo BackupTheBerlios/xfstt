@@ -32,12 +32,8 @@ HeadTable::HeadTable(RandomAccessFile &f, int offset, int length):
 		return;
 	flags = readUShort();
 	emUnits = readUShort();
-#ifdef HAS64BIT_TYPES
 	/* ctime = */ readULong();		// seconds since 1904!!!
 	/* mtime = */ readULong();		// seconds since 1904!!!
-#else
-	seekRelative(16);
-#endif
 	xmin = readSShort();
 	ymin = readSShort();
 	xmax = readSShort();

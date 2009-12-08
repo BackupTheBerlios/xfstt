@@ -32,14 +32,14 @@ VdmxTable::VdmxTable(RandomAccessFile &f, int offset, int length):
 int
 VdmxTable::getYmax(int pelHeight, int xres, int yres, int *ymax, int *ymin)
 {
-	u16_t offset = 0;
+	uint16_t offset = 0;
 
 	for (int i = nRatios; --i >= 0;) {
-		/* u8_t charSet = */ readUByte();
-		u8_t xRatio = readUByte();
-		u8_t yStartRatio= readUByte();
-		u8_t yEndRatio = readUByte();
-		u16_t tmp = readUShort();
+		/* uint8_t charSet = */ readUByte();
+		uint8_t xRatio = readUByte();
+		uint8_t yStartRatio= readUByte();
+		uint8_t yEndRatio = readUByte();
+		uint16_t tmp = readUShort();
 
 		if ((yres * xRatio >= xres * yStartRatio) &&
 		    (yres * xRatio <= xres * yEndRatio)) {
@@ -54,17 +54,17 @@ VdmxTable::getYmax(int pelHeight, int xres, int yres, int *ymax, int *ymin)
 	seekAbsolute(offset);
 
 	int nrecs = readUShort();
-	u8_t startSize = readUByte();
-	u8_t endSize = readUByte();
+	uint8_t startSize = readUByte();
+	uint8_t endSize = readUByte();
 
 	if (pelHeight < startSize || pelHeight > endSize)
 		return 0;
 
 	// XXX: should be a binary search
 	while (--nrecs >= 0) {
-		u16_t ph = readUShort();
-		s16_t y1 = readSShort();
-		s16_t y2 = readSShort();
+		uint16_t ph = readUShort();
+		int16_t y1 = readSShort();
+		int16_t y2 = readSShort();
 
 		if (pelHeight == ph) {
 			*ymax = y1;

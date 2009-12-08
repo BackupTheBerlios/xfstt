@@ -47,14 +47,6 @@
 
 // architecture specific
 
-typedef unsigned char u8_t;
-typedef unsigned short u16_t;
-typedef unsigned int u32_t;
-
-typedef signed char s8_t;
-typedef signed short s16_t;
-typedef signed int s32_t;
-
 #include <netinet/in.h>
 
 // byte swapping (doing it by ntohl/ntohs works only on little endian CPUs)
@@ -75,20 +67,8 @@ inline int muldiv(int a, int b, int c)
 }
 #endif
 
-
 #ifndef MULDIV
-// 64bit types are only needed for temporary MULDIV results
-#    ifdef __alpha
-typedef long s64_t;
-typedef unsigned long u64_t;
-#    else
-typedef long long s64_t;
-typedef unsigned long long u64_t;
-#    endif
-#endif
-
-#ifndef MULDIV
-#  define MULDIV(a, b, c) (int)(((s64_t)(a) * (b) + (c >> 1)) / (c))
+#  define MULDIV(a, b, c) (int)(((int64_t)(a) * (b) + (c >> 1)) / (c))
 #endif
 
 //=========== add special cases here ==================
