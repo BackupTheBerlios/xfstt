@@ -386,7 +386,8 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 		strcpy(buf, xlfdName);
 		strcpy(buf + ttfn->xlfdLen, xlfdExt);
 		strcpy(buf + ttfn->xlfdLen + 12, encodings[mapIndex]->Name.c_str());
-		if (!encodings[++mapIndex]) mapIndex = 0;
+		if (!encodings[++mapIndex])
+			mapIndex = 0;
 		*buf0 = strlen(buf);
 		return *buf0 + 1;
 	}
@@ -760,7 +761,8 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 				while (*xlfd != *p)
 					++xlfd;
 			}
-			if (*p != *xlfd) break;
+			if (*p != *xlfd)
+				break;
 		}
 		if (*p == 0 && *xlfd == 0) {
 			chdir(fontdir);
