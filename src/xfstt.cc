@@ -1,9 +1,9 @@
 /*
  * X Font Server for *.ttf Files
  *
- * Copyright (C) 1997-1999 Herbert Duerr
- * portions are (C) 1999 Stephen Carpenter and others
- * portions are (C) 2002-2008 Guillem Jover
+ * Copyright © 1997-1999 Herbert Duerr
+ * portions are © 1999 Stephen Carpenter and others
+ * portions are © 2002-2008 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

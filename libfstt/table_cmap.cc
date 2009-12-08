@@ -1,7 +1,7 @@
 /*
  * Character Map Table
  *
- * Copyright (C) 1997-1998 Herbert Duerr
+ * Copyright © 1997-1998 Herbert Duerr
  * mac7 style ttf support by Ethan Fischer
  *
  * This library is free software; you can redistribute it and/or

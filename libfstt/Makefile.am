@@ -2,7 +2,7 @@
 #
 # libfstt Makefile
 #
-# Copyright (C) 2002 Guillem Jover <guillem@hadrons.org>
+# Copyright © 2002 Guillem Jover <guillem@hadrons.org>
 #
 
 localedir = $(datadir)/locale

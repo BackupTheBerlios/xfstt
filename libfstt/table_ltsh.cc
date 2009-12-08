@@ -1,7 +1,7 @@
 /*
  * Linear Thresholds for advance width calculation Table
  *
- * Copyright (C) 1997-1998 Herbert Duerr
+ * Copyright © 1997-1998 Herbert Duerr
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

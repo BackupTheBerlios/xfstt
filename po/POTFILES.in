@@ -1,6 +1,6 @@
 # List of files containing translatable strings.
 #
-# Copyright (C) 2002 Guillem Jover <guillem@hadrons.org>
+# Copyright © 2002 Guillem Jover <guillem@hadrons.org>
 
 # Package source files
 src/xfstt.cc

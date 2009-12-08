@@ -1,8 +1,8 @@
 /*
  * Name Table
  *
- * Copyright (C) 1997-1998 Herbert Duerr
- * Copyright (C) 2008 Guillem Jover
+ * Copyright © 1997-1998 Herbert Duerr
+ * Copyright © 2008 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

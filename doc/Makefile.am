@@ -2,7 +2,7 @@
 #
 # xfstt Makefile
 #
-# Copyright (C) 2002,2004 Guillem Jover <guillem@hadrons.org>
+# Copyright © 2002, 2004 Guillem Jover <guillem@hadrons.org>
 #
 
 man_MANS = xfstt.1x
