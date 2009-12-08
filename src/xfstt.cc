@@ -1130,7 +1130,7 @@ fixup_bitmap(FontExtent *fe, u32_t hint)
 			*p = (map[*p & 15] << 4) | map[(*p >> 4) & 15];
 	}
 
-	if ((format != LOGSLP) && (hint & BitmapFormatByteOrderMask == 0)) {
+	if ((format != LOGSLP) && ((hint & BitmapFormatByteOrderMask) == 0)) {
 		debug("fmtswap SLP=%d -> fmt=%d\n", LOGSLP, format);
 		p = fe->bitmaps;
 		if (LOGSLP == 3 && format == 4) {
