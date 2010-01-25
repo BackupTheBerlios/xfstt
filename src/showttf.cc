@@ -33,7 +33,7 @@
 #include "ttf.h"
 
 #if (MSB_BYTE_FIRST != 1 || MSB_BIT_FIRST != 2)
-	#error "showttf assumes MSB_BYTE_FIRST=1 and MSB_BIT_FIRST=2"
+#warning "showttf assumes MSB_BYTE_FIRST=1 and MSB_BIT_FIRST=2"
 #endif
 
 static Display *display;
