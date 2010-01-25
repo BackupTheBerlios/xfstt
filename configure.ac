@@ -14,6 +14,12 @@ AM_INIT_AUTOMAKE([foreign 1.5])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])],
                             [AC_SUBST([AM_DEFAULT_VERBOSITY], [1])])
 
+AC_ARG_WITH([x11],
+            [AS_HELP_STRING([--with-x11], [enable tools using X11])],
+            [],
+            [with_x11=no])
+AM_CONDITIONAL(WITH_X11, [test "x$with_x11" != "xno"])
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CXXCPP
