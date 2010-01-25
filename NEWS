@@ -4,7 +4,31 @@
 	Bump gettext dependency to 0.18.
 	 · Use --previous in msgmerge to help translators.
 	Blank unused fields of the fsError struct when sending an error.
-	Detect system endianness at build time (instead of checking only i386).
+	Fix segfaults on font open errors (thanks to Edward Welbourne).
+	Handle mmap failures which might end up as segfaults otherwise.
+	Fix crashes with fortify support when:
+	 · Listing fonts (thanks to Erik Devriendt).
+	 · Setting info file magic and type fields (thanks to Niall Creech).
+	Add SIGHUP handler to re-sync fonts cache.
+	Do not hardcode any path component in the man page.
+	Code cleanup:
+	 · Fixed several compiler warnings.
+	 · Constify types.
+	 · Refactor client state into a new struct.
+	 · Refactor font protocol error reply handling.
+	 · Remove unused or duped includes.
+	 · Switch more C ‘char *’ strings to C++ strings.
+	 · Use C++ algorithm instead of custom code.
+	 · Always include "config.h" first.
+	 · Use <stdint.h> instead of our own types.
+	Build system cleanup:
+	 · Detect system endianness at build time.
+	 · Enable silent rules by default if support is available.
+	 · Do not use AM_MAINTAINER_MODE.
+	 · Make X11 usage selectable at configure time (new ‘--with-x11’).
+	 · Always build (but not install) extra tools.
+	 · Use pkg-config to get fontsproto and x11 module flags.
+	 · Fix ‘make distcheck’.
 
 1.7 (2005-11-30)
 

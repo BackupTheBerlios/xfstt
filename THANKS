@@ -34,6 +34,9 @@ Patches:
 	Atsawin Chowanakritsanakul (iso8859-11 encoding support)
 	Andre Albsmeier (--notcp support)
 	Dirk Tilger <miriup@users.berlios.de> (Irix gcc 3.2 bug)
+	Edward Welbourne <eddy@chaos.org.uk> (segfault due to open error)
+	Niall Creech <niallcreech@googlemail.com> (crash due to fortify)
+	Erik Devriendt <erik.devriendt@siemens.com> (crash due to fortify)
 
 Ideas:
 
