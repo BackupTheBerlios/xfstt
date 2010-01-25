@@ -7,5 +7,3 @@
 
 SUBDIRS = doc po libfstt src
 
-EXTRA_DIST = autogen.sh CHANGES
-
