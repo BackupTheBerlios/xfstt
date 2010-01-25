@@ -174,7 +174,7 @@ RandomAccessFile::RandomAccessFile(const char *fileName)
 	int fd = open(fileName, O_RDONLY);
 	if (fd <= 0) {
 		debug("Cannot open \"%s\"\n", fileName);
-		ptr = base = 0;
+		ptr = absbase = base = 0;
 		return;
 	}
 	struct stat st;
