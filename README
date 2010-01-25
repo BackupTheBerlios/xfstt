@@ -1,11 +1,27 @@
-This is just a simple file I decided to add to add a few notes that
-may interest people. You SHOULD read this at a minimum for upgrades.
+xfstt - X11 Font Server for TrueType fonts
 
-NOTE: Upgrades From 0.9.99:
+This server will allow X11 applications using X core fonts to use
+TrueType fonts, which are generally regarded to be the best scalable
+fonts for low resolution devices like displays.
 
-Secondly. The default port has changed to 7101, and the default font
-directory has moved to /usr/share/fonts/truetype. If you wish to know
-why then read the other Docs. You can easily change these back.
 
-- Steve Carpenter
+Releases
+--------
+
+  <http://download.berlios.de/xfstt/>
+
+
+Project Site
+------------
+
+The bug tracker, news, and the general project managment can be found at:
+
+  <http://developer.berlios.de/projects/xfstt/>
+
+
+Source Repository
+-----------------
+
+  <http://git.berlios.de/cgi-bin/cgit.cgi/xfstt>
+  <git://git.berlios.de/xfstt>
 
