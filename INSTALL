@@ -33,7 +33,7 @@ Distributed tar Sources
    install in a different directory you may be interested in --prefix
    and --localestatedir options.
 
-2) Compiling. You will need the X header files.
+2) Compiling. You will need the X fonts proto header files.
 
 	$ make && make install
 

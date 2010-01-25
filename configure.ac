@@ -28,9 +28,9 @@ AC_PROG_RANLIB
 
 # Checks for libraries.
 AC_CHECK_LIB([m], [sqrt])
+AS_IF([test "x$with_x11" != "xno"], [PKG_CHECK_MODULES(X11, [x11])])
 
 # Checks for header files.
-AC_PATH_XTRA
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
@@ -45,6 +45,8 @@ AC_CHECK_DECL([IPV6_V6ONLY],
 	      [AC_DEFINE([HAVE_IPV6_V6ONLY], [1],
 			 [The system has IPv6 v6 only support.])],
 	      [], [#include <netinet/in.h>])
+
+PKG_CHECK_MODULES(FONTSPROTO, [fontsproto])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

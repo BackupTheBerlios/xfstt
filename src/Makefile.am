@@ -20,7 +20,7 @@ bin_PROGRAMS = xfstt
 noinst_PROGRAMS = patchttf perftest
 
 xfstt_SOURCES = xfstt.cc xfstt.h ttfn.h encoding.cc encoding.h mesg.h gettext.h
-xfstt_CXXFLAGS = $(X_CFLAGS)
+xfstt_CXXFLAGS = $(FONTSPROTO_CFLAGS)
 
 patchttf_SOURCES = patchttf.cc gettext.h
 perftest_SOURCES = perftest.cc gettext.h
@@ -29,8 +29,8 @@ if WITH_X11
 noinst_PROGRAMS += showttf
 
 showttf_SOURCES = showttf.cc gettext.h
-showttf_CXXFLAGS = $(X_CFLAGS)
-showttf_LDADD = $(LDADD) $(X_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS)
+showttf_CXXFLAGS = $(X11_CFLAGS)
+showttf_LDADD = $(LDADD) $(X11_LIBS)
 endif
 
 install-data-local:
