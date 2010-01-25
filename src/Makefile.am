@@ -10,7 +10,7 @@ fontdir = $(datadir)/fonts/truetype
 cachedir = $(localstatedir)/cache/xfstt
 pidfile = $(localstatedir)/run/xfstt.pid
 
-LDADD = @LIBINTL@ -L$(top_srcdir)/libfstt -lfstt
+LDADD = @LIBINTL@ -L$(top_builddir)/libfstt -lfstt
 
 AM_CPPFLAGS = -DLOCALEDIR=\""$(localedir)\"" -DFONTDIR=\""$(fontdir)\"" \
 	      -DCACHEDIR=\""$(cachedir)\"" -DPIDFILE=\""$(pidfile)\"" \
