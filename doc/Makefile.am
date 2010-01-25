@@ -2,12 +2,13 @@
 #
 # xfstt Makefile
 #
-# Copyright © 2002, 2004 Guillem Jover <guillem@hadrons.org>
+# Copyright © 2002, 2004, 2010 Guillem Jover <guillem@hadrons.org>
 #
 
 man_MANS = xfstt.1x
 
-EXTRA_DIST = $(man_MANS) xfstt.lsm FAQ examples
+EXTRA_DIST = xfstt.1x.in xfstt.lsm FAQ examples
+CLEANFILES = $(man_MANS)
 
 edit = sed \
 	-e 's,@VERSION\@,$(VERSION),g' \
