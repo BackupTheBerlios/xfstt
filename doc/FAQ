@@ -33,9 +33,9 @@ This FAQ is current as of version 1.7 of xfstt.
 2.17 Xfstt wont compile on Solaris x86!
 
 3.0 How do I put fonts in categories?
-3.1 Use with Java (tm) 1.1 and up
-3.2 Use with Netscape/Communicator (tm)
-3.3 Use with StarOffice (tm)
+3.1 Use with Java™ 1.1 and up
+3.2 Use with Netscape/Communicator™
+3.3 Use with StarOffice™
 3.4 How to use with Solaris?
 3.5 How do I print documents which use *.ttf fonts?
 3.6 Does xfstt have anti-aliasing/grayscaling technology?
@@ -57,7 +57,7 @@ This FAQ is current as of version 1.7 of xfstt.
 	fonts for low resolution devices like displays.
 
 	Examples where good scalable fonts improve the visual quality
-	considerably are Netscape (tm), gimp and Java (tm).
+	considerably are Netscape™, gimp and Java™.
 	A fonts.properties file for use with java is provided.
 
 	Xfstt is freely available under the LGPL. This basically means:
@@ -361,12 +361,12 @@ This FAQ is current as of version 1.7 of xfstt.
 	and put the appropriate fonts in there. The corresponding font
 	names will be -modern-*, -script-*, -brush-* and so on.
 
-3.1 Use with Java (tm) 1.1 and up
+3.1 Use with Java™ 1.1 and up
 
 	Overwrite the fonts.properties file in $(JAVA_HOME)/lib/ with
 	the provided one in the examples/ dir.
 
-3.2 Use with Netscape/Communicator (tm)
+3.2 Use with Netscape/Communicator™
 
 	Since X11 Netscape 3 doesn't use scrollable listboxes for font
 	selection having more than a dozen *ttf fonts makes selecting
@@ -379,7 +379,7 @@ This FAQ is current as of version 1.7 of xfstt.
 	Also the listbox for fontsizes only shows the size 0; enable
 	scaling and type in the requested size in the box next to it.
 
-3.3 Use with StarOffice (tm)
+3.3 Use with StarOffice™
 
 	Starting in version 0.9.8 xfstt recognizes the not well formed
 	staroffice request for fonts with "-*" names. When using an older
