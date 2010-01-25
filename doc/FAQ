@@ -29,7 +29,7 @@ This FAQ is current as of version 1.7 of xfstt.
 2.13 How does one request an encoding different from iso8859-1?
 2.14 Why are multiple instances of xfstt running?
 2.15 Help! I just upgraded and the new version doesn't work!
-2.16 Xfstt is broken with Linux Kernel 2.4.0!
+2.16 Xfstt is broken with Linux kernel 2.4.0!
 2.17 Xfstt wont compile on Solaris x86!
 
 3.0 How do I put fonts in categories?
@@ -333,7 +333,7 @@ This FAQ is current as of version 1.7 of xfstt.
 
 	Just move all of your fonts there and it should work.
 
-2.16 Xfstt is broken with Linux Kernel 2.4.0!
+2.16 Xfstt is broken with Linux kernel 2.4.0!
 
 	This was a known bug for a while. Actually, its fixed as of
 	xfstt 1.2 Whats funny is, I see no reason why it shouldn't have
@@ -484,7 +484,7 @@ This FAQ is current as of version 1.7 of xfstt.
 4.5 How can I help?
 
 	Xfstt is reported to work on i386/m68k/sparc/alpha/mips/ppc on
-	linux/freebsd/aix/irix/sco/osf/solaris platforms.
+	Linux/FreeBSD/AIX/Irix/SCO/OSF/Solaris platforms.
 	Porting it to a different platform may require small modifications
 	in the architecture dependent header file "arch.h".
 
