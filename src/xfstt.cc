@@ -803,6 +803,11 @@ openTTFdb()
 	close(fd);
 	delete ttinfofilename;
 
+	if (infoBase == MAP_FAILED) {
+		error(_("cannot mmap font database!\n"));
+		return 0;
+	}
+
 	if (infoSize <= sizeof(TTFNheader)
 	    || strncmp(infoBase, "TTFNINFO", 8)) {
 		error(_("corrupt font database!\n"));
@@ -831,6 +836,11 @@ openTTFdb()
 	close(fd);
 	delete ttnamefilename;
 
+	if (nameBase == MAP_FAILED) {
+		error(_("cannot mmap font database!\n"));
+		return 0;
+	}
+
 	if (nameSize <= sizeof(TTFNheader)
 	    || strncmp(nameBase, "TTFNNAME", 8)) {
 		error(_("corrupt font database!\n"));
@@ -850,6 +860,11 @@ openTTFdb()
 		aliasBase = (char *)mmap(0L, aliasSize, PROT_READ, MAP_SHARED,
 					 fd, 0L);
 		close(fd);
+
+		if (aliasBase == MAP_FAILED) {
+			error(_("cannot mmap alias database!\n"));
+			return 0;
+		}
 	}
 
 	return 1;

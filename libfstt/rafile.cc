@@ -182,6 +182,11 @@ RandomAccessFile::RandomAccessFile(const char *fileName)
 	length = st.st_size;
 	base = (uint8_t *)mmap(0L, length, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
+	if (base == MAP_FAILED) {
+		debug("MMap failed '%s'\n", strerror(errno));
+		ptr = absbase = base = 0;
+		return;
+	}
 	ptr = absbase = base;
 }
 
