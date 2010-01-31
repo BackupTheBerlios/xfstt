@@ -47,17 +47,17 @@ Don't open TCP socket, use unix domain only.
 .BI \-\-dir " name"
 Change xfstt's font directory.
 The default directory is
-.IR @datadir@/fonts/truetype .
+.IR @fontdir@ .
 .TP
 .BI \-\-cache " name"
 Change xfstt's font cache directory.
 The default directory is
-.IR @localstatedir@/cache/xfstt .
+.IR @cachedir@ .
 .TP
 .BI \-\-pidfile " name"
 Change xfstt's pidfile location.
 The default file name is
-.IR @localstatedir@/run/xfstt.pid .
+.IR @pidfile@ .
 .TP
 .BI \-\-res " value"
 Force the resolution for underspecified fonts to value (typically 96 or 120).
