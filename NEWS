@@ -1,7 +1,7 @@
 1.8 (git)
 
 	Remove the obsolete ‘--multi’ option.
-	Bump gettext dependency to 0.17.
+	Bump gettext dependency to 0.18.
 	Blank unused fields of the fsError struct when sending an error.
 	Detect system endianness at build time (instead of checking only i386).
 
