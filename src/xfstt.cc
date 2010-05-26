@@ -463,11 +463,16 @@ listTTFNFonts(char *pattern, int index, char *buf)
 	char *fontName = nameBase + ttfn->nameOfs;
 
 	TPFontName fn;
-	sprintf(&fn.panose[0][0], "%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
+
+	/* Pre-allocate the buffer so that the terminating '\0' fits. */
+	char panose[sizeof(fn.panose) + 1];
+	sprintf(panose, "%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
 		ttfn->bFamilyType, ttfn->bSerifStyle, ttfn->bWeight,
 		ttfn->bProportion, ttfn->bContrast, ttfn->bStrokeVariation,
 		ttfn->bArmStyle, ttfn->bLetterForm, ttfn->bMidLine,
 		ttfn->bXHeight);
+	/* Copy only the text, not the terminating '\0'. */
+	memcpy(&fn.panose[0][0], panose, sizeof(fn.panose));
 
 	fn.nameLen = sizeof(TPFontName) + ttfn->nameLen;
 	fn.magic[0] = 'T';
