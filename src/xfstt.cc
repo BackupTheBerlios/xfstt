@@ -178,7 +178,7 @@ usage(int verbose)
 }
 
 static int
-ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, int gslist)
+ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 {
 	int nfonts = 0;
 	int ttdir_len = strlen(ttdir);
