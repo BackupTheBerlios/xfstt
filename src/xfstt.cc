@@ -126,7 +126,7 @@ struct fs_client {
 static int fs_client_error(fs_client &client, int error);
 
 uid_t newuid = (uid_t)(-2);
-gid_t newgid = (uid_t)(-2);
+gid_t newgid = (gid_t)(-2);
 
 const char *sockname;
 const char *sockdir = "/tmp/.font-unix";
