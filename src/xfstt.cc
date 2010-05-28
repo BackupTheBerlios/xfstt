@@ -889,6 +889,14 @@ closeTTFdb()
 	infoSize = nameSize = aliasSize = 0;
 }
 
+static void
+ttdb_resync()
+{
+	closeTTFdb();
+	ttSyncAll();
+	openTTFdb();
+}
+
 #if defined(HAVE_IPV6)
 static bool
 fs_connection_setup_inet(fs_conn &conn, struct addrinfo *res)
@@ -1330,11 +1338,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 
 		case FS_SetCatalogues:	// resync font database
 			debug("FS_SetCatalogues\n");
-			{
-			closeTTFdb();
-			ttSyncAll();
-			openTTFdb();
-			}
+			ttdb_resync();
 			break;
 
 		case FS_GetCatalogues:
