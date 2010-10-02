@@ -4,7 +4,6 @@ TODO list:
    - default ports.
  - add option to bind to specific interfaces.
  - fix the need to sync to be able to use gslist.
- - add signal handler (HUP?) to re-sync fonts dir.
  - error messages using syslog (depends on error()).
  - add memory sharing support (multi-threading?).
  - add anti-aliasing support (using the X render extension).

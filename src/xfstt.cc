@@ -90,6 +90,7 @@ int MAGNIFY = 0;
 
 uint16_t maxLastChar = 255;
 
+static bool ttdb_needs_resync;
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
 const char *fontdir = FONTDIR;
@@ -895,6 +896,7 @@ ttdb_resync()
 	closeTTFdb();
 	ttSyncAll();
 	openTTFdb();
+	ttdb_needs_resync = false;
 }
 
 #if defined(HAVE_IPV6)
@@ -1246,6 +1248,9 @@ fs_working(fs_client &client, Rasterizer *raster)
 		fp0.resolution[0] = fp.resolution[1] = defaultres;
 
 	for (client.seqno = 1; ; ++client.seqno) {
+		if (ttdb_needs_resync)
+			ttdb_resync();
+
 		int l = read(client.sd, client.buf, sz_fsReq);
 		if (l < sz_fsReq)
 			return l;
@@ -1929,6 +1934,24 @@ delPIDfile(int signal XFSTT_ATTR_UNUSED)
 	exit(0);
 }
 
+static void
+sighup_handler(int signo XFSTT_ATTR_UNUSED)
+{
+	ttdb_needs_resync = true;
+}
+
+static void
+signal_setup(int sig_num, void (*sig_handler)(int))
+{
+	struct sigaction sig;
+
+	memset(&sig, 0, sizeof(sig));
+	sig.sa_flags = SA_RESTART;
+	sig.sa_handler = sig_handler;
+
+	sigaction(sig_num, &sig, NULL);
+}
+
 void
 setuidgid(char *name)
 {
@@ -2082,6 +2105,7 @@ main(int argc, char **argv)
 	}
 
 	signal(SIGCHLD, SIG_IGN); // We don't need no stinkinig zombies -sjc
+	signal_setup(SIGHUP, sighup_handler);
 
 	fs_connection_setup(fs_conn);
 
