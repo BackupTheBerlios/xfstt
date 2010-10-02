@@ -2083,9 +2083,9 @@ main(int argc, char **argv)
 			pid_t pid = getpid();
 			fprintf(pidfile, "%d\n", pid);
 			fclose(pidfile);
-			// setup signal handlers to die better
-			signal(SIGINT, delPIDfile);
-			signal(SIGTERM, delPIDfile);
+
+			signal_setup(SIGINT, delPIDfile);
+			signal_setup(SIGTERM, delPIDfile);
 		}
 	}
 
@@ -2104,7 +2104,7 @@ main(int argc, char **argv)
 		unlink(pidfilename);
 	}
 
-	signal(SIGCHLD, SIG_IGN); // We don't need no stinkinig zombies -sjc
+	signal_setup(SIGCHLD, SIG_IGN); // We don't need no stinkinig zombies -sjc
 	signal_setup(SIGHUP, sighup_handler);
 
 	fs_connection_setup(fs_conn);
