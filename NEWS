@@ -9,6 +9,7 @@
 	Fix crashes with fortify support when:
 	 · Listing fonts (thanks to Erik Devriendt).
 	 · Setting info file magic and type fields (thanks to Niall Creech).
+	Fix segfault on fonts with unknown cmap format.
 	Add SIGHUP handler to re-sync fonts cache.
 	Do not hardcode any path component in the man page.
 	Code cleanup:

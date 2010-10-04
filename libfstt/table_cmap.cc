@@ -104,7 +104,8 @@ CmapTable::unicode2glyphNo(uint16_t unicode)
 		seekAbsolute(subtableOffset + 10 + (unicode - f6FirstCode) * 2);
 		int glyphNo = readUShort();
 		return glyphNo;
-	}
+	} else if (format != SEGMENT_MAPPING)
+		return 0;
 
 	// search for endCount
 	int lower = 0;
@@ -161,7 +162,8 @@ CmapTable::nextUnicode(uint16_t unicode)
 			return 0;
 		
 		return unicode;
-	}
+	} else if (format != SEGMENT_MAPPING)
+		return 0;
 
 	int lower = 0;
 	int upper = f4NSegments - 1;
@@ -195,6 +197,8 @@ CmapTable::firstUnicode()
 		return 0;
 	else if (format == TRIMMED_MAPPING)
 		return f6FirstCode;
+	else if (format != SEGMENT_MAPPING)
+		return 0;
 
 	seekAbsolute(subtableOffset + 16 + (f4NSegments << 1));
 	uint16_t i = readUShort();
@@ -211,6 +215,8 @@ CmapTable::lastUnicode()
 		return 255;
 	else if (format == TRIMMED_MAPPING)
 		return f6FirstCode + f6EntryCount - 1;
+	else if (format != SEGMENT_MAPPING)
+		return 0;
 
 	seekAbsolute(subtableOffset + 14 + ((f4NSegments - 2) << 1));
 	uint16_t i = readUShort();
