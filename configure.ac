@@ -6,7 +6,7 @@
 AC_INIT([xfstt], [1.7])
 AC_PREREQ([2.53])
 AC_CONFIG_SRCDIR([src/xfstt.cc])
-AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([foreign 1.5])

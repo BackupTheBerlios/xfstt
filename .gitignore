@@ -4,8 +4,8 @@ Makefile
 Makefile.in
 autom4te.cache
 aclocal.m4
+build-aux
 configure
-config
 config.*
 m4
 stamp-h1
