@@ -797,7 +797,7 @@ openTTFdb()
 		return 0;
 
 	int fd = open(ttinfofilename, O_RDONLY);
-	if (0 >= fd) {
+	if (fd < 0) {
 		error(_("cannot open font database!\n"));
 		delete ttinfofilename;
 		return 0;
@@ -831,7 +831,7 @@ openTTFdb()
 		return -1;
 
 	fd = open(ttnamefilename, O_RDONLY);
-	if (0 >= fd) {
+	if (fd < 0) {
 		error(_("cannot open font database!\n"));
 		delete ttnamefilename;
 		return 0;
@@ -862,7 +862,7 @@ openTTFdb()
 	if (!stat("fonts.alias", &statbuf)) {
 		aliasSize = statbuf.st_size;
 		int fd = open("fonts.alias", O_RDONLY);
-		if (fd <= 0)
+		if (fd < 0)
 			return 0;
 		aliasBase = (char *)mmap(0L, aliasSize, PROT_READ, MAP_SHARED,
 					 fd, 0L);

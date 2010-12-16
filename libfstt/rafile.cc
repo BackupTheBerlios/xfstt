@@ -166,7 +166,7 @@ operator delete(void *ptr)
 RandomAccessFile::RandomAccessFile(const char *fileName)
 {
 	int fd = open(fileName, O_RDONLY);
-	if (fd <= 0) {
+	if (fd < 0) {
 		debug("Cannot open \"%s\"\n", fileName);
 		ptr = absbase = base = 0;
 		return;

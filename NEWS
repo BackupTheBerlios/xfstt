@@ -1,3 +1,7 @@
+x.x (git)
+
+	Fix file descriptor leaks.
+
 1.8 (2010-11-09)
 
 	Remove the obsolete ‘--multi’ option.
