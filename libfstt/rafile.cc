@@ -33,19 +33,13 @@
 void *
 allocMem(int size)
 {
-	void *ptr;
-
-	ptr = malloc(size);
-
-	return ptr;
+	return malloc(size);
 }
 
 void *
 shrinkMem(void *ptr, int newsize)
 {
-	ptr = realloc(ptr, newsize);
-
-	return ptr;
+	return realloc(ptr, newsize);
 }
 
 void
