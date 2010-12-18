@@ -188,6 +188,8 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 		info(_("Sync in directory \"%s/%s\".\n"), fontdir, ttdir);
 
 	DIR *dirp = opendir(".");
+	if (dirp == NULL)
+		return 0;
 
 	while (dirent *de = readdir(dirp)) {
 		int namelen = strlen(de->d_name);
@@ -264,8 +266,7 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 		delete ttFont;
 		++nfonts;
 	}
-	if (dirp)
-		closedir(dirp);
+	closedir(dirp);
 
 	return nfonts;
 }
@@ -308,7 +309,6 @@ ttSyncAll(bool gslist = false)
 		error(_("directory \"%s\" does not exist!\n"), fontdir);
 		return -1;
 	}
-	DIR *dirp = opendir(".");
 
 	char *ttinfofilename = cachefile(TTINFO_LEAF);
 	if (!ttinfofilename)
@@ -339,12 +339,18 @@ ttSyncAll(bool gslist = false)
 	fwrite((void *)&info, 1, sizeof(info), nameFile);
 
 	int nfonts = ttSyncDir(infoFile, nameFile, ".", gslist);
+
+	DIR *dirp = opendir(".");
+	if (dirp == NULL)
+		return 0;
+
 	while (dirent *de = readdir(dirp)) {
 		chdir(fontdir);
 		if (de->d_name[0] != '.' && !chdir(de->d_name))
 			nfonts += ttSyncDir(infoFile, nameFile,
 					    de->d_name, gslist);
 	}
+	closedir(dirp);
 
 	fclose(infoFile);
 	fclose(nameFile);
