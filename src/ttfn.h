@@ -28,7 +28,7 @@
  * The approach here is to be more specific depending on the context:
  *	OpenFont name != ListFont result != ListFont pattern
  * OpenFont names provide the fontname and rasterizer specific attributes
- * ListFont results provide the fontname and raster independant attributes
+ * ListFont results provide the fontname and raster independent attributes
  *
  */
 

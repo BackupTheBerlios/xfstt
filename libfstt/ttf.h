@@ -1221,11 +1221,11 @@ enum {
 	CEILING		= 0x67,	// ceiling
 	MAX		= 0x8B,	// maximum
 	MIN		= 0x8C,	// minimum
-	ROUND00		= 0x68,	// round engine independant
+	ROUND00		= 0x68,	// round engine independent
 	ROUND01,
 	ROUND02,
 	ROUND03,
-	NROUND00	= 0x6C,	// round engine dependant
+	NROUND00	= 0x6C,	// round engine dependent
 	NROUND01,
 	NROUND02,
 	NROUND03,
