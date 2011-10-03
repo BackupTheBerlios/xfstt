@@ -13,7 +13,8 @@ Git Sources
 
 	autoconf >= 2.53
 	automake >= 1.5
-	gettext  == 0.12.1
+	gettext  == 0.18
+	pkg-config
 
    And running the following command on the source dir:
 
