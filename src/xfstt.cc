@@ -1221,7 +1221,8 @@ fs_client_error(fs_client &client, int error)
 	reply.sequenceNumber = client.seqno;
 	reply.length = sizeof(reply) >> 2;
 	reply.timestamp = 0;
-	reply.major_opcode = 0;
+	reply.major_opcode = client.req.reqType;
+	// No extensions supported, so set minor always to 0.
 	reply.minor_opcode = 0;
 
 	return write(client.sd, (void *)&reply, sizeof(reply));
