@@ -1906,18 +1906,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 
 		default:
 			debug("Unknown FS request 0x%02X !\n", client.req.reqType);
-			{
-			fsRequestError reply;
-			reply.type = FS_Error;
-			reply.request = FSBadRequest;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-			reply.timestamp = 0;
-			reply.major_opcode = client.req.reqType;
-			reply.minor_opcode = client.req.data;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_client_error(client, FSBadRequest);
 			break;
 		}
 		debug("done.\n");
