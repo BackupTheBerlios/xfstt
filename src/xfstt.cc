@@ -592,7 +592,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 	while (!(xfs->fe.buffer = (uint8_t *)allocMem(xfs->fe.buflen)))
 		if ((xfs->fe.buflen >>= 1) < MINFONTBUFSIZE) {
 			error(_("entering memory starved mode.\n"));
-			xfs->fid = 0;
+			xfs->fid = 0;	// Mark font slot as not used.
 			return 0;
 		}
 
@@ -605,7 +605,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 		xfs->fe.buflen = used;
 		xfs->fe.bitmaps = xfs->fe.buffer + bmpoff;
 	} else {
-		xfs->fid = 0;	// XXX
+		xfs->fid = 0;	// Mark font slot as not used.
 		xfs = 0;
 	}
 
