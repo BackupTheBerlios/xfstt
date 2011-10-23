@@ -324,7 +324,11 @@ ttSyncAll(bool gslist = false)
 	delete ttinfofilename;
 	delete ttnamefilename;
 
-	if (infoFile <= 0 || nameFile <= 0) {
+	if (infoFile == NULL || nameFile == NULL) {
+		if (infoFile)
+			fclose(infoFile);
+		if (nameFile)
+			fclose(nameFile);
 		error(_("cannot write to font database!\n"));
 		return -1;
 	}
