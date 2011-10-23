@@ -968,9 +968,10 @@ fs_connection_setup(fs_conn &conn)
 		s_unix.sun_family = AF_UNIX;
 		sprintf(s_unix.sun_path, "%s/fs%d", sockdir, conn.port);
 		sockname = s_unix.sun_path;
+
+		old_umask = umask(0);
 		mkdir(sockdir, 01777);
 		unlink(s_unix.sun_path);
-		old_umask = umask(0);
 
 		if (bind(sd, (struct sockaddr *)&s_unix, sizeof(s_unix)) < 0) {
 			error(_("could not write to %s/, please check "
