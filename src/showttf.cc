@@ -62,8 +62,16 @@ uint8_t *bitmap = 0;
 int MAGNIFY = 1;
 #endif /*MAGNIFY*/
 
+struct font_state {
+	int size;
+	int angle;
+	unsigned width;
+	unsigned height;
+	int glyphNo;
+};
+
 static void
-glyph2image(int glyphNo, int size, int angle, XImage *img)
+glyph2image(struct font_state *state, XImage *img)
 {
 	int length;
 	static int old_size = 0, old_angle = 0;
@@ -73,17 +81,17 @@ glyph2image(int glyphNo, int size, int angle, XImage *img)
 	if (!bitmap)
 		return;
 
-	if (size != old_size || angle != old_angle) {
-		old_size = size;
-		old_angle = angle;
-		int xcos = (int)(size * cos(angle * M_PI / 180));
-		int xsin = (int)(size * sin(angle * M_PI / 180));
+	if (state->size != old_size || state->angle != old_angle) {
+		old_size = state->size;
+		old_angle = state->angle;
+		int xcos = (int)(state->size * cos(state->angle * M_PI / 180));
+		int xsin = (int)(state->size * sin(state->angle * M_PI / 180));
 		raster->setPixelSize(xcos, -xsin, xsin, xcos);
-		printf("fontsize = %d, angle = %d\n", size, angle);
+		printf("fontsize = %d, angle = %d\n", state->size, state->angle);
 	}
 
 	GlyphMetrics gm;
-	length = raster->putGlyphBitmap(glyphNo, bitmap, bitmap + BMPSIZE, &gm);
+	length = raster->putGlyphBitmap(state->glyphNo, bitmap, bitmap + BMPSIZE, &gm);
 
 	img->width = 0;
 	if (length == 0)
@@ -213,7 +221,10 @@ main(int argc, char** argv)
 	unsigned long valuemask = GCFunction | GCForeground;
 	textGC = XCreateGC(display, rootWindow, valuemask, &gcv);
 
-	unsigned int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
+	struct font_state state;
+
+	state.width = DEFAULT_WIDTH;
+	state.height = DEFAULT_HEIGHT;
 
 #if 0
 	int fid = XLoadFont(display, "TTM20_Bitstream Cyberbit");
@@ -223,7 +234,7 @@ main(int argc, char** argv)
 #endif
 
 	Window win = XCreateSimpleWindow(display, rootWindow, 0, 0,
-					 width, height, 1,
+					 state.width, state.height, 1,
 					 gcv.foreground, gcv.background);
 	XStoreName(display, win, "TrueType Viewer");
 
@@ -240,34 +251,35 @@ main(int argc, char** argv)
 	TTFont *ttFont = new TTFont(ttFileName);
 	raster->useTTFont(ttFont);
 
-	int fontsize = 16;
-	int angle = 0;
+	state.size = 16;
+	state.angle = 0;
+	state.glyphNo = STARTGLYF;
+
 	XImage img;
 
 	XEvent event;
 	do {
-		static int glyphNo = STARTGLYF;
 		XNextEvent(display, &event);
 		switch (event.type) {
 		drawglyph:
 #ifndef MAGNIFY
 			if (MAGNIFY && fontsize) {
-				MAGNIFY = height / (fontsize + 1);
+				MAGNIFY = state.height / (state.fontsize + 1);
 				if (!MAGNIFY) MAGNIFY = 1;
 			}
 #endif
 		{
-			int gno2 = glyphNo;
-			//ttFont->getGlyphNo16(glyphNo);
-			fprintf(stderr, "gno2 %d\n", gno2);
+			//ttFont->getGlyphNo16(state.glyphNo);
+			fprintf(stderr, "gno2 %d\n", state.glyphNo);
 			fflush(stderr);
-			glyph2image(gno2, fontsize, angle, &img);
+			glyph2image(&state, &img);
 		}
 			/* fall through */
 		case Expose:
 		expose:
 			XSetForeground(display, textGC, yellow);
-			XFillRectangle(display, win, textGC, 0, 0, width, height);
+			XFillRectangle(display, win, textGC, 0, 0,
+			               state.width, state.height);
 			XSetForeground(display, textGC, black);
 			if (img.width)
 				XPutImage(display, win, textGC, &img,
@@ -304,36 +316,35 @@ main(int argc, char** argv)
 #endif /*MAGNIFY*/
 				goto drawglyph;
 			case XK_Left:
-				--glyphNo;
+				--state.glyphNo;
 				goto drawglyph;
 			case XK_Right:
-				++glyphNo;
+				++state.glyphNo;
 				goto drawglyph;
 			case XK_Up:
-				fontsize += 1;
+				state.size += 1;
 				goto drawglyph;
 			case XK_Down:
-				fontsize -= 1;
-				if (fontsize < 6)
-					fontsize = 4;
+				state.size -= 1;
+				if (state.size < 6)
+					state.size = 4;
 				goto drawglyph;
 			case XK_Page_Up:
-				fontsize += (fontsize >> 2) ? fontsize >> 2 : 1;
+				state.size += (state.size >> 2) ? state.size >> 2 : 1;
 				goto drawglyph;
 			case XK_Page_Down:
-				fontsize -= (fontsize >> 2) ? fontsize >> 2 : 1;
+				state.size -= (state.size >> 2) ? state.size >> 2 : 1;
 				goto drawglyph;
-				if (fontsize < 4)
 			case XK_Begin:
-				angle = 0;
-				fontsize = 8;
+				state.angle = 0;
+				state.size = 8;
 #ifndef MAGNIFY
 				MAGNIFY = 0;
 #endif /*MAGNIFY*/
 				goto drawglyph;
 			case XK_End:
-				angle = 0;
-				fontsize = height - 10;
+				state.angle = 0;
+				state.size = state.height - 10;
 #ifndef MAGNIFY
 				MAGNIFY = 0;
 #endif /*MAGNIFY*/
@@ -347,16 +358,16 @@ main(int argc, char** argv)
 				goto expose;
 			default:
 				// XXX: glyphNo = ttFont->getGlyphNo16(0x20AC);
-				glyphNo = ttFont->getGlyphNo16(c[0]);
-				printf("key = \"%s\" -> %d\n", c, glyphNo);
-				glyph2image(glyphNo, fontsize, angle, &img);
+				state.glyphNo = ttFont->getGlyphNo16(c[0]);
+				printf("key = \"%s\" -> %d\n", c, state.glyphNo);
+				glyph2image(&state, &img);
 			}
 			goto expose;
 		}
 
 		case ConfigureNotify:
-			width = event.xconfigure.width;
-			height = event.xconfigure.height;
+			state.width = event.xconfigure.width;
+			state.height = event.xconfigure.height;
 			goto drawglyph;
 			//break;
 
