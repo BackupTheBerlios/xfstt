@@ -82,23 +82,23 @@ typedef struct {
 	Encoding	*encoding;
 } XFSFont;
 
-XFSFont xfsFont[MAXOPENFONTS];
+static XFSFont xfsFont[MAXOPENFONTS];
 
 #ifndef MAGNIFY
 int MAGNIFY = 0;
 #endif /* MAGNIFY */
 
-uint16_t maxLastChar = 255;
+static uint16_t maxLastChar = 255;
 
 static bool ttdb_needs_resync;
 static unsigned infoSize, nameSize, aliasSize;
 static char *infoBase, *nameBase, *aliasBase;
-const char *fontdir = FONTDIR;
-const char *cachedir = CACHEDIR;
-const char *pidfilename = PIDFILE;
+static const char *fontdir = FONTDIR;
+static const char *cachedir = CACHEDIR;
+static const char *pidfilename = PIDFILE;
 
-int defaultres = 0;
-const int default_port = 7101;
+static int defaultres = 0;
+static const int default_port = 7101;
 
 struct fs_conn {
 	bool listen_unix;
@@ -126,14 +126,14 @@ struct fs_client {
 // Forward declarations
 static int fs_client_error(fs_client &client, int error);
 
-uid_t newuid = (uid_t)(-2);
-gid_t newgid = (gid_t)(-2);
+static uid_t newuid = (uid_t)(-2);
+static gid_t newgid = (gid_t)(-2);
 
-const char *sockname;
-const char *sockdir = "/tmp/.font-unix";
+static const char *sockname;
+static const char *sockdir = "/tmp/.font-unix";
 
 #define MAXENC 16	/* Maximum number of encodings */
-Encoding *encodings[MAXENC];
+static Encoding *encodings[MAXENC];
 
 static void
 version()
@@ -800,7 +800,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 }
 
 // returns > 0 if ok
-int
+static int
 openTTFdb()
 {
 	infoSize = nameSize = aliasSize = 0;
@@ -895,7 +895,7 @@ openTTFdb()
 	return 1;
 }
 
-void
+static void
 closeTTFdb()
 {
 	if (infoSize)
@@ -1932,7 +1932,7 @@ fs_working(fs_client &client, Rasterizer *raster)
  * pid file is properly disposed of when we are killed
  * possibly a better (more robust) signal handler could be written - sjc
  */
-void
+static void
 delPIDfile(int signal XFSTT_ATTR_UNUSED)
 {
 	unlink(pidfilename);
@@ -1961,7 +1961,7 @@ signal_setup(int sig_num, void (*sig_handler)(int))
 	sigaction(sig_num, &sig, NULL);
 }
 
-void
+static void
 setuidgid(char *name)
 {
 	struct passwd *pwent;

@@ -24,7 +24,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-void
+static void
 usage()
 {
 	printf("Usage: patchttf fontfile -p 0xaddr 0xdata\n");
@@ -32,7 +32,7 @@ usage()
 	// => 22 B0 00 58 ... 59
 }
 
-int
+static int
 checksum(uint8_t *buf, int len)
 {
 	len = (len + 3) >> 2;
@@ -46,7 +46,7 @@ checksum(uint8_t *buf, int len)
 	return sum;
 }
 
-int
+static int
 patchttf(int argc, char **argv)
 {
 	char inTTname[160], outTTname[160];

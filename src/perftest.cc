@@ -42,7 +42,7 @@
 	int MAGNIFY = 0;
 #endif /* MAGNIFY */
 
-int numGlyphs = 0;
+static int numGlyphs = 0;
 
 static int
 ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, const char *ttdir)

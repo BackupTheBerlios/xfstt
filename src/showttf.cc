@@ -62,7 +62,7 @@ uint8_t *bitmap = 0;
 int MAGNIFY = 1;
 #endif /*MAGNIFY*/
 
-void
+static void
 glyph2image(int glyphNo, int size, int angle, XImage *img)
 {
 	int length;
@@ -158,7 +158,7 @@ glyph2image(int glyphNo, int size, int angle, XImage *img)
 	img->obdata = 0;
 }
 
-int
+static int
 xAllocColor(int rgb)
 {
 	XColor c;
