@@ -42,4 +42,3 @@ HheaTable::HheaTable(RandomAccessFile &f, int offset, int length):
 	isMetric = readUShort();
 	nLongHMetrics = readUShort();
 }
-

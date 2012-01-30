@@ -162,7 +162,6 @@ operator delete(void *ptr)
 
 #endif /* MEMDEBUG */
 
-
 RandomAccessFile::RandomAccessFile(const char *fileName)
 {
 	int fd = open(fileName, O_RDONLY);
@@ -208,4 +207,3 @@ RandomAccessFile::calcChecksum()
 
 	return checksum;
 }
-

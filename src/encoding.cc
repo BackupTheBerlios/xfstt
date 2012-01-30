@@ -109,8 +109,6 @@ Encoding::enumerate(Encoding *iterator)
 	return iterator ? iterator->next : first;
 }
 
-
-
 class iso8859_1: public Encoding
 {
 public:
@@ -125,7 +123,6 @@ iso8859_1::map2unicode(int code)
 	if (code == 0x80) code = 0x20AC;	// euro currency symbol
 	return code;
 }
-
 
 class iso8859_2: public Encoding
 {
@@ -158,7 +155,6 @@ iso8859_2::map2unicode(int code)
 	return table[code - 0xa0];
 }
 
-
 class iso8859_3: public Encoding
 {
 public:
@@ -189,7 +185,6 @@ iso8859_3::map2unicode(int code)
 	if (code <= 0xa0 || code >= 256) return code;
 	return table[code - 0xa0];
 }
-
 
 class iso8859_4: public Encoding
 {
@@ -222,7 +217,6 @@ iso8859_4::map2unicode(int code)
 	return table[code - 0xa0];
 }
 
-
 class iso8859_5: public Encoding
 {
 public:
@@ -241,7 +235,6 @@ iso8859_5::map2unicode(int code)
 	return (code + 0x360);
 }
 
-
 class iso8859_6: public Encoding
 {
 public:
@@ -259,7 +252,6 @@ iso8859_6::map2unicode(int code)
 	if (code <= 0xa4) return code;
 	return (code + 0x560);
 }
-
 
 class iso8859_7: public Encoding
 {
@@ -285,7 +277,6 @@ iso8859_7::map2unicode(int code)
 	return table[code - 0xa0];
 }
 
-
 class iso8859_8: public Encoding
 {
 public:
@@ -303,7 +294,6 @@ iso8859_8::map2unicode(int code)
 	if (code == 0xdf) return 0x2017;
 	return (code + 0x4f0);	// Thanks Stanislav Malyshev
 }
-
 
 class iso8859_9: public Encoding
 {
@@ -328,7 +318,6 @@ iso8859_9::map2unicode(int code)
 	}
 	return code;
 }
-
 
 // Thanks Atsawin Chowanakritsanakul
 // Latin/Thai aka TIS-620
@@ -360,7 +349,6 @@ iso8859_11::map2unicode(int code)
 	if (code < 160 || code >= 256) return code;
 	return table[code - 160];
 }
-
 
 // Thanks Andrew Wheatley
 class iso8859_14: public Encoding
@@ -394,7 +382,6 @@ iso8859_14::map2unicode(int code)
 	return table[code - 0xa0];
 }
 
-
 // Thanks David Woodhouse
 class iso8859_15: public Encoding
 {
@@ -419,7 +406,6 @@ iso8859_15::map2unicode(int code)
 	}
 	return code;
 }
-
 
 // Thanks Vladimir Eltsov and Nikolay Grygoryev
 class koi8_r: public Encoding
@@ -456,7 +442,6 @@ koi8_r::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 // Thanks Vitaly V. Bursov
 class koi8_u: public Encoding
 {
@@ -491,7 +476,6 @@ koi8_u::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class windows_1251: public Encoding
 {
 public:
@@ -525,7 +509,6 @@ windows_1251::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 // Thanks Petr Tomasek
 class iso8859_10: public Encoding
@@ -562,7 +545,6 @@ iso8859_10::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class windows_1250: public Encoding
 {
 public:
@@ -596,7 +578,6 @@ windows_1250::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class windows_1252: public Encoding
 {
@@ -632,7 +613,6 @@ windows_1252::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class windows_1253: public Encoding
 {
 public:
@@ -666,7 +646,6 @@ windows_1253::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class windows_1254: public Encoding
 {
@@ -702,7 +681,6 @@ windows_1254::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class windows_1255: public Encoding
 {
 public:
@@ -736,7 +714,6 @@ windows_1255::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class windows_1256: public Encoding
 {
@@ -772,7 +749,6 @@ windows_1256::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_437: public Encoding
 {
 public:
@@ -806,7 +782,6 @@ cp_437::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class cp_737: public Encoding
 {
@@ -842,7 +817,6 @@ cp_737::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_850: public Encoding
 {
 public:
@@ -876,7 +850,6 @@ cp_850::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class cp_851: public Encoding
 {
@@ -912,7 +885,6 @@ cp_851::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_852: public Encoding
 {
 public:
@@ -946,7 +918,6 @@ cp_852::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class cp_853: public Encoding
 {
@@ -982,7 +953,6 @@ cp_853::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_855: public Encoding
 {
 public:
@@ -1015,7 +985,6 @@ int cp_855::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class cp_857: public Encoding
 {
@@ -1051,7 +1020,6 @@ cp_857::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_860: public Encoding
 {
 public:
@@ -1085,7 +1053,6 @@ cp_860::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class cp_861: public Encoding
 {
@@ -1121,7 +1088,6 @@ cp_861::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_862: public Encoding
 {
 public:
@@ -1155,7 +1121,6 @@ cp_862::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class cp_863: public Encoding
 {
@@ -1191,7 +1156,6 @@ cp_863::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_864: public Encoding
 {
 public:
@@ -1225,7 +1189,6 @@ cp_864::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class cp_865: public Encoding
 {
@@ -1261,7 +1224,6 @@ cp_865::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_866: public Encoding
 {
 public:
@@ -1295,7 +1257,6 @@ cp_866::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class cp_869: public Encoding
 {
@@ -1331,7 +1292,6 @@ cp_869::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 class cp_895: public Encoding
 {
 public:
@@ -1365,7 +1325,6 @@ cp_895::map2unicode(int code)
 	if (code < 128 || code >= 256) return code;
 	return table[code - 128];
 }
-
 
 class wingreek: public Encoding
 {
@@ -1417,7 +1376,6 @@ wingreek::map2unicode(int code)
 	return table[code];
 }
 
-
 class symbol: public Encoding
 {
 public:
@@ -1467,7 +1425,6 @@ symbol::map2unicode(int code)
 	if (code >= 256) return code;
 	return table[code];
 }
-
 
 class wingding: public Encoding
 {
@@ -1519,7 +1476,6 @@ wingding::map2unicode(int code)
 	return table[code];
 }
 
-
 class atari_st: public Encoding
 {
 public:
@@ -1555,7 +1511,6 @@ atari_st::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 // Thanks Gilbert Baumann
 // Used to be unicode-2 - now known as iso10646-1
 class iso10646_1: public Encoding
@@ -1564,7 +1519,6 @@ public:
 	iso10646_1(): Encoding("iso10646-1") {}
 	int map2unicode(int code) { return code; }
 } exemplar_iso10646_1;
-
 
 // Thanks Mindaugas Riauba
 class windows_1257: public Encoding
@@ -1601,7 +1555,6 @@ windows_1257::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 // Thanks Ove Kaaven  **added 4/14/1999 for v0.9.99 **
 class windows_sami2: public Encoding
 {
@@ -1637,7 +1590,6 @@ windows_sami2::map2unicode(int code)
 	return table[code - 128];
 }
 
-
 void
 Encoding::getDefault(Encoding **maps, int maxcodes)
 {
@@ -1645,4 +1597,3 @@ Encoding::getDefault(Encoding **maps, int maxcodes)
 	if (maxcodes <= 1) return;
 	maps[1] = 0;
 }
-

@@ -1543,7 +1543,6 @@ jump_relative:
 	}
 }
 
-
 void
 Rasterizer::hintGlyph(GlyphTable* g, int offset, int length)
 {
@@ -1558,7 +1557,6 @@ Rasterizer::hintGlyph(GlyphTable* g, int offset, int length)
 	execHints(g, offset, length);
 }
 
-
 void
 Rasterizer::execHints(RandomAccessFile* const f, int offset, int length)
 {
@@ -1569,7 +1567,6 @@ Rasterizer::execHints(RandomAccessFile* const f, int offset, int length)
 		execOpcode(f);
 	debug("\n\n");
 }
-
 
 void
 Rasterizer::skipHints(RandomAccessFile* const f)
@@ -1615,7 +1612,6 @@ Rasterizer::skipHints(RandomAccessFile* const f)
 	}
 }
 
-
 void
 Rasterizer::interpolate(Point &pp, const Point &p2, const Point &p1)
 {
@@ -1645,7 +1641,6 @@ Rasterizer::interpolate(Point &pp, const Point &p2, const Point &p1)
 	gs.movePoint(pp, dist);
 }
 
-
 void
 Rasterizer::iup0(Point *const pp, const Point *const p1, const Point *const p2)
 {
@@ -1671,7 +1666,6 @@ Rasterizer::iup0(Point *const pp, const Point *const p1, const Point *const p2)
 
 	debug(" -> %d %d\n", pp->xnow, pp->ynow);
 }
-
 
 void
 Rasterizer::iup1(Point *const pp, const Point *const p1, const Point *const p2)
@@ -1699,7 +1693,6 @@ Rasterizer::iup1(Point *const pp, const Point *const p1, const Point *const p2)
 	debug(" -> %d %d\n", pp->xnow, pp->ynow);
 }
 
-
 void
 Rasterizer::doIUP0(Point *const first, Point *const last)
 {
@@ -1725,7 +1718,6 @@ Rasterizer::doIUP0(Point *const first, Point *const last)
 		iup0(j, i, p0);
 }
 
-
 void
 Rasterizer::doIUP1(Point *const first, Point *const last)
 {
@@ -1750,4 +1742,3 @@ Rasterizer::doIUP1(Point *const first, Point *const last)
 	for (j = first; j < p0; ++j)
 		iup1(j, i, p0);
 }
-

@@ -36,4 +36,3 @@ endif
 install-data-local:
 	$(INSTALL) -d $(DESTDIR)$(fontdir)
 	$(INSTALL) -d $(DESTDIR)$(cachedir)
-

@@ -94,4 +94,3 @@ NameTable::getString(int pfId, int strId)
 
 	return 0;
 }
-

@@ -37,7 +37,6 @@ Rasterizer::Rasterizer(int _grid_fitting, int _anti_aliasing,
 	openDraw();
 }
 
-
 Rasterizer::~Rasterizer()
 {
 	endInterpreter();
@@ -48,7 +47,6 @@ Rasterizer::~Rasterizer()
 	if (sizePoints[1])
 		delete[] p[1];
 }
-
 
 // useTTFont must be executed before setP*Size!
 void
@@ -96,7 +94,6 @@ Rasterizer::useTTFont(TTFont* _ttFont, int _flags)
 	ttFont->points = p[1];
 	ttFont->endPoints = endPoints;
 }
-
 
 // prepare scaling of outlines
 // it can only be called when useTTFont has defined a font
@@ -146,10 +143,8 @@ Rasterizer::setPixelSize(int _xx, int _xy, int _yx, int _yy)
 		status = NOT_READY;
 }
 
-
 // only needed when emUnits != 2048, but since we don't know this until
 // we know the TTFont we have to separate it from setP*Size()
-
 void
 Rasterizer::applyTransformation()
 {
@@ -180,7 +175,6 @@ Rasterizer::applyTransformation()
 
 	status = TRAFO_APPLIED;
 }
-
 
 /* get font extent
  * XXX: is there a way to avoid going through all glyphs and interpret them?
@@ -262,7 +256,6 @@ Rasterizer::getFontExtent(FontExtent *fe)
 	status = FONT_DONE;
 }
 
-
 int
 Rasterizer::putChar8Bitmap(char c, uint8_t *bmp, uint8_t *endbmp,
                            GlyphMetrics *gm)
@@ -272,7 +265,6 @@ Rasterizer::putChar8Bitmap(char c, uint8_t *bmp, uint8_t *endbmp,
 	return putGlyphBitmap(glyphNo, bmp, endbmp, gm);
 }
 
-
 int
 Rasterizer::putChar16Bitmap(int c, uint8_t *bmp, uint8_t *endbmp,
                             GlyphMetrics *gm)
@@ -281,7 +273,6 @@ Rasterizer::putChar16Bitmap(int c, uint8_t *bmp, uint8_t *endbmp,
 	debug("charNo16 = %d", c);
 	return putGlyphBitmap(glyphNo, bmp, endbmp, gm);
 }
-
 
 int
 Rasterizer::putGlyphBitmap(int glyphNo, uint8_t *bmp, uint8_t *endbmp,
@@ -423,7 +414,6 @@ Rasterizer::putGlyphData(int ne, int np, int *ep, Point *pp, int glyphNo,
 	pp->ynow = (pp->yold + 32) & -64;
 }
 
-
 void
 Rasterizer::scaleGlyph()
 {
@@ -450,7 +440,6 @@ Rasterizer::scaleGlyph()
 	}
 }
 
-
 void
 Rasterizer::printOutline(void)
 {
@@ -471,4 +460,3 @@ Rasterizer::printOutline(void)
 		}
 	 }
 }
-

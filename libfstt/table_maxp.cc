@@ -43,4 +43,3 @@ MaxpTable::MaxpTable(RandomAccessFile &f, int offset, int length):
 	maxComponentElements = readUShort();
 	maxComponentDepth = readUShort();
 }
-

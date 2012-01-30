@@ -401,4 +401,3 @@ Rasterizer::antiAliasing2(uint8_t* bmp)
 	width = dX;
 	length = dX * height;
 }
-

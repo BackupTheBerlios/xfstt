@@ -78,4 +78,3 @@ typedef struct {
 } FontParams;
 
 #endif
-

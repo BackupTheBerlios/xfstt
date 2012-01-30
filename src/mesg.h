@@ -32,4 +32,3 @@
 	std::fprintf(stdout, format, ##__VA_ARGS__)
 
 #endif
-

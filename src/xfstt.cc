@@ -71,7 +71,6 @@
 #include <pwd.h>
 #include <errno.h>
 
-
 // if you want to read good code skip this hacked up file!
 
 typedef struct {
@@ -2166,4 +2165,3 @@ main(int argc, char **argv)
 
 	return 0;
 }
-

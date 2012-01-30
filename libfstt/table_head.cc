@@ -44,4 +44,3 @@ HeadTable::HeadTable(RandomAccessFile &f, int offset, int length):
 	locaMode = readUShort();		// 0: shortGlyph, 1: longGlyph
 	/* glyfFormat = */ readUShort();	// glyphDataFormat == 0
 }
-

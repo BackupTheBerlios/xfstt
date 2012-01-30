@@ -27,4 +27,3 @@ echo Disconnecting from $fontpath
 xset -fp $fontpath
 
 echo Test complete.
-

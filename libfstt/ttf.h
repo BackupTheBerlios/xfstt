@@ -152,7 +152,6 @@ void *allocMem(int size);		// mmaping allocation
 void *shrinkMem(void *ptr, int newsize);
 void deallocMem(void *ptr, int size);
 
-
 class NameTable;
 class HeadTable;
 class MaxpTable;
@@ -352,7 +351,6 @@ public:
 	int badHeadMagic()	{ return headMagic != VALIDHEAD_MAGIC; }
 };
 
-
 // Font limits
 class MaxpTable: public RandomAccessFile {
 	friend class TTFont;
@@ -380,7 +378,6 @@ public:
 	uint16_t getNumGlyphs()	{ return numGlyphs;}
 };
 
-
 // Character code to glyph number mapping
 class CmapTable: public RandomAccessFile {
 	enum {
@@ -407,7 +404,6 @@ public:
 	uint16_t lastUnicode();
 };
 
-
 // Glyph number to glyph data offset mapping
 class LocaTable: public RandomAccessFile {
 	int	maxGlyph;
@@ -423,7 +419,6 @@ public:
 
 	int getGlyphOffset(int glyphNo);
 };
-
 
 // Glyph data
 class GlyphTable: /*public*/ RandomAccessFile {
@@ -479,7 +474,6 @@ private:
 	};
 };
 
-
 // Hhea
 class HheaTable: public RandomAccessFile {
 	friend class TTFont;
@@ -499,7 +493,6 @@ class HheaTable: public RandomAccessFile {
 	HheaTable(RandomAccessFile &f, int offset, int length);
 };
 
-
 // Hmtx
 class HmtxTable: public RandomAccessFile {
 	int	nHMetrics;
@@ -509,7 +502,6 @@ public:
 	void setupHmtx(int h)	{ nHMetrics = h; }
 	void getHMetrics(int glyphNo, int *advWidth, int *lsdBear);
 };
-
 
 // OS/2
 class OS2Table: public RandomAccessFile {
@@ -613,7 +605,6 @@ public:
 	OS2Table(RandomAccessFile &f, int offset, int length);
 };
 
-
 // LTSH
 class LtshTable: public RandomAccessFile {
 	int numGlyphs;
@@ -623,7 +614,6 @@ public:
 
 	int getLinearThreshold(int glyphNo);
 };
-
 
 // hdmx
 class HdmxTable: public RandomAccessFile {
@@ -637,7 +627,6 @@ public:
 	int getGlyphWidth(int mppemx, int glyphNo);
 };
 
-
 // VDMX
 class VdmxTable: public RandomAccessFile {
 	int	nRecords;
@@ -648,7 +637,6 @@ public:
 
 	int getYmax(int pelHeight, int xres, int yres, int *ymax, int *ymin);
 };
-
 
 // cvt
 class CvtTable: public RandomAccessFile {
@@ -661,7 +649,6 @@ public:
 	int nextVal() { return readSShort(); }
 };
 
-
 // fpgm
 class FpgmTable: public RandomAccessFile {
 	friend class TTFont;
@@ -669,14 +656,12 @@ class FpgmTable: public RandomAccessFile {
 	FpgmTable(RandomAccessFile &f, int offset, int length);
 };
 
-
 // prep
 class PrepTable: public RandomAccessFile {
 	friend class TTFont;
 
 	PrepTable(RandomAccessFile &f, int offset, int length);
 };
-
 
 // gasp
 class GaspTable: public RandomAccessFile {
@@ -714,7 +699,6 @@ public:
 	int getKerning(int leftChar, int rightChar);
 };
 
-
 struct FontExtent {
 	int	xBlackboxMin, xBlackboxMax;
 	int	yBlackboxMin, yBlackboxMax;
@@ -750,7 +734,6 @@ struct CharInfo {
 	int		tmpofs;	// scratchpad offset
 };
 
-
 // EBLC embedded bitmap locations
 class EblcTable: public RandomAccessFile {
 	enum {
@@ -779,7 +762,6 @@ class EbscTable: public RandomAccessFile {
 public:
 	EbscTable(RandomAccessFile &f, int offset, int length);
 };
-
 
 class GraphicsState {
 	friend class Rasterizer;	// only Rasterizer needs this
@@ -984,7 +966,6 @@ private:
 	static void bezier1(int x0, int y0, int x1, int y1, int x2, int y2);
 	void antiAliasing2(uint8_t *bmp);
 };
-
 
 // hint opcodes
 enum {
@@ -1271,4 +1252,3 @@ enum {	// getinfo parameters
 };
 
 #endif
-

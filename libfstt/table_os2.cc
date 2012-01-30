@@ -64,4 +64,3 @@ OS2Table::OS2Table(RandomAccessFile &f, int offset, int length):
 	winAscent = readUShort();
 	winDescent = readUShort();
 }
-

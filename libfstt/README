@@ -8,4 +8,3 @@ Please don't link dynamically against this library, because I'm going
 to break API compatibility at random, to clean the interface. When the
 code has been stabilized a new version with a dynamic library will
 be released.
-

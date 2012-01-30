@@ -160,7 +160,6 @@ TTFont::TTFont(const char *fileName, int infoOnly):
 	hmtxTable->setupHmtx(hheaTable->nLongHMetrics);
 }
 
-
 TTFont::~TTFont()
 {
 	closeRAFile();
@@ -247,7 +246,6 @@ TTFont::getFontInfo(FontInfo *fi)
 	faceName.copy(fi->faceName, fi->faceLength);
 }
 
-
 int
 TTFont::getGlyphNo8(char char8)
 {
@@ -312,7 +310,6 @@ TTFont::getGlyphWidth(int mppemx, int glyphNo)
 
 	return width;
 }
-
 
 // verify on reference implementation
 int
@@ -391,7 +388,6 @@ TTFont::write2File(const char *filename)
 	return -1;
 }
 
-
 #include <cctype>
 #include <algorithm>
 
@@ -404,7 +400,6 @@ char_tolower(const char c)
 // result has to be preset with the category name "-category-",
 // returns "-category-family-weight-slant-setwidth-TT-"
 // XXX: "pixelsize-pointsize-xres-yres-spacing-avgwidth-charset-encoding"
-
 string
 TTFont::getXLFDbase(string xlfd_templ)
 {
@@ -441,4 +436,3 @@ TTFont::getXLFDbase(string xlfd_templ)
 
 	return xlfd;
 }
-

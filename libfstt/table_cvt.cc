@@ -26,4 +26,3 @@ CvtTable::CvtTable(RandomAccessFile &f, int offset, int length):
 {
 	nVals = length >> 1;
 }
-

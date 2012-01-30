@@ -148,4 +148,3 @@ main(int argc, char **argv)
 	closedir(dirp);
 	return 0;
 }
-

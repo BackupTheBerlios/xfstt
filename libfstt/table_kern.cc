@@ -45,11 +45,9 @@ KernTable::KernTable(RandomAccessFile &f, int offset, int length):
 	}
 }
 
-
 int
 KernTable::getKerning(int /* leftChar */, int /* rightChar */)
 {
 	// TODO
 	return 0;
 }
-

@@ -41,4 +41,3 @@ LtshTable::getLinearThreshold(int glyphNo)
 
 	return yPel;
 }
-

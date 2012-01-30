@@ -6,4 +6,3 @@
 #
 
 SUBDIRS = doc po libfstt src
-

@@ -223,4 +223,3 @@ CmapTable::lastUnicode()
 	debug("Last Unicode = %d\n", i);
 	return i;
 }
-

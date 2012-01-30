@@ -75,4 +75,3 @@ VdmxTable::getYmax(int pelHeight, int xres, int yres, int *ymax, int *ymin)
 
 	return 1;
 }
-

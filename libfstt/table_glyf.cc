@@ -238,4 +238,3 @@ GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 
 	return 2;
 }
-

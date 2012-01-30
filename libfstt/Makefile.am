@@ -22,4 +22,3 @@ libfstt_a_SOURCES = arch.h ttf.h rafile.cc ttfont.cc	\
 	table_loca.cc table_ltsh.cc table_maxp.cc	\
 	table_name.cc table_os2.cc table_prep.cc	\
 	table_vdmx.cc
-

@@ -48,4 +48,3 @@ LocaTable::getGlyphOffset(int glyphNo)
 
 	return ofs;
 }
-

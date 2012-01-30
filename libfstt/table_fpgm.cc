@@ -25,4 +25,3 @@ FpgmTable::FpgmTable(RandomAccessFile &f, int offset, int length):
 	RandomAccessFile(f, offset, length)
 {
 }
-

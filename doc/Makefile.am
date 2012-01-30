@@ -22,4 +22,3 @@ edit = sed \
 
 xfstt.1x: Makefile $(srcdir)/xfstt.1x.in
 	$(AM_V_GEN) $(edit) $(srcdir)/xfstt.1x.in > $@
-

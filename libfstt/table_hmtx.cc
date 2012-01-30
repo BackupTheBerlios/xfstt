@@ -41,4 +41,3 @@ HmtxTable::getHMetrics(int glyphNo, int *advWidth, int *lsdBear)
 	*lsdBear = readSShort();
 	debug("hmtx(%d) = {%d, %d}\n", glyphNo, *advWidth, *lsdBear);
 }
-

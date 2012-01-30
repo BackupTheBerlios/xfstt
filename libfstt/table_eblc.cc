@@ -144,4 +144,3 @@ EblcTable::readSubTable(int first, int last)
 		break;
 	}
 }
-

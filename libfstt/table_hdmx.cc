@@ -80,4 +80,3 @@ HdmxTable::getGlyphWidth(int mppemx, int glyphNo)
 
 	return width;
 }
-

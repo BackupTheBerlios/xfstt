@@ -46,4 +46,3 @@ GaspTable::getFlags(int mppem)
 
 	return flags;
 }
-

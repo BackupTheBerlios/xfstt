@@ -106,4 +106,3 @@ EbdtTable::readBitmap(int format, uint8_t *bitmap,
 
 	return 0;
 }
-
