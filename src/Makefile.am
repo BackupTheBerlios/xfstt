@@ -25,12 +25,12 @@ xfstt_CXXFLAGS = $(FONTSPROTO_CFLAGS)
 patchttf_SOURCES = patchttf.cc gettext.h
 perftest_SOURCES = perftest.cc gettext.h
 
-if WITH_X11
+if WITH_XCB
 noinst_PROGRAMS += showttf
 
 showttf_SOURCES = showttf.cc gettext.h
-showttf_CXXFLAGS = $(X11_CFLAGS)
-showttf_LDADD = $(LDADD) $(X11_LIBS)
+showttf_CXXFLAGS = $(XCB_CFLAGS)
+showttf_LDADD = $(LDADD) $(XCB_LIBS)
 endif
 
 install-data-local:

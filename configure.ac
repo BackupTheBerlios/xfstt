@@ -14,11 +14,11 @@ AM_INIT_AUTOMAKE([foreign 1.5])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])],
                             [AC_SUBST([AM_DEFAULT_VERBOSITY], [1])])
 
-AC_ARG_WITH([x11],
-            [AS_HELP_STRING([--with-x11], [enable tools using X11])],
+AC_ARG_WITH([xcb],
+            [AS_HELP_STRING([--with-xcb], [enable tools using XCB])],
             [],
-            [with_x11=no])
-AM_CONDITIONAL(WITH_X11, [test "x$with_x11" != "xno"])
+            [with_xcb=no])
+AM_CONDITIONAL(WITH_XCB, [test "x$with_xcb" != "xno"])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -28,7 +28,8 @@ AC_PROG_RANLIB
 
 # Checks for libraries.
 AC_CHECK_LIB([m], [sqrt])
-AS_IF([test "x$with_x11" != "xno"], [PKG_CHECK_MODULES(X11, [x11])])
+AS_IF([test "x$with_xcb" != "xno"],
+      [PKG_CHECK_MODULES(XCB, [xproto xcb xcb-keysyms xcb-image])])
 
 # Checks for header files.
 AC_HEADER_DIRENT

@@ -2,6 +2,7 @@
  * Show glyphs
  *
  * Copyright © 1997-1998 Herbert Duerr
+ * Copyright © 2004,2008,2010,2012 Guillem Jover <guillem@hadrons.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,32 +25,20 @@
 #define STARTGLYF	6
 #define DEFAULT_FONT	"times.ttf"
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/keysym.h>
-#include <stdio.h>
 #include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <X11/keysym.h>
+#include <xcb/xcb.h>
+#include <xcb/xcb_keysyms.h>
+#include <xcb/xcb_image.h>
 
 #include "ttf.h"
 
-#if (MSB_BYTE_FIRST != 1 || MSB_BIT_FIRST != 2)
-#warning "showttf assumes MSB_BYTE_FIRST=1 and MSB_BIT_FIRST=2"
-#endif
-
-static Display *display;
-static Visual *visual;
-static int screen;
-static int depth;
-static Colormap colorMap;
-static Window rootWindow;
-
-static GC textGC;
-static int color[5];
-static int yellow;
-static int black;
-static int white;
-
 static Rasterizer *raster;
+static uint32_t color[5];
 static uint8_t *pixmap;
 
 #define BMPSIZE		1048 * 2048
@@ -65,13 +54,13 @@ int MAGNIFY = 1;
 struct font_state {
 	int size;
 	int angle;
-	unsigned width;
-	unsigned height;
+	uint16_t width;
+	uint16_t height;
 	int glyphNo;
 };
 
 static void
-glyph2image(struct font_state *state, XImage *img)
+glyph2image(struct font_state *state, xcb_image_t *img)
 {
 	int length;
 	static int old_size = 0, old_angle = 0;
@@ -92,11 +81,13 @@ glyph2image(struct font_state *state, XImage *img)
 
 	GlyphMetrics gm;
 	length = raster->putGlyphBitmap(state->glyphNo, bitmap, bitmap + BMPSIZE, &gm);
+	img->size = length;
 
 	img->width = 0;
 	if (length == 0)
 		return;
 
+#if 0
 	if (raster->anti_aliasing <= 0)
 		switch (SCANLINEPAD) {
 		case 8:
@@ -123,10 +114,12 @@ glyph2image(struct font_state *state, XImage *img)
 			}
 			break;
 		}
+#endif
 
 	if (raster->anti_aliasing > 0)
 		for (int i = length; --i >= 0;)
 			pixmap[i] = color[bitmap[i]];
+#if 0
 #ifndef MAGNIFY
 	else if (MAGNIFY) {
 		int8_t *p1 = (int8_t *)bitmap;
@@ -145,43 +138,71 @@ glyph2image(struct font_state *state, XImage *img)
 		}
 	}
 #endif
+#endif
 
 	int isPixmap = (MAGNIFY || raster->anti_aliasing > 0);
 
 	img->width = raster->width;
 	img->height = raster->height;
-	img->xoffset = 0;
-	img->format = isPixmap ? ZPixmap : XYBitmap;
-	img->data = (char *)(isPixmap ? pixmap : bitmap);
-	img->byte_order = LSBFirst;
-	img->bitmap_unit = 8;
-	img->bitmap_bit_order = MSBFirst;
-	img->bitmap_pad = 0;
+	if (isPixmap)
+		img->format = XCB_IMAGE_FORMAT_Z_PIXMAP;
+	else
+		img->format = XCB_IMAGE_FORMAT_XY_BITMAP;
+	img->data = (uint8_t *)(isPixmap ? pixmap : bitmap);
+	img->byte_order = XCB_IMAGE_ORDER_MSB_FIRST;
+	img->unit = 8;
+	img->bit_order = XCB_IMAGE_ORDER_MSB_FIRST;
+	img->scanline_pad = 0;
 	img->depth = isPixmap ? 8 : 1;
-	img->bytes_per_line = raster->dX;
-	img->bits_per_pixel = isPixmap ? 8 : 1;
-	img->red_mask = 0xFF0000;
-	img->green_mask = 0x00FF00;
-	img->blue_mask = 0x0000FF;
-	img->obdata = 0;
+	img->stride = raster->dX;
+	img->bpp = isPixmap ? 8 : 1;
 }
 
-static int
-xAllocColor(int rgb)
+static uint32_t
+new_color(xcb_connection_t *c, xcb_colormap_t cmap,
+          uint16_t r, uint16_t g, uint16_t b)
 {
-	XColor c;
+	xcb_alloc_color_cookie_t cookie;
+	xcb_alloc_color_reply_t *reply;
+	uint32_t color;
 
-	c.red = (rgb >> 8) & 0xff00;
-	c.green = rgb & 0xff00;
-	c.blue = (rgb << 8) & 0xff00;
-	XAllocColor(display, colorMap, &c);
+	cookie = xcb_alloc_color(c, cmap, r, g, b);
+	reply = xcb_alloc_color_reply(c, cookie, NULL);
+	if (!reply)
+		return 0;
 
-	return c.pixel;
+	color = reply->pixel;
+	free(reply);
+
+	return color;
+}
+
+xcb_screen_t *
+screen_of_display(xcb_connection_t *c, int screen)
+{
+	xcb_screen_iterator_t iter;
+
+	iter = xcb_setup_roots_iterator(xcb_get_setup(c));
+	for (; iter.rem; --screen, xcb_screen_next(&iter))
+		if (screen == 0)
+			return iter.data;
+
+	return NULL;
 }
 
 int
 main(int argc, char** argv)
 {
+	xcb_connection_t *c;
+	int screen_nr;
+	xcb_screen_t *screen;
+	xcb_visualid_t root_visual = { 0 };
+	xcb_window_t root_window = { 0 };
+	xcb_gcontext_t gc = { 0 };
+	xcb_colormap_t cmap = { 0 };
+	xcb_key_symbols_t *keysyms;
+	uint32_t black, white, yellow;
+
 	if (argc != 2) {
 		fprintf(stderr, "Usage: showttf fontfile.ttf\n");
 		fprintf(stderr, "use the cursor keys to navigate\n");
@@ -194,32 +215,50 @@ main(int argc, char** argv)
 
 	int done = 0;
 
-	display = XOpenDisplay(":0");
-	visual = XDefaultVisual(display, screen);
-	screen = XDefaultScreen(display);
-	depth = XDefaultDepth(display, screen);
-	rootWindow = XDefaultRootWindow(display);
-	colorMap = XDefaultColormap(display, screen);
+	c = xcb_connect(NULL, &screen_nr);
 
-	color[0] = xAllocColor(0xF0F0F0);
-	color[1] = xAllocColor(0xB4B4B4);
-	color[2] = xAllocColor(0x787878);
-	// XXX: color[3] = xAllocColor(0x3C3C3C);
-	color[3] = xAllocColor(0x505050);
-	color[4] = xAllocColor(0x000000);
+	screen = screen_of_display(c, screen_nr);
+	if (screen == NULL)
+		return 1;
 
-	white = xAllocColor(0xF0F0F0);
-	black = xAllocColor(0x000000);
-	yellow = xAllocColor(0xFFFF00);
+	root_visual = screen->root_visual;
+	root_window = screen->root;
+	cmap = screen->default_colormap;
 
-	XGCValues gcv;
-	gcv.function = GXcopy;
-	gcv.foreground = black;
-	gcv.background = white;
-	gcv.line_width = 1;
-	gcv.line_style = LineSolid;
-	unsigned long valuemask = GCFunction | GCForeground;
-	textGC = XCreateGC(display, rootWindow, valuemask, &gcv);
+	gc = xcb_generate_id(c);
+
+	uint32_t mask;
+	uint32_t values[5];
+
+	mask |= XCB_GC_FUNCTION;
+	values[0] = XCB_GX_COPY;
+
+	mask |= XCB_GC_FOREGROUND;
+	values[1] = screen->black_pixel;
+
+	mask |= XCB_GC_BACKGROUND;
+	values[2] = screen->white_pixel;
+
+	mask |= XCB_GC_LINE_WIDTH;
+	values[3] = 1;
+
+	mask |= XCB_GC_LINE_STYLE;
+	values[4] = XCB_LINE_STYLE_SOLID;
+
+	xcb_create_gc(c, gc, root_window, mask, values);
+
+	keysyms = xcb_key_symbols_alloc(c);
+
+	color[0] = new_color(c, cmap, 0xF000, 0xF000, 0xF000);
+	color[1] = new_color(c, cmap, 0xB400, 0xB400, 0xB400);
+	color[2] = new_color(c, cmap, 0x7800, 0x7800, 0x7800);
+	// XXX: color[3] = new_color(c, cmap, 0x3C00, 0x3C00, 0x3C00);
+	color[3] = new_color(c, cmap, 0x5000, 0x5000, 0x5000);
+	color[4] = new_color(c, cmap, 0x0000, 0x0000, 0x0000);
+
+	white = new_color(c, cmap, 0xF000, 0xF000, 0xF000);
+	black = new_color(c, cmap, 0x0000, 0x0000, 0x0000);
+	yellow = new_color(c, cmap, 0xFF00, 0xFF00, 0x0000);
 
 	struct font_state state;
 
@@ -233,19 +272,29 @@ main(int argc, char** argv)
 	//char *tststr = "abcd";
 #endif
 
-	Window win = XCreateSimpleWindow(display, rootWindow, 0, 0,
-					 state.width, state.height, 1,
-					 gcv.foreground, gcv.background);
-	XStoreName(display, win, "TrueType Viewer");
+	uint32_t cw_mask = XCB_CW_EVENT_MASK;
+	uint32_t cw_values[1] = {
+		XCB_EVENT_MASK_KEY_PRESS |
+		XCB_EVENT_MASK_KEY_RELEASE |
+		XCB_EVENT_MASK_BUTTON_PRESS |
+		XCB_EVENT_MASK_BUTTON_RELEASE |
+		XCB_EVENT_MASK_EXPOSURE |
+		XCB_EVENT_MASK_STRUCTURE_NOTIFY
+	};
 
-	int selection_mask = StructureNotifyMask | ExposureMask |
-			//   EnterWindowMask | LeaveWindowMask |
-			     ButtonPressMask | ButtonReleaseMask |
-			//   PointerMotionMask |
-			     KeyPressMask | KeyReleaseMask;
-	XSelectInput(display, win, selection_mask);
+	xcb_window_t window = xcb_generate_id(c);
+	xcb_create_window(c, 0, window, root_window, 0, 0,
+	                  state.width, state.height, 1,
+	                  XCB_WINDOW_CLASS_INPUT_OUTPUT, root_visual,
+	                  cw_mask, cw_values);
 
-	XMapWindow(display, win);
+	const char title[] = "TrueType Viewer";
+	xcb_change_property(c, XCB_PROP_MODE_REPLACE, window,
+	                    XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
+	                    strlen(title), title);
+
+	xcb_map_window(c, window);
+	xcb_flush(c);
 
 	raster = new Rasterizer();
 	TTFont *ttFont = new TTFont(ttFileName);
@@ -255,12 +304,11 @@ main(int argc, char** argv)
 	state.angle = 0;
 	state.glyphNo = STARTGLYF;
 
-	XImage img;
+	xcb_image_t img;
+	xcb_generic_event_t *event;
 
-	XEvent event;
-	do {
-		XNextEvent(display, &event);
-		switch (event.type) {
+	while ((event = xcb_wait_for_event(c)) && !done) {
+		switch (event->response_type & ~0x80) {
 		drawglyph:
 #ifndef MAGNIFY
 			if (MAGNIFY && fontsize) {
@@ -275,15 +323,25 @@ main(int argc, char** argv)
 			glyph2image(&state, &img);
 		}
 			/* fall through */
-		case Expose:
+		case XCB_EXPOSE:
 		expose:
-			XSetForeground(display, textGC, yellow);
-			XFillRectangle(display, win, textGC, 0, 0,
-			               state.width, state.height);
-			XSetForeground(display, textGC, black);
+		{
+			uint32_t gc_values[] = { 0 };
+
+			gc_values[0] = yellow;
+			xcb_change_gc(c, gc, XCB_GC_FOREGROUND, gc_values);
+
+			xcb_rectangle_t rect = {
+				0, 0, state.width, state.height
+			};
+			xcb_poly_fill_rectangle(c, window, gc, 1, &rect);
+
+			gc_values[0] = black;
+			xcb_change_gc(c, gc, XCB_GC_FOREGROUND, gc_values);
+
 			if (img.width)
-				XPutImage(display, win, textGC, &img,
-					  0, 0, 4, 4, img.width, img.height);
+				xcb_image_put(c, window, gc, &img, 4, 4, 0);
+
 #if 0
 			tststr[3].byte2 = glyphNo;
 			tststr[3].byte1 = glyphNo >> 8;
@@ -291,16 +349,23 @@ main(int argc, char** argv)
 			XDrawImageString16(display, win, textGC, 4, 120,
 					   tststr, 4);
 #endif
+
+			xcb_flush(c);
 			break;
-
-		case KeyPress:
+		}
+		case XCB_KEY_PRESS:
 		{
-			char c[8];
-			unsigned long ks;
-			XComposeStatus xcs;
-			XLookupString(&event.xkey, c, 8, &ks, &xcs);
+			xcb_key_press_event_t *ev_key;
+			xcb_keysym_t ksym;
 
-			switch (ks) {
+			ev_key = (xcb_key_press_event_t *)event;
+
+			ksym = xcb_key_press_lookup_keysym(keysyms, ev_key, 0);
+
+			// FIXME: need the keysym name (XLookupString);
+//			char keyname[8];
+
+			switch (ksym) {
 			case XK_Escape:
 				done = 1;
 				break;
@@ -358,20 +423,28 @@ main(int argc, char** argv)
 				goto expose;
 			default:
 				// XXX: glyphNo = ttFont->getGlyphNo16(0x20AC);
-				state.glyphNo = ttFont->getGlyphNo16(c[0]);
-				printf("key = \"%s\" -> %d\n", c, state.glyphNo);
+
+				// FIXME: need keysym name.
+				state.glyphNo = ttFont->getGlyphNo16(ksym);
+				// printf("key = \"%s\" -> %d\n", keyname, glyphNo);
+				printf("key = %c -> %d\n", ksym, state.glyphNo);
 				glyph2image(&state, &img);
 			}
 			goto expose;
 		}
 
-		case ConfigureNotify:
-			state.width = event.xconfigure.width;
-			state.height = event.xconfigure.height;
+		case XCB_CONFIGURE_NOTIFY:
+		{
+			xcb_configure_notify_event_t *ev_conf;
+
+			ev_conf = (xcb_configure_notify_event_t *)event;
+
+			state.width = ev_conf->width;
+			state.height = ev_conf->height;
 			goto drawglyph;
 			//break;
-
-		case DestroyNotify:
+		}
+		case XCB_DESTROY_NOTIFY:
 			done = 1;
 			break;
 
@@ -379,7 +452,7 @@ main(int argc, char** argv)
 			//printf("XEvent.type = %d\n", event.type);
 			break;
 		}
-	} while (!done);
+	}
 
 	if (bitmap)
 		deallocMem(bitmap, BMPSIZE);
@@ -390,8 +463,9 @@ main(int argc, char** argv)
 
 	cleanupMem();
 
-	XUnmapWindow(display, win);
-	XCloseDisplay(display);
+	xcb_key_symbols_free(keysyms);
+	xcb_unmap_window(c, window);
+	xcb_disconnect(c);
 
 	return 0;
 }
