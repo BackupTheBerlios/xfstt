@@ -2043,10 +2043,10 @@ main(int argc, char **argv)
 			version();
 			return 0;
 		} else if (!strcmp(argv[i], "--inetd")) { // thanks Feanor
-			inetdConnection = 1;
-			multiConnection = 0;
+			inetdConnection = true;
+			multiConnection = false;
 		} else if (!strcmp(argv[i], "--once")) {
-			multiConnection = 0;
+			multiConnection = false;
 		} else if (!strcmp(argv[i], "--unstrap")) {
 			maxLastChar = UNSTRAPLIMIT;
 			warning(_("[unstrapped] you must start X11 with "
