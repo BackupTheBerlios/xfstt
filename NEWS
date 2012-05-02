@@ -2,6 +2,7 @@ x.x (git)
 
 	Fix file descriptor leaks.
 	Fix directory resource leaks and segfaults on opening errors.
+	Reset the umask before creating the temporary directory.
 	Rewrite showttf to use XCB instead of X11.
 
 1.8 (2010-11-09)
@@ -137,7 +138,7 @@ x.x (git)
 	Cleaned Makefile.
 	Version is taken from first line of this file.
 
-1.2
+1.2 (2001-03-22)
 
 	Fixes bug that broke xfstt when using unix domain sockets under
 	  linux 2.4 (thanks to Oliver Suárez).
