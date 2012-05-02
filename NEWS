@@ -1,4 +1,4 @@
-x.x (git)
+1.9 (2012-05-02)
 
 	Fix file descriptor leaks.
 	Fix directory resource leaks and segfaults on opening errors.
